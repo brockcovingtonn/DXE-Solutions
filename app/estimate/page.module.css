@@ -1,0 +1,43 @@
+.estimateSection {
+  background: var(--navy-dark);
+  min-height: 100vh;
+  padding-top: 10rem;
+}
+
+.estimateForm {
+  max-width: 680px;
+}
+
+.successBox {
+  max-width: 680px;
+  text-align: center;
+  padding: 4rem 2rem;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  background: rgba(201, 168, 76, 0.04);
+}
+
+.successBox i {
+  font-size: 2.5rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.successBox h3 {
+  font-size: 1.8rem;
+  color: var(--white);
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.successBox p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.errorMsg {
+  color: #fca5a5;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
