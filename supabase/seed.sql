@@ -19,7 +19,7 @@
 -- (the trigger from schema.sql will have already created a profiles row for them)
 do $$
 declare
-  test_user_id uuid := 'PASTE_USER_UUID_HERE';
+  test_user_id uuid := '05d1dd29-f406-41e2-8fad-dae82a1c8edd';
   proj1_id uuid;
   proj2_id uuid;
 begin

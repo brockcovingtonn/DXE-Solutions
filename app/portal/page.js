@@ -7,6 +7,12 @@ export default async function PortalIndexPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
   const { data: projects } = await supabase
     .from('projects')
     .select('id')
@@ -16,6 +22,11 @@ export default async function PortalIndexPage() {
 
   if (projects && projects.length > 0) {
     redirect(`/portal/projects/${projects[0].id}/overview`);
+  }
+
+  // Admins with no projects of their own go straight to the admin dashboard
+  if (profile?.is_admin) {
+    redirect('/admin/clients');
   }
 
   // No projects yet — show a friendly empty state

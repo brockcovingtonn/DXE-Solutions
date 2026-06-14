@@ -117,6 +117,14 @@ export default function PortalShell({ profile, projects, children }) {
             label="Account Settings"
             active={pathname === '/portal/settings'}
           />
+          {profile?.is_admin && (
+            <SidebarLink
+              href="/admin/clients"
+              icon="ti-lock-access"
+              label="Admin Dashboard"
+              active={false}
+            />
+          )}
         </aside>
 
         <main className={styles.main}>{children}</main>

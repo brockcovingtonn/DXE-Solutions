@@ -32,6 +32,7 @@ cp .env.local.example .env.local
 Open `.env.local` and fill in:
 
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` — from your Supabase project's **Settings > API** page
+- `SUPABASE_SERVICE_ROLE_KEY` — also from **Settings > API**, under "service_role" (click "Reveal" to see it). **Keep this secret** — it bypasses all security rules and should never be exposed to the browser. It's only used in admin API routes.
 - `RESEND_API_KEY` — from your Resend dashboard under **API Keys** (create one if you haven't)
 - `ESTIMATE_NOTIFICATION_EMAIL` — the email address that should receive estimate requests (e.g. `dixie@dxesolutions.com`)
 - `RESEND_FROM_EMAIL` — while testing, use `onboarding@resend.dev`. Once you verify your own domain in Resend, switch this to something like `estimates@dxesolutions.com`
@@ -97,13 +98,34 @@ Every time you `git push` to `main` after this, Vercel automatically redeploys.
 
 ## How Dixie adds new clients & projects
 
-Right now, project creation happens directly in Supabase (there's no admin UI yet — that can be a future addition). To onboard a new client:
+There's now a built-in admin dashboard for this — no SQL required.
 
-1. **Create the user**: Supabase dashboard → Authentication → Users → Add user (their email + a temporary password, "Auto Confirm User" checked)
-2. **Create their project**: SQL Editor → run an `insert into public.projects (...)` statement (see `supabase/seed.sql` for the format), using their new user's UUID as `owner_id`
-3. Add phases, milestones, documents, and notes the same way
+### One-time setup: make an account an admin
 
-A simple internal admin dashboard for Dixie to do this without SQL would be a great next addition once the client-facing site is live.
+1. Run `supabase/admin_migration.sql` once in the Supabase SQL editor (same way you ran `schema.sql` — copy, paste, Run). This adds the `is_admin` flag and the security rules that let admins see/manage every client's data.
+2. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
+3. In the SQL editor, run:
+
+   ```sql
+   update public.profiles set is_admin = true where id = 'HER-UUID-HERE';
+   ```
+
+4. Repeat for any other staff who need admin access
+
+### Using the admin dashboard
+
+Once an account has `is_admin = true`, that person will see an **Admin Dashboard** link in their portal sidebar (under Account). From there they can:
+
+- **Add a new client** — creates their login (email + temporary password) and their first project in one step. The client can log in immediately.
+- **Add a project to an existing client** — from the client list, click "Add project"
+- **Edit any project** — update status, overall progress %, dates, and project manager name
+- **Edit phases** — add/remove/reorder the 6 progress phases and set each one's percentage and state (pending / active / done)
+- **Edit milestones** — add/remove timeline items with custom dates and states
+- **Upload documents** — drag and drop files on behalf of a client; set each document's badge (new / pending / signed)
+- **Upload photos** — drag and drop progress photos with optional captions
+- **Post notes** — write updates that appear in the client's "Notes & Updates" feed, automatically signed "[Name] — Project Manager"
+
+Each of these admin actions also logs an entry to the project's activity feed automatically (e.g. "DXE uploaded Change Order #1").
 
 ## Project structure reference
 
@@ -123,11 +145,31 @@ app/
       documents/page.js       → full document list + upload
       photos/page.js          → progress photo gallery
       notes/page.js           → notes & updates thread
+  admin/
+    layout.js                → admin auth check (requires is_admin)
+    clients/page.js          → list all clients + their projects
+    clients/new/page.js       → create new client + first project
+    clients/[clientId]/page.js → add a project to an existing client
+    projects/[id]/page.js     → full project editor (info, phases, milestones, docs, photos, notes)
+  api/admin/
+    clients/route.js          → creates new auth user + profile + project (uses service role key)
+    projects/route.js         → creates a project for an existing client
+    projects/[id]/route.js    → updates project info
+    phases/route.js           → replaces a project's phases
+    milestones/route.js       → replaces a project's milestones
+    documents/route.js        → records an admin-uploaded document
+    documents/[id]/route.js   → update badge / delete document
+    photos/route.js           → records an admin-uploaded photo
+    photos/[id]/route.js      → delete photo
+    notes/route.js            → posts a note as "[Name] — Project Manager"
 components/                   → shared UI components
+components/admin/             → admin-only editor components
 lib/
   supabase-client.js          → browser Supabase client
-  supabase-server.js          → server Supabase client
+  supabase-server.js          → server Supabase client (cookies-based, respects RLS)
+  supabase-admin.js           → service-role client (bypasses RLS, server-only, used for creating users)
 supabase/
   schema.sql                  → run once to create all tables + policies
+  admin_migration.sql         → run once to add is_admin flag + admin policies
   seed.sql                     → optional demo data
 ```

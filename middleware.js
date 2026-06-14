@@ -35,9 +35,28 @@ export async function middleware(request) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  // Protect /admin routes - require auth AND is_admin flag
+  if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      const redirectUrl = new URL('/login', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      const redirectUrl = new URL('/portal', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/portal/:path*'],
+  matcher: ['/portal/:path*', '/admin/:path*'],
 };
