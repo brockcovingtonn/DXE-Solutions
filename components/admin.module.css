@@ -354,6 +354,19 @@
   cursor: pointer;
 }
 
+.dashboardActivityLink {
+  display: block;
+  text-decoration: none;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.dashboardActivityLink:hover {
+  background: var(--cream);
+}
+
 .fieldHint {
   font-size: 0.72rem;
   color: #a0aec0;

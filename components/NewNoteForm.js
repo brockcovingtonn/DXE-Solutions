@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 
 export default function NewNoteForm({ projectId }) {
-  const supabase = createClient();
   const router = useRouter();
 
   const [body, setBody] = useState('');
@@ -21,26 +19,13 @@ export default function NewNoteForm({ projectId }) {
     setError('');
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', user.id)
-        .single();
-
-      const authorName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || 'You';
-
-      const { error: insertError } = await supabase.from('notes').insert({
-        project_id: projectId,
-        author_id: user.id,
-        author_name: authorName,
-        author_role: 'client',
-        body: body.trim(),
+      const res = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, text: body.trim() }),
       });
 
-      if (insertError) throw insertError;
+      if (!res.ok) throw new Error();
 
       setBody('');
       router.refresh();

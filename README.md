@@ -108,19 +108,21 @@ There's now a built-in admin dashboard for this — no SQL required.
 4. Run `supabase/admin_utilities_function.sql` once, after `utility_entries_migration.sql`. This adds an admin-only function so the admin dashboard can see and manage entries (including the admin-only Action Step / Comments fields).
 5. Run `supabase/contacts_migration.sql` once. This adds a global Contacts list (people/companies Dixie works with regularly), optionally linkable to specific projects.
 6. Run `supabase/templates_migration.sql` once. This adds a Templates section and a storage bucket for standard documents Dixie can apply to any project.
-7. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
-8. In the SQL editor, run:
+7. Run `supabase/email_notifications_migration.sql` once. This adds an email notifications preference to client accounts (default on).
+8. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
+9. In the SQL editor, run:
 
    ```sql
    update public.profiles set is_admin = true where id = 'HER-UUID-HERE';
    ```
 
-9. Repeat for any other staff who need admin access
+10. Repeat for any other staff who need admin access
 
 ### Using the admin dashboard
 
 Once an account has `is_admin = true`, that person will see an **Admin Dashboard** link in their portal sidebar (under Account). From there they can:
 
+- **Dashboard** — the admin landing page after login, showing client/project counts, a cross-project activity feed, upcoming milestones, and any utility entries marked Pending or In Progress
 - **Add a new client** — creates their login (email + temporary password) and their first project in one step. The client can log in immediately.
 - **Add a project to an existing client** — from the client list, click "Add project"
 - **Edit any project** — update status, overall progress %, dates, and project type
@@ -137,6 +139,15 @@ Once an account has `is_admin = true`, that person will see an **Admin Dashboard
 - **Post notes** — write updates that appear in the client's "Notes & Updates" feed, automatically signed "[Name] — Project Manager"
 
 Each of these admin actions also logs an entry to the project's activity feed automatically (e.g. "DXE uploaded Change Order #1").
+
+### Email notifications
+
+Once `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `ESTIMATE_NOTIFICATION_EMAIL` are set, the app sends emails automatically:
+
+- **To Dixie (admin)**: whenever a client uploads a document or posts a note, an email goes to `ESTIMATE_NOTIFICATION_EMAIL` with a link to that project in the admin dashboard. This always sends — there's no opt-out for the admin side.
+- **To the client**: whenever Dixie adds a document, adds photos, posts a note, or changes the project's status, the client gets an email with a link to their portal. Clients can turn this off from **Account Settings** ("Email me when there's an update on my project" — on by default).
+
+If `RESEND_API_KEY` isn't set (e.g. local development without it configured), these emails are silently skipped — nothing breaks, the app just won't send mail.
 
 ## Project structure reference
 

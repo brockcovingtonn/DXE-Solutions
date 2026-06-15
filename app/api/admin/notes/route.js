@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -52,6 +53,23 @@ export async function POST(request) {
       type: 'note',
       text: `${authorName.split(' —')[0]} added a note: ${text.trim().slice(0, 100)}${text.trim().length > 100 ? '...' : ''}`,
     });
+
+    // Notify the client of the new note
+    const { data: project } = await supabase
+      .from('projects')
+      .select('name, profiles!projects_owner_id_fkey(email, email_notifications)')
+      .eq('id', projectId)
+      .single();
+
+    if (project?.profiles?.email) {
+      await notifyClientOfProjectUpdate({
+        clientEmail: project.profiles.email,
+        clientNotificationsEnabled: project.profiles.email_notifications,
+        projectName: project.name,
+        projectId,
+        message: `Your project manager added a new note: "${text.trim().slice(0, 140)}${text.trim().length > 140 ? '...' : ''}"`,
+      });
+    }
 
     return NextResponse.json({ success: true, note });
   } catch (err) {

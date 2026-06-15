@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -53,6 +54,23 @@ export async function POST(request) {
         project_id: projectId,
         type: 'doc',
         text: `${fileName} uploaded by DXE`,
+      });
+    }
+
+    // Notify the client of the new document
+    const { data: project } = await supabase
+      .from('projects')
+      .select('name, profiles!projects_owner_id_fkey(email, email_notifications)')
+      .eq('id', projectId)
+      .single();
+
+    if (project?.profiles?.email) {
+      await notifyClientOfProjectUpdate({
+        clientEmail: project.profiles.email,
+        clientNotificationsEnabled: project.profiles.email_notifications,
+        projectName: project.name,
+        projectId,
+        message: `A new document, "${fileName}", was added to your project.`,
       });
     }
 

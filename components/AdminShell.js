@@ -55,6 +55,12 @@ export default function AdminShell({ profile, children }) {
         <aside className={styles.sidebar}>
           <div className={styles.sidebarSectionLabel}>Admin</div>
           <SidebarLink
+            href="/admin/dashboard"
+            icon="ti-layout-dashboard"
+            label="Dashboard"
+            active={pathname.startsWith('/admin/dashboard')}
+          />
+          <SidebarLink
             href="/admin/clients"
             icon="ti-users"
             label="Clients & Projects"

@@ -31,17 +31,18 @@ export default function DocumentUpload({ projectId }) {
 
         if (uploadError) throw uploadError;
 
-        const { error: dbError } = await supabase.from('documents').insert({
-          project_id: projectId,
-          uploaded_by: user.id,
-          uploaded_by_role: 'client',
-          file_name: file.name,
-          file_path: filePath,
-          file_type: file.name.split('.').pop(),
-          badge: 'new',
+        const res = await fetch('/api/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId,
+            fileName: file.name,
+            filePath,
+            fileType: file.name.split('.').pop(),
+          }),
         });
 
-        if (dbError) throw dbError;
+        if (!res.ok) throw new Error();
       }
 
       router.refresh();

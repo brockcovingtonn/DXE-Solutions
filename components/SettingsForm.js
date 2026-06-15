@@ -9,6 +9,7 @@ export default function SettingsForm({ profile, email }) {
   const [firstName, setFirstName] = useState(profile?.first_name || '');
   const [lastName, setLastName] = useState(profile?.last_name || '');
   const [phone, setPhone] = useState(profile?.phone || '');
+  const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -19,7 +20,7 @@ export default function SettingsForm({ profile, email }) {
 
     const { error } = await supabase
       .from('profiles')
-      .update({ first_name: firstName, last_name: lastName, phone })
+      .update({ first_name: firstName, last_name: lastName, phone, email_notifications: emailNotifications })
       .eq('id', profile.id);
 
     if (error) {
@@ -85,6 +86,29 @@ export default function SettingsForm({ profile, email }) {
           placeholder="(818) 555-0000"
           style={inputStyle}
         />
+      </div>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            cursor: 'pointer',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={emailNotifications}
+            onChange={(e) => setEmailNotifications(e.target.checked)}
+            style={{ width: '16px', height: '16px', accentColor: 'var(--gold)', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>
+            Email me when there&apos;s an update on my project
+          </span>
+        </label>
+        <p style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.35rem', marginLeft: '1.6rem' }}>
+          New documents, photos, notes, and status changes
+        </p>
       </div>
       {message && (
         <p style={{ fontSize: '0.82rem', color: message.includes('saved') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>

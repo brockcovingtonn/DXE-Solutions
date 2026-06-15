@@ -40,7 +40,7 @@ export default function LoginPage() {
       .single();
 
     if (profile?.is_admin) {
-      router.push('/admin/clients');
+      router.push('/admin/dashboard');
     } else {
       router.push('/portal');
     }

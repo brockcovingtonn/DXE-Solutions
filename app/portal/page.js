@@ -26,7 +26,7 @@ export default async function PortalIndexPage() {
 
   // Admins with no projects of their own go straight to the admin dashboard
   if (profile?.is_admin) {
-    redirect('/admin/clients');
+    redirect('/admin/dashboard');
   }
 
   // No projects yet — show a friendly empty state
