@@ -13,7 +13,7 @@ export default function HomePage() {
             <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(201,168,76,1)" strokeWidth="0.5" />
+                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(201,168,87,1)" strokeWidth="0.5" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
@@ -71,19 +71,19 @@ export default function HomePage() {
               <div className={styles.aboutImg}>
                 <div className={styles.aboutImgInner}>
                   <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="20" y="180" width="160" height="8" fill="rgba(201,168,76,0.6)" />
-                    <rect x="40" y="120" width="30" height="60" fill="rgba(255,255,255,0.15)" />
-                    <rect x="80" y="80" width="40" height="100" fill="rgba(255,255,255,0.2)" />
-                    <rect x="130" y="100" width="30" height="80" fill="rgba(255,255,255,0.12)" />
-                    <rect x="45" y="135" width="8" height="8" fill="rgba(201,168,76,0.4)" />
-                    <rect x="57" y="135" width="8" height="8" fill="rgba(201,168,76,0.4)" />
-                    <rect x="85" y="95" width="8" height="8" fill="rgba(201,168,76,0.4)" />
-                    <rect x="97" y="95" width="8" height="8" fill="rgba(201,168,76,0.4)" />
-                    <rect x="135" y="115" width="8" height="8" fill="rgba(201,168,76,0.4)" />
-                    <line x1="0" y1="188" x2="200" y2="188" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
-                    <circle cx="50" cy="65" r="20" fill="none" stroke="rgba(201,168,76,0.3)" strokeWidth="1" />
-                    <line x1="50" y1="45" x2="50" y2="85" stroke="rgba(201,168,76,0.2)" strokeWidth="0.5" />
-                    <line x1="30" y1="65" x2="70" y2="65" stroke="rgba(201,168,76,0.2)" strokeWidth="0.5" />
+                    <rect x="20" y="180" width="160" height="8" fill="rgba(201,168,87,0.6)" />
+                    <rect x="40" y="120" width="30" height="60" fill="rgba(62,84,104,0.18)" />
+                    <rect x="80" y="80" width="40" height="100" fill="rgba(62,84,104,0.25)" />
+                    <rect x="130" y="100" width="30" height="80" fill="rgba(62,84,104,0.15)" />
+                    <rect x="45" y="135" width="8" height="8" fill="rgba(201,168,87,0.4)" />
+                    <rect x="57" y="135" width="8" height="8" fill="rgba(201,168,87,0.4)" />
+                    <rect x="85" y="95" width="8" height="8" fill="rgba(201,168,87,0.4)" />
+                    <rect x="97" y="95" width="8" height="8" fill="rgba(201,168,87,0.4)" />
+                    <rect x="135" y="115" width="8" height="8" fill="rgba(201,168,87,0.4)" />
+                    <line x1="0" y1="188" x2="200" y2="188" stroke="rgba(201,168,87,0.3)" strokeWidth="1" />
+                    <circle cx="50" cy="65" r="20" fill="none" stroke="rgba(201,168,87,0.3)" strokeWidth="1" />
+                    <line x1="50" y1="45" x2="50" y2="85" stroke="rgba(201,168,87,0.2)" strokeWidth="0.5" />
+                    <line x1="30" y1="65" x2="70" y2="65" stroke="rgba(201,168,87,0.2)" strokeWidth="0.5" />
                   </svg>
                 </div>
                 <div className={styles.aboutBadge}>
@@ -127,7 +127,7 @@ export default function HomePage() {
           <div className="section-inner">
             <div className="section-header">
               <div className="section-eyebrow">What We Do</div>
-              <h2 className="display" style={{ color: 'var(--white)' }}>
+              <h2 className="display" style={{ color: 'var(--navy)' }}>
                 Everything the construction crew doesn&apos;t handle.
               </h2>
             </div>
@@ -270,7 +270,7 @@ const PROJECTS = [
   {
     title: 'Calabasas Estate — 8,400 sq ft',
     tag: 'Residential',
-    bg: 'var(--navy)',
+    bg: '#5A7188',
     desc: 'Custom single-family luxury home. Full project management from entitlement through certificate of occupancy, including hillside grading permits and private road access approval.',
     location: 'Calabasas, CA',
     status: 'Completed 2024',
@@ -279,7 +279,7 @@ const PROJECTS = [
   {
     title: 'Mixed-Use Development — 24 Units',
     tag: 'Commercial',
-    bg: '#1a2a3a',
+    bg: '#4A6178',
     desc: 'Ground-up mixed-use building with retail and residential. Coordinated 11 separate permit tracks, managed 4 inspection agencies, and delivered on schedule in a 26-month timeline.',
     location: 'Thousand Oaks, CA',
     status: 'Completed 2023',
@@ -288,7 +288,7 @@ const PROJECTS = [
   {
     title: 'Historic Commercial Renovation',
     tag: 'Renovation',
-    bg: '#0d1f30',
+    bg: '#3E5468',
     desc: 'Adaptive reuse of a 1940s commercial building. Navigated historic preservation requirements, fire code modernization, and ADA compliance retrofit across 18,000 sq ft of occupied space.',
     location: 'Ventura, CA',
     status: 'Completed 2024',
@@ -297,7 +297,7 @@ const PROJECTS = [
   {
     title: 'Westlake Village — Spec Development',
     tag: 'Residential',
-    bg: '#162030',
+    bg: '#6B8499',
     desc: 'Three-lot residential spec development. Managed simultaneous permitting across all three parcels, utility coordination, and HOA approvals to enable a unified construction start date.',
     location: 'Westlake Village, CA',
     status: 'In Progress',

@@ -124,7 +124,7 @@ export default function NewClientForm() {
         />
       </div>
 
-      <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.1rem', margin: '1.5rem 0 1rem', color: 'var(--navy)', paddingTop: '1.5rem', borderTop: '1px solid rgba(11,31,58,0.06)' }}>
+      <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.1rem', margin: '1.5rem 0 1rem', color: 'var(--navy)', paddingTop: '1.5rem', borderTop: '1px solid rgba(62,84,104,0.08)' }}>
         First project
       </h3>
 

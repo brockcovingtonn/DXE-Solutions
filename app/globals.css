@@ -1,18 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  --navy: #0B1F3A;
-  --navy-dark: #071628;
-  --navy-mid: #132845;
-  --navy-light: #1a3558;
-  --gold: #C9A84C;
-  --gold-light: #E2C47A;
-  --gold-pale: #F5EDD8;
-  --cream: #F8F5EE;
-  --text-light: #E8E0D0;
-  --text-muted: #9BA8B8;
+  --navy: #3E5468;
+  --navy-dark: #2F4153;
+  --navy-mid: #4A6178;
+  --navy-light: #5A7188;
+  --gold: #C9A857;
+  --gold-light: #DBC07E;
+  --gold-pale: #F6EFDD;
+  --cream: #F6F8FA;
+  --surface: #E5ECF1;
+  --text-light: #E5ECF1;
+  --text-muted: #93A6B7;
   --white: #FFFFFF;
-  --border: #1E3A5F;
+  --border: #DCE5EC;
 }
 
 * {
@@ -88,8 +89,8 @@ button {
 
 /* Buttons */
 .btn-primary {
-  background: var(--gold);
-  color: var(--navy);
+  background: var(--navy);
+  color: var(--white);
   padding: 0.85rem 2.5rem;
   font-size: 0.8rem;
   font-weight: 600;
@@ -103,7 +104,7 @@ button {
 }
 
 .btn-primary:hover {
-  background: var(--gold-light);
+  background: var(--navy-mid);
 }
 
 .btn-primary:disabled {
@@ -113,13 +114,13 @@ button {
 
 .btn-outline {
   background: transparent;
-  color: var(--white);
+  color: var(--navy);
   padding: 0.85rem 2.5rem;
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
@@ -127,12 +128,13 @@ button {
 }
 
 .btn-outline:hover {
-  border-color: var(--white);
+  border-color: var(--navy);
+  background: var(--surface);
 }
 
 .btn-navy {
   background: var(--navy);
-  color: var(--gold);
+  color: var(--white);
   padding: 0.85rem 2.5rem;
   font-size: 0.8rem;
   font-weight: 500;
@@ -151,7 +153,7 @@ button {
 .btn-gold {
   width: 100%;
   background: var(--gold);
-  color: var(--navy);
+  color: var(--white);
   padding: 0.9rem;
   font-size: 0.8rem;
   font-weight: 600;
@@ -172,7 +174,7 @@ button {
   cursor: not-allowed;
 }
 
-/* Form elements (marketing pages, dark bg) */
+/* Form elements (marketing pages, light bg) */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -198,9 +200,9 @@ button {
 .form-group select,
 .form-group textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(201, 168, 76, 0.2);
-  color: var(--white);
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--navy);
   padding: 0.8rem 1rem;
   font-size: 0.9rem;
   font-family: 'Inter', sans-serif;
@@ -215,8 +217,8 @@ button {
 }
 
 .form-group select option {
-  background: var(--navy);
-  color: var(--white);
+  background: var(--white);
+  color: var(--navy);
 }
 
 .form-group textarea {

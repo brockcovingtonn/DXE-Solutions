@@ -1,5 +1,5 @@
 .portal {
-  background: #F0EDE6;
+  background: var(--cream);
   min-height: 100vh;
 }
 
@@ -9,8 +9,8 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--navy-dark);
-  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
   height: 68px;
   display: flex;
   align-items: center;
@@ -51,19 +51,19 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   font-size: 0.82rem;
 }
 
 .welcome strong {
-  color: var(--white);
+  color: var(--navy);
 }
 
 .avatar {
   width: 34px;
   height: 34px;
   background: var(--gold);
-  color: var(--navy);
+  color: var(--white);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -74,8 +74,8 @@
 
 .signOutBtn {
   background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
+  border: 1px solid var(--border);
+  color: var(--navy-mid);
   padding: 0.4rem 1.2rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -86,8 +86,9 @@
 }
 
 .signOutBtn:hover {
-  background: var(--gold);
-  color: var(--navy);
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
 }
 
 .signOutBtn:disabled {
@@ -103,8 +104,8 @@
 
 .sidebar {
   width: 260px;
-  background: var(--navy-dark);
-  border-right: 1px solid rgba(201, 168, 76, 0.12);
+  background: var(--white);
+  border-right: 1px solid var(--border);
   flex-shrink: 0;
   position: sticky;
   top: 68px;
@@ -117,7 +118,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.5);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -126,7 +127,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.7rem 1rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   font-size: 0.82rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -134,12 +135,12 @@
 }
 
 .sidebarLink:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--white);
+  background: var(--cream);
+  color: var(--navy);
 }
 
 .sidebarLinkActive {
-  background: rgba(201, 168, 76, 0.08);
+  background: var(--gold-pale);
   color: var(--gold);
   border-left-color: var(--gold);
 }
@@ -152,26 +153,26 @@
 .sidebarProject {
   display: block;
   margin: 0.5rem 1rem;
-  background: rgba(201, 168, 76, 0.06);
-  border: 1px solid rgba(201, 168, 76, 0.12);
+  background: var(--cream);
+  border: 1px solid var(--border);
   padding: 0.85rem 1rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .sidebarProject:hover {
-  background: rgba(201, 168, 76, 0.1);
+  background: var(--surface);
 }
 
 .sidebarProjectSelected {
-  background: rgba(201, 168, 76, 0.12);
-  border-color: rgba(201, 168, 76, 0.3);
+  background: var(--gold-pale);
+  border-color: var(--gold-light);
 }
 
 .projName {
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 0.2rem;
 }
 
@@ -192,8 +193,8 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: rgba(201, 168, 76, 0.12);
-  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-light);
   color: var(--navy);
   font-size: 0.8rem;
   padding: 0.6rem 1rem;

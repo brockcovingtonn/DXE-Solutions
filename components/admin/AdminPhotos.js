@@ -104,7 +104,7 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
                 position: 'absolute',
                 top: '0.4rem',
                 right: '0.4rem',
-                background: 'rgba(11,31,58,0.8)',
+                background: 'rgba(62,84,104,0.85)',
                 border: 'none',
                 color: '#fca5a5',
                 width: '24px',

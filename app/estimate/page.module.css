@@ -1,5 +1,5 @@
 .estimateSection {
-  background: var(--navy-dark);
+  background: var(--cream);
   min-height: 100vh;
   padding-top: 10rem;
 }
@@ -12,8 +12,8 @@
   max-width: 680px;
   text-align: center;
   padding: 4rem 2rem;
-  border: 1px solid rgba(201, 168, 76, 0.2);
-  background: rgba(201, 168, 76, 0.04);
+  border: 1px solid var(--border);
+  background: var(--white);
 }
 
 .successBox i {
@@ -25,19 +25,19 @@
 
 .successBox h3 {
   font-size: 1.8rem;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 1rem;
   font-weight: 400;
 }
 
 .successBox p {
-  color: var(--text-muted);
+  color: var(--navy-mid);
   line-height: 1.7;
   font-size: 0.95rem;
 }
 
 .errorMsg {
-  color: #fca5a5;
+  color: #b91c1c;
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }

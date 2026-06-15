@@ -54,7 +54,7 @@ export default function EstimatePage() {
           <div className="section-inner">
             <div className="section-header">
               <div className="section-eyebrow">Get Started</div>
-              <h2 className="display" style={{ color: 'var(--white)' }}>
+              <h2 className="display" style={{ color: 'var(--navy)' }}>
                 Tell us about your project.
               </h2>
             </div>

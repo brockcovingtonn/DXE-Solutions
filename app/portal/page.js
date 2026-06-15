@@ -40,7 +40,7 @@ export default async function PortalIndexPage() {
           No projects have been added to your account yet.
         </p>
       </div>
-      <div style={{ background: 'var(--white)', border: '1px solid rgba(11,31,58,0.08)', padding: '1.5rem' }}>
+      <div style={{ background: 'var(--white)', border: '1px solid rgba(62,84,104,0.1)', padding: '1.5rem' }}>
         <p style={{ fontSize: '0.9rem', color: '#4a5568', lineHeight: 1.7 }}>
           Once Dixie sets up your project, it will appear here automatically with status updates,
           documents, photos, and notes. If you believe this is an error, please contact{' '}

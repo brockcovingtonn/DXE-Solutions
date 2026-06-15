@@ -15,7 +15,7 @@
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.06);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.08);
 }
 
 .contactRow {
@@ -23,7 +23,7 @@
   align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.06);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.08);
   text-decoration: none;
   transition: background 0.15s;
 }
@@ -82,7 +82,7 @@
   align-items: center;
   gap: 0.5rem;
   background: var(--cream);
-  border: 1px solid rgba(11, 31, 58, 0.08);
+  border: 1px solid rgba(62, 84, 104, 0.1);
   padding: 0.35rem 0.75rem;
   font-size: 0.78rem;
   font-weight: 500;
@@ -141,7 +141,7 @@
 
 .fieldInput {
   width: 100%;
-  border: 1px solid rgba(11, 31, 58, 0.15);
+  border: 1px solid rgba(62, 84, 104, 0.18);
   background: var(--cream);
   color: var(--navy);
   padding: 0.7rem;
@@ -177,7 +177,7 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.05);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.06);
 }
 
 .teamRow {
@@ -186,7 +186,7 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.05);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.06);
 }
 
 .teamRow:last-child {
@@ -195,7 +195,7 @@
 
 .teamRow input,
 .teamRow select {
-  border: 1px solid rgba(11, 31, 58, 0.12);
+  border: 1px solid rgba(62, 84, 104, 0.14);
   background: var(--cream);
   color: var(--navy);
   padding: 0.5rem 0.6rem;
@@ -211,7 +211,7 @@
 }
 
 .milestoneCard {
-  border-bottom: 1px solid rgba(11, 31, 58, 0.08);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.1);
   padding: 0.75rem 0;
 }
 
@@ -226,7 +226,7 @@
 
 .milestoneNotes {
   width: 100%;
-  border: 1px solid rgba(11, 31, 58, 0.12);
+  border: 1px solid rgba(62, 84, 104, 0.14);
   background: var(--cream);
   color: var(--navy);
   padding: 0.5rem 0.6rem;
@@ -247,7 +247,7 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.05);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.06);
 }
 
 .milestoneRow:last-child {
@@ -256,7 +256,7 @@
 
 .milestoneRow input,
 .milestoneRow select {
-  border: 1px solid rgba(11, 31, 58, 0.12);
+  border: 1px solid rgba(62, 84, 104, 0.14);
   background: var(--cream);
   color: var(--navy);
   padding: 0.5rem 0.6rem;
@@ -277,7 +277,7 @@
 
 .editableRow input,
 .editableRow select {
-  border: 1px solid rgba(11, 31, 58, 0.12);
+  border: 1px solid rgba(62, 84, 104, 0.14);
   background: var(--cream);
   color: var(--navy);
   padding: 0.5rem 0.6rem;
@@ -313,7 +313,7 @@
 .addRowBtn {
   margin-top: 0.75rem;
   background: transparent;
-  border: 1px dashed rgba(11, 31, 58, 0.2);
+  border: 1px dashed rgba(62, 84, 104, 0.22);
   color: var(--navy);
   padding: 0.5rem 1rem;
   font-size: 0.78rem;
@@ -343,7 +343,7 @@
   color: var(--navy);
   cursor: pointer;
   background: var(--cream);
-  border: 1px solid rgba(11, 31, 58, 0.06);
+  border: 1px solid rgba(62, 84, 104, 0.08);
   padding: 0.5rem 0.7rem;
 }
 
@@ -399,7 +399,7 @@
 
 .fieldTextarea {
   width: 100%;
-  border: 1px solid rgba(11, 31, 58, 0.15);
+  border: 1px solid rgba(62, 84, 104, 0.18);
   background: var(--cream);
   color: var(--navy);
   padding: 0.6rem 0.7rem;
@@ -415,7 +415,7 @@
 }
 
 .utilitySection {
-  border: 1px solid rgba(11, 31, 58, 0.08);
+  border: 1px solid rgba(62, 84, 104, 0.1);
   padding: 1.25rem;
   margin-bottom: 1.25rem;
 }
@@ -430,7 +430,7 @@
   justify-content: space-between;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(11, 31, 58, 0.06);
+  border-bottom: 1px solid rgba(62, 84, 104, 0.08);
 }
 
 .utilityToggle {
@@ -470,18 +470,18 @@
   font-weight: 600;
   margin: 1.25rem 0 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(11, 31, 58, 0.06);
+  border-top: 1px solid rgba(62, 84, 104, 0.08);
 }
 
 .utilityEntryForm {
-  border: 1px solid rgba(201, 168, 76, 0.3);
+  border: 1px solid rgba(201, 168, 87, 0.35);
   background: var(--cream);
   padding: 1rem;
   margin-bottom: 0.75rem;
 }
 
 .utilityEntryBlock {
-  border: 1px solid rgba(11, 31, 58, 0.08);
+  border: 1px solid rgba(62, 84, 104, 0.1);
   padding: 0.85rem 1rem;
   margin-bottom: 0.6rem;
   display: flex;
@@ -527,7 +527,7 @@
 
 .cancelBtn {
   background: transparent;
-  border: 1px solid rgba(11, 31, 58, 0.15);
+  border: 1px solid rgba(62, 84, 104, 0.18);
   color: var(--navy);
   padding: 0.55rem 1.2rem;
   font-size: 0.8rem;
@@ -538,7 +538,7 @@
 }
 
 .cancelBtn:hover {
-  background: rgba(11, 31, 58, 0.04);
+  background: rgba(62, 84, 104, 0.05);
 }
 
 .saveBar {
@@ -547,7 +547,7 @@
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(11, 31, 58, 0.06);
+  border-top: 1px solid rgba(62, 84, 104, 0.08);
 }
 
 .savedMsg {
@@ -574,7 +574,7 @@
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--navy);
-  border: 1px solid rgba(11, 31, 58, 0.15);
+  border: 1px solid rgba(62, 84, 104, 0.18);
   padding: 0.5rem 1rem;
   text-decoration: none;
   white-space: nowrap;

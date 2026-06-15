@@ -56,7 +56,7 @@ export default function LoginPage() {
         <div className={styles.loginLeft}>
           <div className={styles.loginLogo}>
             <Image
-              src="/images/logo-gold.png"
+              src="/images/logo-slate.png"
               alt="DXE Solutions"
               fill
               style={{ objectFit: 'contain', objectPosition: 'left center' }}

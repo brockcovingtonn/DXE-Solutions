@@ -33,7 +33,7 @@ export default function SettingsForm({ profile, email }) {
 
   const inputStyle = {
     width: '100%',
-    border: '1px solid rgba(11,31,58,0.15)',
+    border: '1px solid rgba(62,84,104,0.2)',
     background: 'var(--cream)',
     color: 'var(--navy)',
     padding: '0.7rem',

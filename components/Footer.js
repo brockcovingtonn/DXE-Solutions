@@ -7,7 +7,7 @@ export default function Footer() {
       <div className={styles.inner}>
         <div className={styles.logoImg}>
           <Image
-            src="/images/logo-cream.png"
+            src="/images/logo-slate.png"
             alt="DXE Solutions"
             fill
             style={{ objectFit: 'contain', objectPosition: 'left center' }}

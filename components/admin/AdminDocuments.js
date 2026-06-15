@@ -110,7 +110,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               onChange={(e) => handleBadgeChange(d.id, e.target.value)}
               disabled={savingId === d.id}
               style={{
-                border: '1px solid rgba(11,31,58,0.12)',
+                border: '1px solid rgba(62,84,104,0.14)',
                 background: 'var(--cream)',
                 color: 'var(--navy)',
                 padding: '0.3rem 0.5rem',

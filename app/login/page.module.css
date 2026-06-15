@@ -1,5 +1,5 @@
 .loginPage {
-  background: var(--navy-dark);
+  background: var(--cream);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -11,7 +11,7 @@
   position: absolute;
   top: 2rem;
   left: 2rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -40,12 +40,12 @@
 }
 
 .loginRight {
-  background: var(--navy-mid);
+  background: var(--white);
   padding: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border-left: 1px solid rgba(201, 168, 76, 0.15);
+  border-left: 1px solid var(--border);
 }
 
 .loginLogo {
@@ -66,12 +66,12 @@
 .loginLeft h2 {
   font-size: 2.8rem;
   font-weight: 300;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 0.75rem;
 }
 
 .loginLeft p {
-  color: var(--text-muted);
+  color: var(--navy-mid);
   font-size: 0.9rem;
   line-height: 1.7;
   margin-bottom: 2rem;
@@ -86,7 +86,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
 }
@@ -99,20 +99,20 @@
 .loginRight h3 {
   font-size: 1.6rem;
   font-weight: 400;
-  color: var(--white);
+  color: var(--navy);
   margin-bottom: 0.5rem;
 }
 
 .loginRight p {
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   margin-bottom: 2rem;
 }
 
 .errorBox {
-  background: rgba(220, 38, 38, 0.15);
-  border: 1px solid rgba(220, 38, 38, 0.3);
-  color: #fca5a5;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
   padding: 0.75rem 1rem;
   font-size: 0.82rem;
   margin-bottom: 1rem;
@@ -127,16 +127,16 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
 .field input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(201, 168, 76, 0.2);
-  color: var(--white);
+  background: var(--cream);
+  border: 1px solid var(--border);
+  color: var(--navy);
   padding: 0.8rem 1rem;
   font-size: 0.9rem;
   font-family: 'Inter', sans-serif;
@@ -158,6 +158,6 @@
   }
   .loginRight {
     border-left: none;
-    border-top: 1px solid rgba(201, 168, 76, 0.15);
+    border-top: 1px solid var(--border);
   }
 }

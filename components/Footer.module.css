@@ -1,6 +1,6 @@
 .footer {
-  background: var(--navy-dark);
-  border-top: 1px solid rgba(201, 168, 76, 0.15);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   padding: 3rem 2rem;
 }
 
@@ -22,7 +22,7 @@
 
 .copy {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--navy-mid);
   text-align: right;
 }
 
