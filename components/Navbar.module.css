@@ -4,9 +4,9 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(246, 248, 250, 0.92);
+  background: rgba(44, 62, 80, 0.97);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .inner {
@@ -33,7 +33,7 @@
 }
 
 .links a {
-  color: var(--navy-mid);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -42,20 +42,22 @@
 }
 
 .links a:hover {
-  color: var(--gold);
+  color: var(--white);
 }
 
 .cta {
   background: var(--gold);
   border: 1px solid var(--gold);
-  color: var(--navy) !important;
+  color: var(--navy-dark) !important;
   padding: 0.4rem 1.2rem;
   transition: all 0.2s;
+  font-weight: 600;
 }
 
 .cta:hover {
   background: var(--gold-light);
   border-color: var(--gold-light);
+  color: var(--navy-dark) !important;
 }
 
 @media (max-width: 900px) {

@@ -30,7 +30,7 @@ export default function AdminShell({ profile, children }) {
           <div className={styles.navLogoArea}>
             <div className={styles.navLogoImg}>
               <Image
-                src="/images/logo-slate.png"
+                src="/images/logo-cream.png"
                 alt="DXE Solutions"
                 fill
                 style={{ objectFit: 'contain', objectPosition: 'left center' }}

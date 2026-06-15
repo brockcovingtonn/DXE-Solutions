@@ -9,8 +9,8 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
+  background: var(--navy-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   height: 68px;
   display: flex;
   align-items: center;
@@ -40,7 +40,7 @@
 
 .logoSub {
   font-size: 0.65rem;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.45);
   margin-left: 0.75rem;
   font-family: 'Inter', sans-serif;
   letter-spacing: 0.1em;
@@ -51,12 +51,12 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: var(--navy-mid);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.82rem;
 }
 
 .welcome strong {
-  color: var(--navy);
+  color: var(--white);
 }
 
 .avatar {
@@ -74,8 +74,8 @@
 
 .signOutBtn {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--navy-mid);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
   padding: 0.4rem 1.2rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -86,9 +86,9 @@
 }
 
 .signOutBtn:hover {
-  background: var(--navy);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--white);
-  border-color: var(--navy);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .signOutBtn:disabled {
@@ -104,8 +104,8 @@
 
 .sidebar {
   width: 260px;
-  background: var(--white);
-  border-right: 1px solid var(--border);
+  background: var(--navy-dark);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
   position: sticky;
   top: 68px;
@@ -118,7 +118,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: rgba(201, 168, 87, 0.55);
   font-weight: 500;
 }
 
@@ -127,7 +127,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.7rem 1rem;
-  color: var(--navy-mid);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.82rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -135,12 +135,12 @@
 }
 
 .sidebarLink:hover {
-  background: var(--cream);
-  color: var(--navy);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
 }
 
 .sidebarLinkActive {
-  background: var(--gold-pale);
+  background: rgba(201, 168, 87, 0.1);
   color: var(--gold);
   border-left-color: var(--gold);
 }
@@ -153,26 +153,26 @@
 .sidebarProject {
   display: block;
   margin: 0.5rem 1rem;
-  background: var(--cream);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.85rem 1rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .sidebarProject:hover {
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 .sidebarProjectSelected {
-  background: var(--gold-pale);
-  border-color: var(--gold-light);
+  background: rgba(201, 168, 87, 0.12);
+  border-color: rgba(201, 168, 87, 0.3);
 }
 
 .projName {
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--navy);
+  color: var(--white);
   margin-bottom: 0.2rem;
 }
 

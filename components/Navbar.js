@@ -10,7 +10,7 @@ export default function Navbar() {
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Image
-            src="/images/logo-slate.png"
+            src="/images/logo-gold.png"
             alt="DXE Solutions"
             fill
             style={{ objectFit: 'contain', objectPosition: 'left center' }}
