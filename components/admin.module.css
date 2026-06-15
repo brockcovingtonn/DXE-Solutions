@@ -363,6 +363,22 @@
   transition: background 0.15s;
 }
 
+.noteHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.noteHeaderRow > * {
+  margin-bottom: 0 !important;
+}
+
+.noteHeaderRow .iconBtn {
+  width: 26px;
+  height: 26px;
+}
+
 .dashboardActivityLink:hover {
   background: var(--cream);
 }

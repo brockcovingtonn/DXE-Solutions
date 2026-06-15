@@ -109,14 +109,15 @@ There's now a built-in admin dashboard for this — no SQL required.
 5. Run `supabase/contacts_migration.sql` once. This adds a global Contacts list (people/companies Dixie works with regularly), optionally linkable to specific projects.
 6. Run `supabase/templates_migration.sql` once. This adds a Templates section and a storage bucket for standard documents Dixie can apply to any project.
 7. Run `supabase/email_notifications_migration.sql` once. This adds an email notifications preference to client accounts (default on).
-8. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
-9. In the SQL editor, run:
+8. Run `supabase/admin_notes_management_migration.sql` once. This lets admins edit and delete any note in the Notes & Updates section.
+9. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
+10. In the SQL editor, run:
 
    ```sql
    update public.profiles set is_admin = true where id = 'HER-UUID-HERE';
    ```
 
-10. Repeat for any other staff who need admin access
+11. Repeat for any other staff who need admin access
 
 ### Using the admin dashboard
 
@@ -136,7 +137,7 @@ Once an account has `is_admin = true`, that person will see an **Admin Dashboard
 - **View as client** — from any project's admin page, open a preview of exactly what the client sees for that project
 - **Upload documents** — drag and drop files on behalf of a client; set each document's badge (new / pending / signed)
 - **Upload photos** — drag and drop progress photos with optional captions
-- **Post notes** — write updates that appear in the client's "Notes & Updates" feed, automatically signed "[Name] — Project Manager"
+- **Post notes** — write updates that appear in the client's "Notes & Updates" feed, automatically signed "[Name] — Project Manager". Admins can also edit or delete any note, including ones posted by the client.
 
 Each of these admin actions also logs an entry to the project's activity feed automatically (e.g. "DXE uploaded Change Order #1").
 
