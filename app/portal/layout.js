@@ -21,7 +21,7 @@ export default async function PortalLayout({ children }) {
     .order('created_at', { ascending: true });
 
   return (
-    <PortalShell profile={profile} projects={projects || []}>
+    <PortalShell profile={profile} projects={projects || []} isAdmin={profile?.is_admin}>
       {children}
     </PortalShell>
   );

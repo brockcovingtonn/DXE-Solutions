@@ -4,8 +4,10 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
+import ProjectTeamEditor from '@/components/admin/ProjectTeamEditor';
 import PhasesEditor from '@/components/admin/PhasesEditor';
 import MilestonesEditor from '@/components/admin/MilestonesEditor';
+import AdminUtilitiesEditor from '@/components/admin/AdminUtilitiesEditor';
 import AdminDocuments from '@/components/admin/AdminDocuments';
 import AdminPhotos from '@/components/admin/AdminPhotos';
 import AdminNotes from '@/components/admin/AdminNotes';
@@ -22,13 +24,15 @@ export default async function AdminProjectPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: utilities }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('documents').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('photos').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+      supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+      supabase.rpc('get_project_utilities_admin', { p_project_id: projectId }),
     ]);
 
   // Generate signed URLs for photos so admin can preview them
@@ -52,15 +56,31 @@ export default async function AdminProjectPage({ params }) {
         <i className="ti ti-arrow-left" aria-hidden="true"></i> Back to clients
       </Link>
       <div className={styles.portalHeader}>
-        <h1>{project.name}</h1>
-        <p>
-          {client?.first_name} {client?.last_name} ({client?.email})
-        </p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <div>
+            <h1>{project.name}</h1>
+            <p>
+              {client?.first_name} {client?.last_name} ({client?.email})
+            </p>
+          </div>
+          <Link
+            href={`/portal/projects/${projectId}/overview`}
+            className={adminStyles.viewAsClientLink}
+            target="_blank"
+          >
+            <i className="ti ti-eye" aria-hidden="true"></i> View as client
+          </Link>
+        </div>
       </div>
 
       <div className={styles.fullWidthCard}>
         <h3>Project details</h3>
         <ProjectInfoForm project={project} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Project team</h3>
+        <ProjectTeamEditor projectId={projectId} initialTeam={team || []} />
       </div>
 
       <div className={styles.fullWidthCard}>
@@ -71,6 +91,11 @@ export default async function AdminProjectPage({ params }) {
       <div className={styles.fullWidthCard}>
         <h3>Milestones</h3>
         <MilestonesEditor projectId={projectId} initialMilestones={milestones || []} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Utilities</h3>
+        <AdminUtilitiesEditor projectId={projectId} initialUtilities={utilities || []} />
       </div>
 
       <div className={styles.fullWidthCard}>

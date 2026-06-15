@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
+import { PROJECT_TYPES } from '@/lib/constants';
 
 const initialState = {
   firstName: '',
@@ -13,7 +14,6 @@ const initialState = {
   projectName: '',
   address: '',
   projectType: '',
-  estimatedValue: '',
   startedOn: '',
   estimatedCompletion: '',
 };
@@ -151,27 +151,21 @@ export default function NewClientForm() {
         />
       </div>
 
-      <div className={adminStyles.formGrid2}>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Project type</label>
-          <input
-            className={adminStyles.fieldInput}
-            name="projectType"
-            value={form.projectType}
-            onChange={handleChange}
-            placeholder="Residential — New Construction"
-          />
-        </div>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Estimated value</label>
-          <input
-            className={adminStyles.fieldInput}
-            name="estimatedValue"
-            value={form.estimatedValue}
-            onChange={handleChange}
-            placeholder="$4.2M"
-          />
-        </div>
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Project type</label>
+        <select
+          className={adminStyles.fieldInput}
+          name="projectType"
+          value={form.projectType}
+          onChange={handleChange}
+        >
+          <option value="">Select type...</option>
+          {PROJECT_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={adminStyles.formGrid2}>

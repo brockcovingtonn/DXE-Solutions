@@ -103,14 +103,19 @@ There's now a built-in admin dashboard for this — no SQL required.
 ### One-time setup: make an account an admin
 
 1. Run `supabase/admin_migration.sql` once in the Supabase SQL editor (same way you ran `schema.sql` — copy, paste, Run). This adds the `is_admin` flag and the security rules that let admins see/manage every client's data.
-2. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
-3. In the SQL editor, run:
+2. Run `supabase/feature_migration.sql` once as well. This adds the project team table, utilities tracking, milestone notes, and removes the old "estimated value" / "project manager" fields from projects.
+3. Run `supabase/utility_entries_migration.sql` once, after `feature_migration.sql`. This restructures utilities so each Electrical/Water/Gas type has one contact plus multiple tracking entries (Application, Work Request #, Status, Action Step, Comments).
+4. Run `supabase/admin_utilities_function.sql` once, after `utility_entries_migration.sql`. This adds an admin-only function so the admin dashboard can see and manage entries (including the admin-only Action Step / Comments fields).
+5. Run `supabase/contacts_migration.sql` once. This adds a global Contacts list (people/companies Dixie works with regularly), optionally linkable to specific projects.
+6. Run `supabase/templates_migration.sql` once. This adds a Templates section and a storage bucket for standard documents Dixie can apply to any project.
+7. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
+8. In the SQL editor, run:
 
    ```sql
    update public.profiles set is_admin = true where id = 'HER-UUID-HERE';
    ```
 
-4. Repeat for any other staff who need admin access
+9. Repeat for any other staff who need admin access
 
 ### Using the admin dashboard
 
@@ -118,9 +123,15 @@ Once an account has `is_admin = true`, that person will see an **Admin Dashboard
 
 - **Add a new client** — creates their login (email + temporary password) and their first project in one step. The client can log in immediately.
 - **Add a project to an existing client** — from the client list, click "Add project"
-- **Edit any project** — update status, overall progress %, dates, and project manager name
-- **Edit phases** — add/remove/reorder the 6 progress phases and set each one's percentage and state (pending / active / done)
-- **Edit milestones** — add/remove timeline items with custom dates and states
+- **Edit any project** — update status, overall progress %, dates, and project type
+- **Project team** — add team members with a Trade/Title (from a preset list — Owner, Contractor, Grading & Drainage, Electrical Engineer, Mechanical, Plumbing, Structural Engineer, Architect — or add a custom trade), name, phone, and email
+- **Edit phases** — add/remove/reorder the 6 progress phases and set each one's percentage and state (pending / active / done / N/A). N/A phases show only the phase name to clients, with no percentage or status.
+- **Edit milestones** — add/remove timeline items with custom dates, states, and a notes field visible to the client
+- **Utilities** — for Electrical, Water, and Gas, independently toggle each as visible to the client and set one contact (trade, name, phone, email, plus admin-only comments). Below the contact, add any number of entries — each with Application, Work Request Number, and Status (Not Ready / Pending / In Progress / Complete), plus admin-only Action Step and Comments. Entries can be edited or deleted individually. Clients only see enabled utilities, their contact info, and the Application / Work Request # / Status of each entry.
+- **Clients** — click any client's name in "All Clients" to edit their profile (name, email, phone) and see/manage their projects from one page
+- **Contacts** — a global list of people and companies Dixie works with regularly (consultants, vendors, inspectors). Each contact can optionally be linked to one or more projects.
+- **Templates** — upload standard documents (scopes of work, checklists, etc.) once, then apply (copy) them into any project's Documents with one click
+- **View as client** — from any project's admin page, open a preview of exactly what the client sees for that project
 - **Upload documents** — drag and drop files on behalf of a client; set each document's badge (new / pending / signed)
 - **Upload photos** — drag and drop progress photos with optional captions
 - **Post notes** — write updates that appear in the client's "Notes & Updates" feed, automatically signed "[Name] — Project Manager"

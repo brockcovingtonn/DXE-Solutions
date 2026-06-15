@@ -18,6 +18,28 @@
   border-bottom: 1px solid rgba(11, 31, 58, 0.06);
 }
 
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(11, 31, 58, 0.06);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.contactRow:hover {
+  background: var(--cream);
+}
+
+.contactMeta {
+  font-size: 0.78rem;
+  color: #718096;
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
 .clientRow:last-child {
   border-bottom: none;
 }
@@ -31,6 +53,15 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--navy);
+}
+
+.clientNameLink {
+  text-decoration: none;
+}
+
+.clientNameLink:hover .clientName {
+  color: var(--gold);
+  text-decoration: underline;
 }
 
 .clientEmail {
@@ -149,6 +180,67 @@
   border-bottom: 1px solid rgba(11, 31, 58, 0.05);
 }
 
+.teamRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr 1.4fr 36px;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(11, 31, 58, 0.05);
+}
+
+.teamRow:last-child {
+  border-bottom: none;
+}
+
+.teamRow input,
+.teamRow select {
+  border: 1px solid rgba(11, 31, 58, 0.12);
+  background: var(--cream);
+  color: var(--navy);
+  padding: 0.5rem 0.6rem;
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  width: 100%;
+}
+
+.teamRow input:focus,
+.teamRow select:focus {
+  border-color: var(--gold);
+}
+
+.milestoneCard {
+  border-bottom: 1px solid rgba(11, 31, 58, 0.08);
+  padding: 0.75rem 0;
+}
+
+.milestoneCard:last-child {
+  border-bottom: none;
+}
+
+.milestoneCard .milestoneRow {
+  border-bottom: none;
+  padding: 0 0 0.5rem 0;
+}
+
+.milestoneNotes {
+  width: 100%;
+  border: 1px solid rgba(11, 31, 58, 0.12);
+  background: var(--cream);
+  color: var(--navy);
+  padding: 0.5rem 0.6rem;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  resize: vertical;
+  min-height: 50px;
+}
+
+.milestoneNotes:focus {
+  border-color: var(--gold);
+}
+
 .milestoneRow {
   display: grid;
   grid-template-columns: 1fr 160px 130px 36px;
@@ -236,6 +328,190 @@
   border-color: var(--gold);
 }
 
+.projectCheckGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.projectCheckLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--navy);
+  cursor: pointer;
+  background: var(--cream);
+  border: 1px solid rgba(11, 31, 58, 0.06);
+  padding: 0.5rem 0.7rem;
+}
+
+.projectCheckLabel input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.fieldHint {
+  font-size: 0.72rem;
+  color: #a0aec0;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.formGrid3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.fieldTextarea {
+  width: 100%;
+  border: 1px solid rgba(11, 31, 58, 0.15);
+  background: var(--cream);
+  color: var(--navy);
+  padding: 0.6rem 0.7rem;
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.fieldTextarea:focus {
+  border-color: var(--gold);
+}
+
+.utilitySection {
+  border: 1px solid rgba(11, 31, 58, 0.08);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.utilitySection:last-of-type {
+  margin-bottom: 0;
+}
+
+.utilitySectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(11, 31, 58, 0.06);
+}
+
+.utilityToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.utilityToggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.utilityToggleLabel {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--navy);
+}
+
+.utilityToggleHint {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+.utilityContactHeader {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(11, 31, 58, 0.06);
+}
+
+.utilityEntryForm {
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: var(--cream);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.utilityEntryBlock {
+  border: 1px solid rgba(11, 31, 58, 0.08);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.utilityEntryGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem 1.25rem;
+  flex: 1;
+}
+
+.utilityEntryField .ufLabel {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #a0aec0;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.utilityEntryField .ufValue {
+  font-size: 0.82rem;
+  color: var(--navy);
+  word-break: break-word;
+}
+
+.utilityEntryActions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.entryFormActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid rgba(11, 31, 58, 0.15);
+  color: var(--navy);
+  padding: 0.55rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+  background: rgba(11, 31, 58, 0.04);
+}
+
 .saveBar {
   display: flex;
   align-items: center;
@@ -261,6 +537,30 @@
   text-decoration: underline;
 }
 
+.viewAsClientLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--navy);
+  border: 1px solid rgba(11, 31, 58, 0.15);
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.viewAsClientLink:hover {
+  background: var(--navy);
+  color: var(--white);
+}
+
+.viewAsClientLink i {
+  color: var(--gold);
+}
+
 @media (max-width: 900px) {
   .clientRow {
     flex-direction: column;
@@ -271,8 +571,17 @@
     width: 100%;
   }
   .formGrid2,
+  .formGrid3,
   .editableRow,
-  .milestoneRow {
+  .milestoneRow,
+  .teamRow,
+  .utilityEntryGrid {
     grid-template-columns: 1fr;
+  }
+  .utilityEntryBlock {
+    flex-direction: column;
+  }
+  .utilityEntryActions {
+    align-self: flex-end;
   }
 }

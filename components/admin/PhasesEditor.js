@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
+import { PHASE_STATES } from '@/lib/constants';
 
 export default function PhasesEditor({ projectId, initialPhases }) {
   const router = useRouter();
@@ -67,11 +68,14 @@ export default function PhasesEditor({ projectId, initialPhases }) {
             placeholder="%"
             value={phase.pct}
             onChange={(e) => updatePhase(i, 'pct', e.target.value)}
+            disabled={phase.state === 'na'}
           />
           <select value={phase.state} onChange={(e) => updatePhase(i, 'state', e.target.value)}>
-            <option value="pending">Pending</option>
-            <option value="active">Active</option>
-            <option value="done">Done</option>
+            {PHASE_STATES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
           </select>
           <button type="button" className={adminStyles.iconBtn} onClick={() => removePhase(i)} aria-label="Remove phase">
             <i className="ti ti-trash" aria-hidden="true"></i>

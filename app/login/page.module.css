@@ -49,8 +49,9 @@
 }
 
 .loginLogo {
+  position: relative;
   height: 40px;
-  width: auto;
+  width: 141px;
   margin-bottom: 2rem;
 }
 

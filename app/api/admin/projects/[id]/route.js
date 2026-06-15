@@ -27,8 +27,6 @@ export async function PATCH(request, { params }) {
       'name',
       'address',
       'project_type',
-      'estimated_value',
-      'pm_name',
       'started_on',
       'estimated_completion',
       'progress_pct',

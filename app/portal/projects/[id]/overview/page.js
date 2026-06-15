@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
+import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 
 export default async function ProjectOverviewPage({ params }) {
@@ -9,22 +10,19 @@ export default async function ProjectOverviewPage({ params }) {
 
   const projectId = params.id;
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', projectId)
-    .eq('owner_id', user.id)
-    .single();
+  const project = await getViewableProject(supabase, projectId, user, '*');
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: utilities }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('documents').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('activity').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(4),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(1),
+      supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+      supabase.rpc('get_project_utilities', { p_project_id: projectId }),
     ]);
 
   const doneMilestones = (milestones || []).filter((m) => m.state === 'done').length;
@@ -55,9 +53,7 @@ export default async function ProjectOverviewPage({ params }) {
     <div>
       <div className={styles.portalHeader}>
         <h1>{project.name}</h1>
-        <p>
-          {project.project_type} · {project.estimated_value} · PM: {project.pm_name}
-        </p>
+        <p>{project.project_type}</p>
       </div>
 
       <div className={styles.statCards}>
@@ -91,11 +87,11 @@ export default async function ProjectOverviewPage({ params }) {
       <div className={styles.highlightCards}>
         <div className={styles.highlightCard}>
           <div className={styles.hcIcon}>
-            <i className="ti ti-user" aria-hidden="true"></i>
+            <i className="ti ti-activity" aria-hidden="true"></i>
           </div>
           <div>
-            <div className={styles.hcLabel}>Project Manager</div>
-            <div className={styles.hcValue}>{project.pm_name}</div>
+            <div className={styles.hcLabel}>Project Status</div>
+            <div className={styles.hcValue}>{capitalize(project.status)}</div>
           </div>
         </div>
         <div className={styles.highlightCard}>
@@ -134,7 +130,31 @@ export default async function ProjectOverviewPage({ params }) {
                 }`}
               >
                 <div className={styles.phName}>{ph.name}</div>
-                <div className={styles.phPct}>{ph.pct}%</div>
+                {ph.state !== 'na' && <div className={styles.phPct}>{ph.pct}%</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {team && team.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Project Team</h3>
+          <div className={styles.teamGrid}>
+            {team.map((member) => (
+              <div className={styles.teamCard} key={member.id}>
+                <div className={styles.teamTrade}>{member.trade}</div>
+                <div className={styles.teamName}>{member.name || '—'}</div>
+                {member.phone && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-phone" aria-hidden="true"></i> {member.phone}
+                  </div>
+                )}
+                {member.email && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-mail" aria-hidden="true"></i> {member.email}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -167,6 +187,7 @@ export default async function ProjectOverviewPage({ params }) {
                 <div>
                   <div className={styles.stepName}>{m.name}</div>
                   <div className={styles.stepDate}>{m.display_date}</div>
+                  {m.notes && <div className={styles.stepNotes}>{m.notes}</div>}
                 </div>
               </div>
             ))}
@@ -241,6 +262,11 @@ export default async function ProjectOverviewPage({ params }) {
       </div>
     </div>
   );
+}
+
+function capitalize(s) {
+  if (!s) return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatDate(dateStr) {

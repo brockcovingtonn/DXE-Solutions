@@ -46,6 +46,7 @@ export async function PUT(request) {
           name: m.name,
           display_date: m.display_date,
           state: m.state,
+          notes: m.notes || null,
           sort_order: i + 1,
         }))
       );

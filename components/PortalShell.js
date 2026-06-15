@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import styles from './PortalShell.module.css';
 
-export default function PortalShell({ profile, projects, children }) {
+export default function PortalShell({ profile, projects, isAdmin, children }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -40,14 +40,15 @@ export default function PortalShell({ profile, projects, children }) {
       <nav className={styles.navbar}>
         <div className={styles.navInner}>
           <div className={styles.navLogoArea}>
-            <Image
-              src="/images/logo-gold.png"
-              alt="DXE Solutions"
-              width={1229}
-              height={347}
-              className={styles.navLogoImg}
-              priority
-            />
+            <div className={styles.navLogoImg}>
+              <Image
+                src="/images/logo-gold.png"
+                alt="DXE Solutions"
+                fill
+                style={{ objectFit: 'contain', objectPosition: 'left center' }}
+                priority
+              />
+            </div>
             <span className={styles.logoSub}>Client Portal</span>
           </div>
           <div className={styles.userArea}>
@@ -64,7 +65,7 @@ export default function PortalShell({ profile, projects, children }) {
 
       <div className={styles.body}>
         <aside className={styles.sidebar}>
-          {projects && projects.length > 0 ? (
+          {projects && projects.length > 0 && (
             <>
               <div className={styles.sidebarSectionLabel}>My Projects</div>
               {projects.map((p) => (
@@ -81,38 +82,46 @@ export default function PortalShell({ profile, projects, children }) {
                   </div>
                 </Link>
               ))}
-
-              {activeProjectId && (
-                <>
-                  <div className={styles.sidebarSectionLabel}>Project</div>
-                  <SidebarLink
-                    href={`${projectBasePath(activeProjectId)}/overview`}
-                    icon="ti-layout-dashboard"
-                    label="Overview"
-                    active={subPath === 'overview'}
-                  />
-                  <SidebarLink
-                    href={`${projectBasePath(activeProjectId)}/documents`}
-                    icon="ti-files"
-                    label="Documents"
-                    active={subPath === 'documents'}
-                  />
-                  <SidebarLink
-                    href={`${projectBasePath(activeProjectId)}/photos`}
-                    icon="ti-photo"
-                    label="Photos"
-                    active={subPath === 'photos'}
-                  />
-                  <SidebarLink
-                    href={`${projectBasePath(activeProjectId)}/notes`}
-                    icon="ti-notes"
-                    label="Notes & Updates"
-                    active={subPath === 'notes'}
-                  />
-                </>
-              )}
             </>
-          ) : (
+          )}
+
+          {activeProjectId && (
+            <>
+              <div className={styles.sidebarSectionLabel}>Project</div>
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/overview`}
+                icon="ti-layout-dashboard"
+                label="Overview"
+                active={subPath === 'overview'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/utilities`}
+                icon="ti-bolt"
+                label="Utilities"
+                active={subPath === 'utilities'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/documents`}
+                icon="ti-files"
+                label="Documents"
+                active={subPath === 'documents'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/photos`}
+                icon="ti-photo"
+                label="Photos"
+                active={subPath === 'photos'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/notes`}
+                icon="ti-notes"
+                label="Notes & Updates"
+                active={subPath === 'notes'}
+              />
+            </>
+          )}
+
+          {(!projects || projects.length === 0) && !activeProjectId && (
             <div className={styles.sidebarSectionLabel}>No projects yet</div>
           )}
 
@@ -133,7 +142,18 @@ export default function PortalShell({ profile, projects, children }) {
           )}
         </aside>
 
-        <main className={styles.main}>{children}</main>
+        <main className={styles.main}>
+          {isAdmin && activeProjectId && !projects?.some((p) => p.id === activeProjectId) && (
+            <div className={styles.adminPreviewBanner}>
+              <i className="ti ti-eye" aria-hidden="true"></i>
+              Previewing as the client would see this project.
+              <Link href="/admin/clients" className={styles.adminPreviewLink}>
+                Back to admin
+              </Link>
+            </div>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   );

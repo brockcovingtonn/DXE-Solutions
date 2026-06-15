@@ -8,7 +8,12 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
   const router = useRouter();
 
   const [milestones, setMilestones] = useState(
-    initialMilestones.map((m) => ({ name: m.name, display_date: m.display_date || '', state: m.state }))
+    initialMilestones.map((m) => ({
+      name: m.name,
+      display_date: m.display_date || '',
+      state: m.state,
+      notes: m.notes || '',
+    }))
   );
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -22,7 +27,7 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
   }
 
   function add() {
-    setMilestones((prev) => [...prev, { name: '', display_date: '', state: 'pending' }]);
+    setMilestones((prev) => [...prev, { name: '', display_date: '', state: 'pending', notes: '' }]);
   }
 
   async function handleSave() {
@@ -50,26 +55,34 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
   return (
     <div>
       {milestones.map((m, i) => (
-        <div className={adminStyles.milestoneRow} key={i}>
-          <input
-            placeholder="Milestone name"
-            value={m.name}
-            onChange={(e) => update(i, 'name', e.target.value)}
+        <div className={adminStyles.milestoneCard} key={i}>
+          <div className={adminStyles.milestoneRow}>
+            <input
+              placeholder="Milestone name"
+              value={m.name}
+              onChange={(e) => update(i, 'name', e.target.value)}
+            />
+            <input
+              placeholder="Date (e.g. Aug 14, 2025)"
+              value={m.display_date}
+              onChange={(e) => update(i, 'display_date', e.target.value)}
+              style={{ gridColumn: 'span 1' }}
+            />
+            <select value={m.state} onChange={(e) => update(i, 'state', e.target.value)}>
+              <option value="pending">Pending</option>
+              <option value="active">Active</option>
+              <option value="done">Done</option>
+            </select>
+            <button type="button" className={adminStyles.iconBtn} onClick={() => remove(i)} aria-label="Remove milestone">
+              <i className="ti ti-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+          <textarea
+            className={adminStyles.milestoneNotes}
+            placeholder="Notes for this milestone (visible to client)..."
+            value={m.notes}
+            onChange={(e) => update(i, 'notes', e.target.value)}
           />
-          <input
-            placeholder="Date (e.g. Aug 14, 2025)"
-            value={m.display_date}
-            onChange={(e) => update(i, 'display_date', e.target.value)}
-            style={{ gridColumn: 'span 1' }}
-          />
-          <select value={m.state} onChange={(e) => update(i, 'state', e.target.value)}>
-            <option value="pending">Pending</option>
-            <option value="active">Active</option>
-            <option value="done">Done</option>
-          </select>
-          <button type="button" className={adminStyles.iconBtn} onClick={() => remove(i)} aria-label="Remove milestone">
-            <i className="ti ti-trash" aria-hidden="true"></i>
-          </button>
         </div>
       ))}
 

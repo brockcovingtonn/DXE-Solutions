@@ -54,14 +54,15 @@ export default function LoginPage() {
       </Link>
       <div className={styles.loginWrap}>
         <div className={styles.loginLeft}>
-          <Image
-            src="/images/logo-gold.png"
-            alt="DXE Solutions"
-            width={1229}
-            height={347}
-            className={styles.loginLogo}
-            priority
-          />
+          <div className={styles.loginLogo}>
+            <Image
+              src="/images/logo-gold.png"
+              alt="DXE Solutions"
+              fill
+              style={{ objectFit: 'contain', objectPosition: 'left center' }}
+              priority
+            />
+          </div>
           <div className={styles.eyebrow}>Client Portal</div>
           <h2 className="display">
             Your project,

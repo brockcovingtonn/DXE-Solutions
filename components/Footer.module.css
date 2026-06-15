@@ -15,8 +15,9 @@
 }
 
 .logoImg {
+  position: relative;
   height: 28px;
-  width: auto;
+  width: 99px;
 }
 
 .copy {

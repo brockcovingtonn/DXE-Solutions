@@ -28,14 +28,15 @@ export default function AdminShell({ profile, children }) {
       <nav className={styles.navbar}>
         <div className={styles.navInner}>
           <div className={styles.navLogoArea}>
-            <Image
-              src="/images/logo-gold.png"
-              alt="DXE Solutions"
-              width={1229}
-              height={347}
-              className={styles.navLogoImg}
-              priority
-            />
+            <div className={styles.navLogoImg}>
+              <Image
+                src="/images/logo-gold.png"
+                alt="DXE Solutions"
+                fill
+                style={{ objectFit: 'contain', objectPosition: 'left center' }}
+                priority
+              />
+            </div>
             <span className={styles.logoSub}>Admin</span>
           </div>
           <div className={styles.userArea}>
@@ -43,9 +44,6 @@ export default function AdminShell({ profile, children }) {
               Signed in as <strong>{firstName}</strong>
             </span>
             <div className={styles.avatar}>{initials || 'A'}</div>
-            <Link href="/portal" className={styles.signOutBtn} style={{ textDecoration: 'none' }}>
-              Client View
-            </Link>
             <button className={styles.signOutBtn} onClick={handleSignOut} disabled={signingOut}>
               {signingOut ? 'Signing out...' : 'Sign Out'}
             </button>
@@ -61,6 +59,18 @@ export default function AdminShell({ profile, children }) {
             icon="ti-users"
             label="Clients & Projects"
             active={pathname.startsWith('/admin/clients') || pathname.startsWith('/admin/projects')}
+          />
+          <SidebarLink
+            href="/admin/contacts"
+            icon="ti-address-book"
+            label="Contacts"
+            active={pathname.startsWith('/admin/contacts')}
+          />
+          <SidebarLink
+            href="/admin/templates"
+            icon="ti-file-stack"
+            label="Templates"
+            active={pathname.startsWith('/admin/templates')}
           />
         </aside>
 

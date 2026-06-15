@@ -12,9 +12,8 @@ export default function Navbar() {
           <Image
             src="/images/logo-gold.png"
             alt="DXE Solutions"
-            width={1229}
-            height={347}
-            className={styles.logoImg}
+            fill
+            style={{ objectFit: 'contain', objectPosition: 'left center' }}
             priority
           />
         </Link>

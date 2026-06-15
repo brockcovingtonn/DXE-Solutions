@@ -51,9 +51,11 @@ export default async function AdminClientsPage() {
             {clients.map((client) => (
               <div className={adminStyles.clientRow} key={client.id}>
                 <div className={adminStyles.clientInfo}>
-                  <div className={adminStyles.clientName}>
-                    {client.first_name} {client.last_name}
-                  </div>
+                  <Link href={`/admin/clients/${client.id}`} className={adminStyles.clientNameLink}>
+                    <div className={adminStyles.clientName}>
+                      {client.first_name} {client.last_name}
+                    </div>
+                  </Link>
                   <div className={adminStyles.clientEmail}>{client.email}</div>
                 </div>
                 <div className={adminStyles.clientProjects}>

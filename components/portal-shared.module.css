@@ -573,6 +573,117 @@
   color: var(--navy);
 }
 
+.stepNotes {
+  font-size: 0.78rem;
+  color: #4a5568;
+  margin-top: 0.35rem;
+  line-height: 1.5;
+  background: var(--cream);
+  padding: 0.5rem 0.65rem;
+  border-left: 2px solid var(--gold);
+}
+
+/* Team */
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.teamCard {
+  background: var(--cream);
+  border: 1px solid rgba(11, 31, 58, 0.06);
+  padding: 1rem;
+}
+
+.teamTrade {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.teamName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 0.4rem;
+}
+
+.teamContact {
+  font-size: 0.78rem;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+/* Utilities */
+.utilityBlock {
+  margin-bottom: 1.5rem;
+}
+
+.utilityBlock:last-child {
+  margin-bottom: 0;
+}
+
+.utilityHeader {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.utilityHeader i {
+  color: var(--gold);
+}
+
+.utilityTable {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem 1.5rem;
+  background: var(--cream);
+  border: 1px solid rgba(11, 31, 58, 0.06);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.utilityField .ufLabel {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #718096;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.utilityField .ufValue {
+  font-size: 0.88rem;
+  color: var(--navy);
+  font-weight: 500;
+}
+
+.utilityContact {
+  font-size: 0.8rem;
+  color: #718096;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0 0.25rem;
+}
+
+.utilityContact strong {
+  color: var(--navy);
+}
+
 @media (max-width: 900px) {
   .statCards,
   .portalGrid,
@@ -584,5 +695,11 @@
   }
   .photosGrid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .teamGrid {
+    grid-template-columns: 1fr;
+  }
+  .utilityTable {
+    grid-template-columns: 1fr;
   }
 }

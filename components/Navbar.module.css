@@ -20,14 +20,10 @@
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.logoImg {
+  position: relative;
+  display: block;
   height: 32px;
-  width: auto;
+  width: 113px;
 }
 
 .links {

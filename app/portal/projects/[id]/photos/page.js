@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
+import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 
 export default async function PhotosPage({ params }) {
@@ -9,12 +10,7 @@ export default async function PhotosPage({ params }) {
 
   const projectId = params.id;
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('id, name')
-    .eq('id', projectId)
-    .eq('owner_id', user.id)
-    .single();
+  const project = await getViewableProject(supabase, projectId, user, 'id, name');
 
   if (!project) notFound();
 

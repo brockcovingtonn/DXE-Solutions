@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
+import { PROJECT_TYPES } from '@/lib/constants';
 
 export default function ProjectInfoForm({ project }) {
   const router = useRouter();
@@ -11,8 +12,6 @@ export default function ProjectInfoForm({ project }) {
     name: project.name || '',
     address: project.address || '',
     project_type: project.project_type || '',
-    estimated_value: project.estimated_value || '',
-    pm_name: project.pm_name || '',
     started_on: project.started_on || '',
     estimated_completion: project.estimated_completion || '',
     progress_pct: project.progress_pct ?? 0,
@@ -74,33 +73,19 @@ export default function ProjectInfoForm({ project }) {
       <div className={adminStyles.formGrid2}>
         <div className={adminStyles.fieldGroup}>
           <label className={adminStyles.fieldLabel}>Project type</label>
-          <input
+          <select
             className={adminStyles.fieldInput}
             name="project_type"
             value={form.project_type}
             onChange={handleChange}
-          />
-        </div>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Estimated value</label>
-          <input
-            className={adminStyles.fieldInput}
-            name="estimated_value"
-            value={form.estimated_value}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <div className={adminStyles.formGrid2}>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Project manager</label>
-          <input
-            className={adminStyles.fieldInput}
-            name="pm_name"
-            value={form.pm_name}
-            onChange={handleChange}
-          />
+          >
+            <option value="">Select type...</option>
+            {PROJECT_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
         </div>
         <div className={adminStyles.fieldGroup}>
           <label className={adminStyles.fieldLabel}>Status</label>

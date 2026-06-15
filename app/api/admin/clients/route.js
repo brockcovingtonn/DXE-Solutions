@@ -31,7 +31,6 @@ export async function POST(request) {
       projectName,
       address,
       projectType,
-      estimatedValue,
       startedOn,
       estimatedCompletion,
     } = body;
@@ -71,7 +70,6 @@ export async function POST(request) {
         name: projectName,
         address: address || null,
         project_type: projectType || null,
-        estimated_value: estimatedValue || null,
         started_on: startedOn || null,
         estimated_completion: estimatedCompletion || null,
         progress_pct: 0,
