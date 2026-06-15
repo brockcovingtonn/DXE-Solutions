@@ -26,15 +26,14 @@
   width: 100%;
 }
 
-.logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--white);
+.navLogoArea {
+  display: flex;
+  align-items: center;
 }
 
-.logoDot {
-  color: var(--gold);
+.navLogoImg {
+  height: 28px;
+  width: auto;
 }
 
 .logoSub {

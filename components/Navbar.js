@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
@@ -8,7 +9,14 @@ export default function Navbar() {
     <nav className={styles.nav}>
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>
-          DXE<span>.</span> Solutions
+          <Image
+            src="/images/logo-gold.png"
+            alt="DXE Solutions"
+            width={1229}
+            height={347}
+            className={styles.logoImg}
+            priority
+          />
         </Link>
         <div className={styles.links}>
           <Link href="/#about">About</Link>

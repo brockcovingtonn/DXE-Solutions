@@ -14,15 +14,9 @@
   gap: 1rem;
 }
 
-.logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--white);
-}
-
-.logo span {
-  color: var(--gold);
+.logoImg {
+  height: 28px;
+  width: auto;
 }
 
 .copy {

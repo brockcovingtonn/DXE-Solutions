@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import styles from './page.module.css';
 
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -53,6 +54,14 @@ const { data, error } = await supabase.auth.signInWithPassword({
       </Link>
       <div className={styles.loginWrap}>
         <div className={styles.loginLeft}>
+          <Image
+            src="/images/logo-gold.png"
+            alt="DXE Solutions"
+            width={1229}
+            height={347}
+            className={styles.loginLogo}
+            priority
+          />
           <div className={styles.eyebrow}>Client Portal</div>
           <h2 className="display">
             Your project,

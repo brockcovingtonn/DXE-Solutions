@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import styles from './PortalShell.module.css';
 
@@ -26,10 +27,15 @@ export default function AdminShell({ profile, children }) {
     <div className={styles.portal}>
       <nav className={styles.navbar}>
         <div className={styles.navInner}>
-          <div>
-            <span className={styles.logo}>
-              DXE<span className={styles.logoDot}>.</span> Solutions
-            </span>
+          <div className={styles.navLogoArea}>
+            <Image
+              src="/images/logo-gold.png"
+              alt="DXE Solutions"
+              width={1229}
+              height={347}
+              className={styles.navLogoImg}
+              priority
+            />
             <span className={styles.logoSub}>Admin</span>
           </div>
           <div className={styles.userArea}>
