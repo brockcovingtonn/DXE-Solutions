@@ -150,11 +150,32 @@ Once `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `ESTIMATE_NOTIFICATION_EMAIL` ar
 
 If `RESEND_API_KEY` isn't set (e.g. local development without it configured), these emails are silently skipped — nothing breaks, the app just won't send mail.
 
+## "Coming Soon" mode (temporary)
+
+While the full site is being finished, the public root (`/`) shows a static
+**Coming Soon** page instead of the marketing homepage.
+
+- `app/page.js` + `app/coming-soon.module.css` → the Coming Soon page
+- `app/preview/page.js` + `app/preview/page.module.css` → the real, in-progress
+  homepage. It's not linked anywhere, so it's hidden from the public — preview it
+  at **`/preview`** while you keep building.
+- `/login`, `/portal`, `/admin`, and `/estimate` all still work normally.
+
+**To go live** (swap back to the full site):
+
+1. Delete `app/page.js` and `app/coming-soon.module.css`.
+2. Move `app/preview/page.js` → `app/page.js` and
+   `app/preview/page.module.css` → `app/page.module.css`, then remove the empty
+   `app/preview/` folder.
+3. Commit and push — Vercel redeploys automatically.
+
 ## Project structure reference
 
 ```
 app/
-  page.js                    → homepage (hero, about, services, projects, contact)
+  page.js                    → "Coming Soon" page (temporary — see section above)
+  coming-soon.module.css     → styles for the Coming Soon page
+  preview/page.js            → the full homepage, hidden at /preview until launch
   estimate/page.js           → estimate request form
   login/page.js              → client login
   api/estimate/route.js      → sends estimate form via Resend
