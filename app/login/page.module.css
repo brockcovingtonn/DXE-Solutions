@@ -148,6 +148,18 @@
   border-color: var(--gold);
 }
 
+.forgotLink {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--navy-mid);
+  transition: color 0.2s;
+}
+
+.forgotLink:hover {
+  color: var(--gold);
+}
+
 @media (max-width: 900px) {
   .loginWrap {
     grid-template-columns: 1fr;

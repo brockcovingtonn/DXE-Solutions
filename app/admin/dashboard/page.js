@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import { UTILITY_STATUSES, UTILITY_TYPES } from '@/lib/constants';
+import WeekStripCalendar from '@/components/WeekStripCalendar';
 
 const ICONS = {
   note: 'ti-notes',
@@ -21,14 +22,21 @@ const ICON_CLASS_KEYS = {
 export default async function AdminDashboardPage() {
   const supabase = createClient();
 
+  const weekStart = new Date();
+  weekStart.setHours(0, 0, 0, 0);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  const windowEnd = new Date(weekStart);
+  windowEnd.setDate(windowEnd.getDate() + 21);
+
   const [
     { data: profiles },
     { data: projects },
     { data: activity },
     { data: milestones },
     { data: utilityEntries },
+    { data: calendarEvents },
   ] = await Promise.all([
-    supabase.from('profiles').select('id, is_admin'),
+    supabase.from('profiles').select('id, is_admin, is_employee'),
     supabase.from('projects').select('id, name, status'),
     supabase
       .from('activity')
@@ -47,9 +55,15 @@ export default async function AdminDashboardPage() {
       .in('status', ['pending', 'in_progress'])
       .order('created_at', { ascending: false })
       .limit(8),
+    supabase
+      .from('calendar_events')
+      .select('*, projects(id, name)')
+      .gte('start_time', weekStart.toISOString())
+      .lte('start_time', windowEnd.toISOString())
+      .order('start_time'),
   ]);
 
-  const clientCount = (profiles || []).filter((p) => !p.is_admin).length;
+  const clientCount = (profiles || []).filter((p) => !p.is_admin && !p.is_employee).length;
   const activeProjects = (projects || []).filter((p) => p.status === 'active').length;
   const totalProjects = (projects || []).length;
 
@@ -61,24 +75,29 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className={styles.statCards3}>
-        <div className={styles.statCard}>
+        <Link href="/admin/clients" className={styles.statCard} style={{ display: 'block' }}>
           <div className={styles.scLabel}>Clients</div>
           <div className={styles.scValue}>{clientCount}</div>
-        </div>
-        <div className={styles.statCard}>
+        </Link>
+        <Link href="/admin/projects" className={styles.statCard} style={{ display: 'block' }}>
           <div className={styles.scLabel}>Total Projects</div>
           <div className={styles.scValue}>{totalProjects}</div>
-        </div>
-        <div className={styles.statCard}>
+        </Link>
+        <Link href="/admin/projects?status=active" className={styles.statCard} style={{ display: 'block' }}>
           <div className={styles.scLabel}>Active Projects</div>
           <div className={styles.scValue}>{activeProjects}</div>
-        </div>
+        </Link>
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>This Week</h3>
+        <WeekStripCalendar events={calendarEvents || []} viewAllHref="/admin/calendar" />
       </div>
 
       <div className={styles.portalGrid}>
         <div className={styles.portalCard}>
           <h3>Recent Activity</h3>
-          <div className={styles.activityFeed}>
+          <div className={`${styles.activityFeed} ${styles.activityFeedScroll}`}>
             {(activity || []).map((a) => (
               <Link
                 href={a.projects ? `/admin/projects/${a.projects.id}` : '#'}
@@ -107,7 +126,7 @@ export default async function AdminDashboardPage() {
 
         <div className={styles.portalCard}>
           <h3>Upcoming Milestones</h3>
-          <div className={styles.activityFeed}>
+          <div className={`${styles.activityFeed} ${styles.activityFeedScroll}`}>
             {(milestones || []).map((m) => (
               <Link
                 href={m.projects ? `/admin/projects/${m.projects.id}` : '#'}

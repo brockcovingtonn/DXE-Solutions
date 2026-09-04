@@ -1,0 +1,156 @@
+.page {
+  min-height: 100vh;
+  background: var(--surface);
+  padding: 2rem 1.5rem 4rem;
+}
+
+.toolbar {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sheet {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--white);
+  padding: 3rem;
+  border: 1px solid var(--border);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 2rem;
+}
+
+.logo {
+  position: relative;
+  height: 36px;
+  width: 128px;
+}
+
+.headerMeta {
+  text-align: right;
+}
+
+.docTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.docDate {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 0.15rem;
+}
+
+.projectName {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 0.25rem;
+}
+
+.projectAddress {
+  font-size: 0.95rem;
+  color: #718096;
+  margin-bottom: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.fieldLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.fieldValue {
+  font-size: 0.88rem;
+  color: var(--navy);
+}
+
+.section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.section h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 1rem;
+}
+
+.empty {
+  font-size: 0.85rem;
+  color: #a0aec0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.table th {
+  text-align: left;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #718096;
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.table td {
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--navy);
+}
+
+.footer {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.72rem;
+  color: #a0aec0;
+  letter-spacing: 0.04em;
+}
+
+@media print {
+  .page {
+    background: var(--white);
+    padding: 0;
+  }
+  .toolbar {
+    display: none;
+  }
+  .sheet {
+    border: none;
+    max-width: 100%;
+    padding: 0;
+  }
+}

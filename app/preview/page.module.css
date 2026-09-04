@@ -4,15 +4,29 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: var(--cream);
+  background: var(--navy-dark);
   overflow: hidden;
   padding-top: 68px;
+}
+
+.heroPhoto {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroPhotoOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(100deg, rgba(20, 29, 38, 0.9) 0%, rgba(20, 29, 38, 0.6) 60%, rgba(20, 29, 38, 0.4) 100%),
+    linear-gradient(0deg, rgba(20, 29, 38, 0.5) 0%, transparent 40%);
 }
 
 .heroGrid {
   position: absolute;
   inset: 0;
-  opacity: 0.05;
+  opacity: 0.08;
 }
 
 .heroGrid svg {
@@ -72,7 +86,7 @@
 .heroTitle {
   font-size: clamp(3rem, 6vw, 5.5rem);
   font-weight: 300;
-  color: var(--navy);
+  color: var(--white);
   line-height: 1.05;
   max-width: 700px;
   margin-bottom: 1.5rem;
@@ -85,7 +99,8 @@
 
 .heroSub {
   font-size: 1rem;
-  color: var(--navy-mid);
+  color: var(--text-light);
+  opacity: 0.85;
   line-height: 1.7;
   max-width: 500px;
   margin-bottom: 3rem;
@@ -98,12 +113,22 @@
   flex-wrap: wrap;
 }
 
+.heroActions :global(.btn-outline) {
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.heroActions :global(.btn-outline):hover {
+  border-color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .heroStats {
   display: flex;
   gap: 3rem;
   margin-top: 4rem;
   padding-top: 3rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   flex-wrap: wrap;
 }
 
@@ -111,7 +136,7 @@
   font-family: 'Cormorant Garamond', serif;
   font-size: 2.5rem;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--white);
 }
 
 .statNum span {
@@ -120,7 +145,8 @@
 
 .statLabel {
   font-size: 0.75rem;
-  color: var(--navy-mid);
+  color: var(--text-light);
+  opacity: 0.7;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-top: 0.2rem;
@@ -198,9 +224,61 @@
   line-height: 1.6;
 }
 
+/* Subtle blueprint texture layered behind a section's cards */
+.textureLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  z-index: 0;
+}
+
 /* SERVICES */
 .servicesSection {
+  position: relative;
+  overflow: hidden;
   background: var(--cream);
+}
+
+.servicesSection :global(.section-inner) {
+  position: relative;
+  z-index: 1;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.photoTile {
+  position: relative;
+  height: 220px;
+  background: var(--navy-dark);
+  overflow: hidden;
+}
+
+.photoTileCaption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 1.25rem;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.photoTileCaption strong {
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.photoTileCaption span {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
 }
 
 .servicesGrid {
@@ -404,7 +482,8 @@
     gap: 3rem;
   }
   .servicesGrid,
-  .projGrid {
+  .projGrid,
+  .photoGrid {
     grid-template-columns: 1fr;
   }
   .heroStats {

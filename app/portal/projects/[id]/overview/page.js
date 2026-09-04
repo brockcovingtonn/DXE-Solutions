@@ -14,7 +14,7 @@ export default async function ProjectOverviewPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: utilities }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: utilities }, { data: actionItems }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -23,6 +23,12 @@ export default async function ProjectOverviewPage({ params }) {
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(1),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.rpc('get_project_utilities', { p_project_id: projectId }),
+      supabase
+        .from('action_items')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('visible_to_client', true)
+        .order('created_at', { ascending: false }),
     ]);
 
   const doneMilestones = (milestones || []).filter((m) => m.state === 'done').length;
@@ -47,6 +53,7 @@ export default async function ProjectOverviewPage({ params }) {
     new: styles.badgeNew,
     signed: styles.badgeSigned,
     pending: styles.badgePending,
+    contract: styles.badgeContract,
   };
 
   return (
@@ -155,6 +162,26 @@ export default async function ProjectOverviewPage({ params }) {
                     <i className="ti ti-mail" aria-hidden="true"></i> {member.email}
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {actionItems && actionItems.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Action Items</h3>
+          <div className={styles.statusSteps}>
+            {actionItems.map((item) => (
+              <div className={styles.statusStep} key={item.id}>
+                <div className={`${styles.stepDot} ${item.status === 'done' ? styles.stepDotDone : styles.stepDotPending}`}>
+                  {item.status === 'done' ? <i className="ti ti-check" style={{ fontSize: '0.75rem' }}></i> : '·'}
+                </div>
+                <div>
+                  <div className={styles.stepName}>{item.title}</div>
+                  {item.description && <div className={styles.stepNotes}>{item.description}</div>}
+                  {item.due_date && <div className={styles.stepDate}>Due {item.due_date}</div>}
+                </div>
               </div>
             ))}
           </div>

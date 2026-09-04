@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import { TRADE_OPTIONS } from '@/lib/constants';
+import { CONTACT_CATEGORIES } from '@/lib/constants';
 
 export default function ContactForm({ contact, allProjects, linkedProjectIds, contactId }) {
   const router = useRouter();
@@ -93,15 +93,14 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
       </div>
       <div className={adminStyles.formGrid2}>
         <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Trade / Role</label>
+          <label className={adminStyles.fieldLabel}>Category</label>
           <select className={adminStyles.fieldInput} name="trade" value={form.trade} onChange={handleChange}>
             <option value="">Select...</option>
-            {TRADE_OPTIONS.map((t) => (
+            {CONTACT_CATEGORIES.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>
             ))}
-            <option value="Other">Other</option>
           </select>
         </div>
         <div className={adminStyles.fieldGroup}>

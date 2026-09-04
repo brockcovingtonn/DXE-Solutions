@@ -17,8 +17,10 @@ export async function POST(request) {
       details,
     } = data;
 
-    // Basic validation
-    if (!firstName || !lastName || !email || !projectType) {
+    // Basic validation — a caller needs a name, a project type, and some way
+    // to reach them back (the hero quick-form only collects one contact
+    // field, which may be an email or a phone number).
+    if (!firstName || !projectType || (!email && !phone)) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -29,8 +31,8 @@ export async function POST(request) {
 
     const html = `
       <h2>New Estimate Request — DXE Solutions</h2>
-      <p><strong>Name:</strong> ${escapeHtml(firstName)} ${escapeHtml(lastName)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Name:</strong> ${escapeHtml(firstName)}${lastName ? ' ' + escapeHtml(lastName) : ''}</p>
+      <p><strong>Email:</strong> ${escapeHtml(email || 'Not provided')}</p>
       <p><strong>Phone:</strong> ${escapeHtml(phone || 'Not provided')}</p>
       <p><strong>Project Type:</strong> ${escapeHtml(projectType)}</p>
       <p><strong>Estimated Value:</strong> ${escapeHtml(projectValue || 'Not specified')}</p>
@@ -43,8 +45,8 @@ export async function POST(request) {
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: process.env.ESTIMATE_NOTIFICATION_EMAIL,
-      replyTo: email,
-      subject: `New Estimate Request from ${firstName} ${lastName}`,
+      ...(email ? { replyTo: email } : {}),
+      subject: `New Estimate Request from ${firstName}${lastName ? ' ' + lastName : ''}`,
       html,
     });
 

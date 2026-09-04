@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -13,9 +14,11 @@ export default function Footer() {
             style={{ objectFit: 'contain', objectPosition: 'left center' }}
           />
         </div>
+        <div className={styles.links}>
+          <Link href="/privacy">Privacy Policy</Link>
+        </div>
         <div className={styles.copy}>
-          © {new Date().getFullYear()} DXE Solutions. All rights reserved. Licensed Civil
-          Engineer, State of California.
+          © {new Date().getFullYear()} DXE Solutions. All rights reserved.
         </div>
       </div>
     </footer>

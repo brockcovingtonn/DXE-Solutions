@@ -37,6 +37,11 @@ export async function PATCH(request, { params }) {
       'estimated_completion',
       'progress_pct',
       'status',
+      'apn',
+      'jurisdiction',
+      'zoning',
+      'lot_size',
+      'building_size',
     ];
 
     const update = {};

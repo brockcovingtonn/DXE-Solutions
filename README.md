@@ -110,14 +110,63 @@ There's now a built-in admin dashboard for this — no SQL required.
 6. Run `supabase/templates_migration.sql` once. This adds a Templates section and a storage bucket for standard documents Dixie can apply to any project.
 7. Run `supabase/email_notifications_migration.sql` once. This adds an email notifications preference to client accounts (default on).
 8. Run `supabase/admin_notes_management_migration.sql` once. This lets admins edit and delete any note in the Notes & Updates section.
-9. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
-10. In the SQL editor, run:
+9. Run `supabase/employee_role_migration.sql` once. This adds the `is_employee` flag, a `project_employees` assignment table, and read-only security rules so employee accounts only see the projects they're assigned to.
+10. Run `supabase/action_items_migration.sql` once, after `employee_role_migration.sql`. This adds the `action_items` table admins use to create and assign tasks, employees can mark complete on their assigned projects, and clients only see when explicitly flagged visible to them.
+11. Run `supabase/project_permitting_fields_migration.sql` once. This adds APN, jurisdiction, zoning, lot size, and building size fields to projects, editable from the project detail page and shown on the cover sheet. (It also added a `permit_number` field that is no longer used by the app — see the next migration.)
+12. Run `supabase/permits_migration.sql` once, after `employee_role_migration.sql`. This adds a full `permits` table (a project can have any number of permits, each with its own type, agency, status, and dates) with a client-safe `get_project_permits` function, replacing the single `permit_number` field from the previous migration.
+13. Run `supabase/reviews_migration.sql` once, after `admin_migration.sql`. This adds a `reviews` table — clients submit a star rating + optional written review per project from their portal, admins can mark specific reviews "featured" from `/admin/reviews`, and featured reviews are publicly readable (including by signed-out visitors) for the homepage testimonials section.
+14. Run `supabase/invoices_migration.sql` once, after `employee_role_migration.sql`. This adds an `invoices` table (invoices the client owes, and receipts for expenses paid on their behalf), each optionally with an attached PDF. **After running it, go to Storage in the Supabase dashboard and create a new bucket named `project-invoices` (private)** — the same way `project-documents` and `project-photos` were created — the storage policies in this migration depend on that bucket existing.
+15. Run `supabase/training_migration.sql` once, after `employee_role_migration.sql`. This adds the `training_steps` table and seeds it with DXE's standard project workflow plus category-specific steps, viewable at `/admin/training` (editable) and `/employee/training` (read-only).
+16. Run `supabase/calendar_migration.sql` once, after `employee_role_migration.sql`. This adds `calendar_events` (admin-managed, optionally tagged to a project and to a client) and `google_calendar_connections` (server-only — no client-readable policy; holds OAuth tokens for one-way sync to Google Calendar). See "Google Calendar sync setup" below before connecting.
+17. Run `supabase/messages_migration.sql` once, after `employee_role_migration.sql`. This adds the `messages` table powering per-project chat between the client, admins, and assigned employees, and enables Supabase Realtime on it so messages arrive live.
+18. Run `supabase/message_reads_migration.sql` once, after `messages_migration.sql`. This adds `message_reads` (who's read a project's chat, and when — also realtime-enabled, powering the "Read" receipt under your last sent message) and a `get_unread_message_counts()` function used to badge "Chat" links around the app.
+19. Run `supabase/chat_dm_migration.sql` once, after `message_reads_migration.sql`. This adds direct-message threads (a private line between one client or employee and admin, with no admin id to record since any admin can read/reply to any DM) alongside the existing per-project group threads, and reworks `get_unread_message_counts()` to cover both. This is what powers the floating chat widget — clients only ever see their DM-with-admin thread; employees can pick an assigned project or "Dixie" (their DM thread); admins can open any project or any client/employee's DM.
+20. Run `supabase/onboarding_migration.sql` any time. Adds a single `has_seen_portal_tour` flag to `profiles`, powering the first-login walkthrough pop-up in the client portal (skippable, and replayable from Account Settings → "Take the tour again"). No new RLS policy needed — profiles already lets a user update their own row.
+21. Run `supabase/chat_client_roster_migration.sql` any time after `chat_dm_migration.sql`. Clients now pick a specific project to chat about (not just a general DM) — this adds the missing RLS so a client can actually see who else is in that conversation (admin, and any employee assigned to their project) for the "online now" roster and read receipts.
+22. Run `supabase/chat_client_roster_fix_migration.sql` immediately after it. The migration above had a bug: one of its policies caused a Postgres RLS infinite-recursion loop (`project_employees` ↔ `projects`) that broke every query against `profiles`/`projects`/`project_employees` — for every account, not just clients, including the basic "what's my role" lookup on login. This fixes it by routing the check through a security-definer function instead, the same pattern `is_admin()`/`is_employee()` already use.
+23. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
+24. In the SQL editor, run:
 
    ```sql
    update public.profiles set is_admin = true where id = 'HER-UUID-HERE';
    ```
 
-11. Repeat for any other staff who need admin access
+25. Repeat for any other staff who need admin access
+
+### Google Calendar sync setup
+
+Only needed once, before anyone clicks "Connect Google Calendar" in `/admin/calendar`:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a new project (or use an existing one).
+2. In **APIs & Services > Library**, search for **Google Calendar API** and click **Enable**.
+3. In **APIs & Services > OAuth consent screen**, configure it (External is fine for a small business):
+   - App name: DXE Solutions
+   - User support email + developer contact: your email
+   - Scopes: add `https://www.googleapis.com/auth/calendar.events`
+   - Test users: while the app is in "Testing" mode, add every Google account that will connect a calendar (this app never needs Google's full verification review as long as it stays under 100 test users — completely fine for a small firm)
+4. In **APIs & Services > Credentials**, click **Create Credentials > OAuth client ID**:
+   - Application type: **Web application**
+   - Authorized redirect URIs: add `http://localhost:3000/api/admin/google-calendar/callback` for local dev, and `https://your-real-domain.com/api/admin/google-calendar/callback` for production
+5. Copy the generated **Client ID** and **Client Secret** into `.env.local` (and your production environment variables) as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+6. Set `GOOGLE_REDIRECT_URI` to match whichever redirect URI you're using in that environment.
+7. Restart the dev server (or redeploy), then go to **Admin → Calendar** and click **Connect Google Calendar**.
+
+Once connected, any event created or edited from `/admin/calendar` is pushed to that admin's primary Google Calendar automatically (one-way: app → Google). Deleting an event in the app also removes it from Google Calendar.
+
+### AI Assistant setup
+
+The Assistant (bottom of the sidebar, plus a floating icon on every page, in the Master account, the client portal, and the employee portal) is an actual tool-calling Claude agent — it can look up real project data, including permits, documents on file, and accounting balance. No new database migration is needed; it reads and writes through the same tables and RLS policies as the rest of the app, so each role only ever sees what that role can already see elsewhere in the portal:
+
+- **Master**: full access — can also create/update Action Items and calendar events, and generate documents from templates.
+- **Employee**: scoped to their assigned project(s) only. Can also browse DXE's Training content (so "what do I do next" answers from the real workflow steps, not guesses) and mark their own assigned action items open/done — but can't create action items, touch the calendar, or generate documents.
+- **Client**: scoped to their own project(s), and only what's marked visible to them — same as the rest of their portal.
+
+1. Get an API key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys).
+2. Set `ANTHROPIC_API_KEY` in `.env.local` (and your production environment variables).
+3. Restart the dev server (or redeploy). No key means the Assistant page will load but every message will return a "not set up yet" error — nothing else in the app is affected.
+4. If a message instead comes back with a "Server error", and the error in your terminal mentions `anthropic-workspace-id is required` — that means the key is identity-linked to your Anthropic account rather than a standalone workspace key. Go to [console.anthropic.com/settings/workspaces](https://console.anthropic.com/settings/workspaces), open your workspace, and copy its ID from the URL (`wrkspc_...`) into `ANTHROPIC_WORKSPACE_ID` in `.env.local`, then restart the dev server.
+
+Conversations aren't persisted — each one lives only in the browser tab and resets on refresh.
 
 ### Using the admin dashboard
 

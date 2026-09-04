@@ -54,9 +54,28 @@ export async function middleware(request) {
     }
   }
 
+  // Protect /employee routes - require auth AND is_employee flag
+  if (request.nextUrl.pathname.startsWith('/employee')) {
+    if (!user) {
+      const redirectUrl = new URL('/login', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin, is_employee')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_employee) {
+      const redirectUrl = new URL(profile?.is_admin ? '/admin/dashboard' : '/portal', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   return response;
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/admin/:path*'],
+  matcher: ['/portal/:path*', '/admin/:path*', '/employee/:path*'],
 };

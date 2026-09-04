@@ -16,6 +16,11 @@ export default function ProjectInfoForm({ project }) {
     estimated_completion: project.estimated_completion || '',
     progress_pct: project.progress_pct ?? 0,
     status: project.status || 'planning',
+    apn: project.apn || '',
+    jurisdiction: project.jurisdiction || '',
+    zoning: project.zoning || '',
+    lot_size: project.lot_size || '',
+    building_size: project.building_size || '',
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -125,6 +130,80 @@ export default function ProjectInfoForm({ project }) {
           />
         </div>
       </div>
+
+      <h3
+        style={{
+          fontFamily: 'Cormorant Garamond, serif',
+          fontSize: '1.1rem',
+          margin: '1.5rem 0 1rem',
+          color: 'var(--navy)',
+          paddingTop: '1.5rem',
+          borderTop: '1px solid rgba(62,84,104,0.08)',
+        }}
+      >
+        Permitting details
+      </h3>
+
+      <div className={adminStyles.formGrid2}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>APN / Parcel Number</label>
+          <input
+            className={adminStyles.fieldInput}
+            name="apn"
+            value={form.apn}
+            onChange={handleChange}
+            placeholder="e.g. 4356-021-015"
+          />
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Jurisdiction</label>
+          <input
+            className={adminStyles.fieldInput}
+            name="jurisdiction"
+            value={form.jurisdiction}
+            onChange={handleChange}
+            placeholder="e.g. City of Los Angeles"
+          />
+        </div>
+      </div>
+
+      <div className={adminStyles.formGrid2}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Zoning</label>
+          <input
+            className={adminStyles.fieldInput}
+            name="zoning"
+            value={form.zoning}
+            onChange={handleChange}
+            placeholder="e.g. R-1"
+          />
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Lot Size</label>
+          <input
+            className={adminStyles.fieldInput}
+            name="lot_size"
+            value={form.lot_size}
+            onChange={handleChange}
+            placeholder="e.g. 6,500 sq ft"
+          />
+        </div>
+      </div>
+
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Building Size</label>
+        <input
+          className={adminStyles.fieldInput}
+          name="building_size"
+          value={form.building_size}
+          onChange={handleChange}
+          placeholder="e.g. 3,200 sq ft"
+        />
+      </div>
+
+      <p style={{ fontSize: '0.78rem', color: '#a0aec0', marginTop: '-0.5rem', marginBottom: '1.5rem' }}>
+        Permit numbers and status are tracked per-permit below, in the Permits section.
+      </p>
 
       <div className={adminStyles.fieldGroup}>
         <label className={adminStyles.fieldLabel}>Overall progress: {form.progress_pct}%</label>

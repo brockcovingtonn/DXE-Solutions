@@ -95,6 +95,26 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
               </div>
             )}
             {p.caption && <div className={styles.photoTag}>{p.caption}</div>}
+            {p.url && (
+              <a
+                href={`/api/photos/${p.id}/download`}
+                title="Download"
+                style={{
+                  position: 'absolute',
+                  top: '0.4rem',
+                  left: '0.4rem',
+                  background: 'rgba(62,84,104,0.85)',
+                  color: 'var(--gold-light)',
+                  width: '24px',
+                  height: '24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
+              </a>
+            )}
             <button
               type="button"
               onClick={() => handleDelete(p.id)}

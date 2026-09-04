@@ -131,11 +131,17 @@ a.detailVal:hover {
   color: var(--gold-light);
 }
 
-.clientLogin {
+.loginLinks {
   position: absolute;
   bottom: 1.75rem;
   right: 2rem;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.clientLogin {
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -145,6 +151,12 @@ a.detailVal:hover {
 
 .clientLogin:hover {
   color: var(--gold);
+}
+
+.loginDivider {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 @media (max-width: 600px) {
@@ -158,9 +170,9 @@ a.detailVal:hover {
     text-align: center;
     min-width: 0;
   }
-  .clientLogin {
+  .loginLinks {
     position: static;
-    display: block;
+    justify-content: center;
     margin-top: 2.5rem;
   }
 }

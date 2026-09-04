@@ -1,14 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import styles from './page.module.css';
 
 export default function LoginPage() {
-  const router = useRouter();
   const supabase = createClient();
 
   const [email, setEmail] = useState('');
@@ -32,19 +30,23 @@ export default function LoginPage() {
       return;
     }
 
-    // Check if this account is an admin and route accordingly
+    // Check the account's role and route accordingly
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin')
+      .select('is_admin, is_employee')
       .eq('id', data.user.id)
       .single();
 
+    // A full navigation (not router.push) so the destination's server-side
+    // role check runs against a fresh request with the just-set auth
+    // cookies, instead of racing an in-flight client-side transition.
     if (profile?.is_admin) {
-      router.push('/admin/dashboard');
+      window.location.href = '/admin/dashboard';
+    } else if (profile?.is_employee) {
+      window.location.href = '/employee/dashboard';
     } else {
-      router.push('/portal');
+      window.location.href = '/portal';
     }
-    router.refresh();
   }
 
   return (
@@ -133,6 +135,9 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
+          <Link href="/forgot-password" className={styles.forgotLink}>
+            Forgot your password?
+          </Link>
         </div>
       </div>
     </div>

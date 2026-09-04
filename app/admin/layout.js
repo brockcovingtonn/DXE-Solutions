@@ -16,5 +16,46 @@ export default async function AdminLayout({ children }) {
 
   if (!profile?.is_admin) redirect('/portal');
 
-  return <AdminShell profile={profile}>{children}</AdminShell>;
+  const [{ data: projects }, { data: people }, { data: unread }] = await Promise.all([
+    supabase
+      .from('projects')
+      .select('id, name, profiles!projects_owner_id_fkey(first_name, last_name)')
+      .order('name'),
+    supabase
+      .from('profiles')
+      .select('id, first_name, last_name, is_employee')
+      .eq('is_admin', false)
+      .order('first_name'),
+    supabase.rpc('get_unread_message_counts'),
+  ]);
+
+  const projectUnread = {};
+  const dmUnread = {};
+  (unread || []).forEach((r) => {
+    if (r.project_id) projectUnread[r.project_id] = r.unread_count;
+    else if (r.dm_user_id) dmUnread[r.dm_user_id] = r.unread_count;
+  });
+
+  const chatThreads = [
+    ...(people || []).map((p) => ({
+      key: `dm-${p.id}`,
+      label: `${p.first_name} ${p.last_name}`.trim() || 'Unnamed',
+      sublabel: p.is_employee ? 'Employee' : 'Client',
+      dmUserId: p.id,
+      unread: dmUnread[p.id] || 0,
+    })),
+    ...(projects || []).map((p) => ({
+      key: `project-${p.id}`,
+      label: p.profiles ? `${p.profiles.first_name} ${p.profiles.last_name} - ${p.name}` : p.name,
+      sublabel: 'Project',
+      projectId: p.id,
+      unread: projectUnread[p.id] || 0,
+    })),
+  ];
+
+  return (
+    <AdminShell profile={profile} currentUserId={user.id} chatThreads={chatThreads} assistantProjects={projects || []}>
+      {children}
+    </AdminShell>
+  );
 }

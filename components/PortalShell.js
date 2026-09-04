@@ -1,17 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
+import FloatingChat from '@/components/FloatingChat';
+import FloatingAssistant from '@/components/FloatingAssistant';
+import OnboardingTour from '@/components/OnboardingTour';
 import styles from './PortalShell.module.css';
 
-export default function PortalShell({ profile, projects, isAdmin, children }) {
+export default function PortalShell({ profile, projects, isAdmin, unreadByProject, currentUserId, chatThreads, children }) {
   const pathname = usePathname();
-  const router = useRouter();
   const supabase = createClient();
   const [signingOut, setSigningOut] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   const initials = `${profile?.first_name?.[0] || ''}${profile?.last_name?.[0] || ''}`.toUpperCase();
   const firstName = profile?.first_name || 'there';
@@ -24,8 +27,7 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
   async function handleSignOut() {
     setSigningOut(true);
     await supabase.auth.signOut();
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   }
 
   function projectBasePath(id) {
@@ -38,33 +40,43 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
   return (
     <div className={styles.portal}>
       <nav className={styles.navbar}>
-        <div className={styles.navInner}>
-          <div className={styles.navLogoArea}>
-            <div className={styles.navLogoImg}>
-              <Image
-                src="/images/logo-cream.png"
-                alt="DXE Solutions"
-                fill
-                style={{ objectFit: 'contain', objectPosition: 'left center' }}
-                priority
-              />
-            </div>
-            <span className={styles.logoSub}>Client Portal</span>
+        <div className={styles.navLogoArea}>
+          <div className={styles.navLogoImg}>
+            <Image
+              src="/images/logo-cream.png"
+              alt="DXE Solutions"
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+            />
           </div>
+        </div>
+        <div className={styles.navInner}>
           <div className={styles.userArea}>
             <span className={styles.welcome}>
               Welcome back, <strong>{firstName}</strong>
             </span>
-            <div className={styles.avatar}>{initials || 'U'}</div>
+            <Link href="/portal/settings" className={styles.avatar} title="Account Settings" aria-label="Account Settings">
+              {initials || 'U'}
+            </Link>
             <button className={styles.signOutBtn} onClick={handleSignOut} disabled={signingOut}>
               {signingOut ? 'Signing out...' : 'Sign Out'}
+            </button>
+            <button
+              type="button"
+              className={styles.mobileNavToggle}
+              onClick={() => setNavOpen((o) => !o)}
+              aria-label={navOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={navOpen}
+            >
+              <i className={`ti ${navOpen ? 'ti-x' : 'ti-menu-2'}`} aria-hidden="true"></i>
             </button>
           </div>
         </div>
       </nav>
 
       <div className={styles.body}>
-        <aside className={styles.sidebar}>
+        <aside className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ''}`} onClick={() => setNavOpen(false)}>
           {projects && projects.length > 0 && (
             <>
               <div className={styles.sidebarSectionLabel}>My Projects</div>
@@ -76,7 +88,23 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
                     p.id === activeProjectId ? styles.sidebarProjectSelected : ''
                   }`}
                 >
-                  <div className={styles.projName}>{p.name}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <div className={styles.projName}>{p.name}</div>
+                    {unreadByProject?.[p.id] > 0 && (
+                      <span
+                        style={{
+                          background: 'var(--gold)',
+                          color: 'var(--navy-dark)',
+                          fontSize: '0.62rem',
+                          fontWeight: 700,
+                          padding: '0.05rem 0.4rem',
+                          borderRadius: '999px',
+                        }}
+                      >
+                        {unreadByProject[p.id]}
+                      </span>
+                    )}
+                  </div>
                   <div className={styles.projStatus}>
                     {p.status === 'active' ? '● Active' : `● ${capitalize(p.status)}`}
                   </div>
@@ -95,10 +123,28 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
                 active={subPath === 'overview'}
               />
               <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/calendar`}
+                icon="ti-calendar"
+                label="Calendar"
+                active={subPath === 'calendar'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/permits`}
+                icon="ti-file-certificate"
+                label="Permits"
+                active={subPath === 'permits'}
+              />
+              <SidebarLink
                 href={`${projectBasePath(activeProjectId)}/utilities`}
                 icon="ti-bolt"
                 label="Utilities"
                 active={subPath === 'utilities'}
+              />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/accounting`}
+                icon="ti-receipt"
+                label="Accounting"
+                active={subPath === 'accounting'}
               />
               <SidebarLink
                 href={`${projectBasePath(activeProjectId)}/documents`}
@@ -118,6 +164,12 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
                 label="Notes & Updates"
                 active={subPath === 'notes'}
               />
+              <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/review`}
+                icon="ti-star"
+                label="Leave a Review"
+                active={subPath === 'review'}
+              />
             </>
           )}
 
@@ -136,10 +188,16 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
             <SidebarLink
               href="/admin/clients"
               icon="ti-lock-access"
-              label="Admin Dashboard"
+              label="Master Dashboard"
               active={false}
             />
           )}
+          <SidebarLink
+            href="/portal/assistant"
+            icon="ti-sparkles"
+            label="Assistant"
+            active={pathname === '/portal/assistant'}
+          />
         </aside>
 
         <main className={styles.main}>
@@ -155,14 +213,35 @@ export default function PortalShell({ profile, projects, isAdmin, children }) {
           {children}
         </main>
       </div>
+
+      {currentUserId && chatThreads && <FloatingChat currentUserId={currentUserId} threads={chatThreads} />}
+      <FloatingAssistant projects={projects || []} initialProjectId={activeProjectId} />
+      {currentUserId && !profile?.is_admin && !profile?.is_employee && (
+        <OnboardingTour userId={currentUserId} initialSeen={profile?.has_seen_portal_tour} />
+      )}
     </div>
   );
 }
 
-function SidebarLink({ href, icon, label, active }) {
+function SidebarLink({ href, icon, label, active, badge }) {
   return (
     <Link href={href} className={`${styles.sidebarLink} ${active ? styles.sidebarLinkActive : ''}`}>
       <i className={`ti ${icon}`} aria-hidden="true"></i> {label}
+      {badge > 0 && (
+        <span
+          style={{
+            marginLeft: 'auto',
+            background: 'var(--gold)',
+            color: 'var(--navy-dark)',
+            fontSize: '0.62rem',
+            fontWeight: 700,
+            padding: '0.05rem 0.4rem',
+            borderRadius: '999px',
+          }}
+        >
+          {badge}
+        </span>
+      )}
     </Link>
   );
 }

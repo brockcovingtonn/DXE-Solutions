@@ -25,6 +25,7 @@ export default async function DocumentsPage({ params }) {
     new: styles.badgeNew,
     signed: styles.badgeSigned,
     pending: styles.badgePending,
+    contract: styles.badgeContract,
   };
 
   return (

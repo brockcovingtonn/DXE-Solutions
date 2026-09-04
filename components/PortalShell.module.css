@@ -11,40 +11,33 @@
   z-index: 100;
   background: var(--navy-dark);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  height: 68px;
+  height: calc(68px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
   display: flex;
   align-items: center;
 }
 
 .navInner {
-  max-width: 1400px;
-  margin: 0 auto;
+  flex: 1;
   padding: 0 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  justify-content: flex-end;
 }
 
 .navLogoArea {
+  width: 260px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .navLogoImg {
   position: relative;
-  height: 28px;
-  width: 99px;
+  height: 54px;
+  width: 191px;
   flex-shrink: 0;
-}
-
-.logoSub {
-  font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.45);
-  margin-left: 0.75rem;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 .userArea {
@@ -98,7 +91,7 @@
 
 .body {
   display: flex;
-  padding-top: 68px;
+  padding-top: calc(68px + env(safe-area-inset-top));
   min-height: 100vh;
 }
 
@@ -108,8 +101,8 @@
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
   position: sticky;
-  top: 68px;
-  height: calc(100vh - 68px);
+  top: calc(68px + env(safe-area-inset-top));
+  height: calc(100vh - 68px - env(safe-area-inset-top));
   overflow-y: auto;
 }
 
@@ -213,14 +206,33 @@
   font-size: 0.8rem;
 }
 
+.mobileNavToggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.mobileOnly {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .body {
     flex-direction: column;
   }
   .sidebar {
+    display: none;
     width: 100%;
     position: relative;
     height: auto;
+  }
+  .sidebarOpen {
+    display: block;
   }
   .main {
     padding: 1.5rem;
@@ -228,5 +240,35 @@
   }
   .welcome {
     display: none;
+  }
+  .mobileNavToggle {
+    display: block;
+  }
+  .navLogoArea {
+    width: auto;
+    justify-content: flex-start;
+    padding-left: 1.25rem;
+  }
+  .navLogoImg {
+    height: 30px;
+    width: 106px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navInner {
+    padding: 0 1.1rem;
+  }
+  .navLogoArea {
+    padding-left: 1.1rem;
+  }
+  .main {
+    padding: 1.1rem;
+  }
+  .userArea {
+    gap: 0.6rem;
+  }
+  .signOutBtn {
+    padding: 0.4rem 0.75rem;
   }
 }

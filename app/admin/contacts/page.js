@@ -2,14 +2,22 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import ContactCategoryFilter from '@/components/admin/ContactCategoryFilter';
 
-export default async function ContactsPage() {
+export default async function ContactsPage({ searchParams }) {
   const supabase = createClient();
+  const categoryFilter = searchParams?.category;
 
-  const { data: contacts } = await supabase
+  let query = supabase
     .from('contacts')
     .select('*, project_contacts(project_id, projects(id, name))')
     .order('name');
+
+  if (categoryFilter) {
+    query = query.eq('trade', categoryFilter);
+  }
+
+  const { data: contacts } = await query;
 
   return (
     <div>
@@ -18,7 +26,8 @@ export default async function ContactsPage() {
         <p>People and companies Dixie works with regularly</p>
       </div>
 
-      <div className={adminStyles.actionsRow}>
+      <div className={adminStyles.actionsRow} style={{ justifyContent: 'space-between' }}>
+        <ContactCategoryFilter current={categoryFilter} />
         <Link href="/admin/contacts/new" className="btn-navy">
           <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
           New Contact
@@ -26,10 +35,14 @@ export default async function ContactsPage() {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <h3>All Contacts ({contacts?.length || 0})</h3>
+        <h3>
+          {categoryFilter ? `${categoryFilter} Contacts` : 'All Contacts'} ({contacts?.length || 0})
+        </h3>
         {!contacts || contacts.length === 0 ? (
           <p style={{ fontSize: '0.85rem', color: '#718096' }}>
-            No contacts yet. Click &quot;New Contact&quot; to add your first one.
+            {categoryFilter
+              ? `No contacts in "${categoryFilter}" yet.`
+              : 'No contacts yet. Click "New Contact" to add your first one.'}
           </p>
         ) : (
           <div className={adminStyles.clientList}>

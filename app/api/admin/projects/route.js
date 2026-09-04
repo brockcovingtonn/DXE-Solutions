@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { getPhaseTemplate } from '@/lib/constants';
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -55,7 +56,7 @@ export async function POST(request) {
       return NextResponse.json({ error: projectError.message }, { status: 400 });
     }
 
-    const defaultPhases = ['Pre-Design', 'Permits', 'Site Work', 'Framing', 'MEP', 'Finish'];
+    const defaultPhases = getPhaseTemplate(projectType);
     await supabase.from('project_phases').insert(
       defaultPhases.map((name, i) => ({
         project_id: project.id,

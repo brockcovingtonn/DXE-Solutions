@@ -1,14 +1,46 @@
+import { redirect } from 'next/navigation';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { createClient } from '@/lib/supabase-server';
 import styles from './page.module.css';
 
-export default function HomePage() {
+// Retired homepage design, kept only as an internal reference. Not linked
+// from anywhere public — gated to admins so it doesn't show up for clients
+// or search engines.
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
+export default async function HomePage() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile?.is_admin) redirect('/login');
+
   return (
     <>
       <Navbar />
       <main>
         {/* HERO */}
         <section className={styles.hero}>
+          <div className={styles.heroPhoto} aria-hidden="true">
+            <Image
+              src="/images/hero-downtown-la.jpg"
+              alt=""
+              fill
+              style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
+              priority
+            />
+            <div className={styles.heroPhotoOverlay}></div>
+          </div>
           <div className={styles.heroGrid}>
             <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -94,11 +126,11 @@ export default function HomePage() {
               <div className={styles.aboutText}>
                 <div className="section-header">
                   <div className="section-eyebrow">About DXE Solutions</div>
-                  <h2 className="display">The expert between the plans and the keys.</h2>
+                  <h2 className="display">The firm between the plans and the keys.</h2>
                 </div>
                 <p className={styles.lead}>
-                  Dixie brings over 15 years of civil engineering and construction management
-                  expertise to every project she touches.
+                  DXE Solutions brings over 15 years of civil engineering and construction
+                  management expertise to every project we take on.
                 </p>
                 <p>
                   DXE Solutions was founded on a simple premise: great construction projects
@@ -107,10 +139,10 @@ export default function HomePage() {
                   scope creep are the real threats to your timeline and budget.
                 </p>
                 <p>
-                  Dixie&apos;s role is to own everything outside the physical construction itself
-                  — from the first permit application to the final certificate of occupancy.
-                  She&apos;s the single point of accountability that keeps every stakeholder
-                  aligned and every deadline met.
+                  Our team owns everything outside the physical construction itself — from the
+                  first permit application to the final certificate of occupancy. We&apos;re the
+                  single point of accountability that keeps every stakeholder aligned and every
+                  deadline met.
                 </p>
                 <p>
                   Whether you&apos;re developing a luxury residential estate or a commercial
@@ -124,6 +156,9 @@ export default function HomePage() {
 
         {/* SERVICES */}
         <section id="services" className={`section ${styles.servicesSection}`}>
+          <div className={styles.textureLayer} aria-hidden="true">
+            <Image src="/images/blueprint-texture.jpg" alt="" fill style={{ objectFit: 'cover' }} />
+          </div>
           <div className="section-inner">
             <div className="section-header">
               <div className="section-eyebrow">What We Do</div>
@@ -139,6 +174,18 @@ export default function HomePage() {
                   </div>
                   <h3>{s.title}</h3>
                   <p>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.photoGrid}>
+              {PHOTO_TILES.map((t) => (
+                <div className={styles.photoTile} key={t.title}>
+                  <Image src={t.img} alt={t.title} fill style={{ objectFit: 'cover' }} />
+                  <div className={styles.photoTileCaption}>
+                    <strong>{t.title}</strong>
+                    <span>{t.sub}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -264,6 +311,12 @@ const SERVICES = [
     title: 'Close-Out & CO Management',
     desc: 'Systematic project close-out management including punch list coordination, final inspections, certificate of occupancy procurement, and warranty documentation to get you to the finish line clean and clear.',
   },
+];
+
+const PHOTO_TILES = [
+  { img: '/images/site-grading-aerial.jpg', title: 'Site & grading', sub: 'Pad, drainage, retaining — engineered and approved.' },
+  { img: '/images/inspections-framing.jpg', title: 'Inspections', sub: 'Pre-walked before the inspector shows up.' },
+  { img: '/images/closeout-house.jpg', title: 'Close-out', sub: 'Sign-offs, C of O, keys in hand.' },
 ];
 
 const PROJECTS = [

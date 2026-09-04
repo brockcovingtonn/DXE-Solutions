@@ -20,6 +20,12 @@
   width: 99px;
 }
 
+.links a {
+  font-size: 0.75rem;
+  color: var(--navy-mid);
+  text-decoration: underline;
+}
+
 .copy {
   font-size: 0.75rem;
   color: var(--navy-mid);

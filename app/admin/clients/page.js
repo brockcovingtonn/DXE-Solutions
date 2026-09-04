@@ -9,7 +9,7 @@ export default async function AdminClientsPage() {
   // Get all non-admin profiles (clients)
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('id, first_name, last_name, email, is_admin')
+    .select('id, first_name, last_name, email, is_admin, is_employee')
     .order('first_name');
 
   // Get all projects so we can count per client
@@ -18,7 +18,10 @@ export default async function AdminClientsPage() {
     .select('id, name, status, owner_id')
     .order('created_at', { ascending: false });
 
-  const clients = (profiles || []).filter((p) => !p.is_admin);
+  const { data: unread } = await supabase.rpc('get_unread_message_counts');
+  const unreadByProject = Object.fromEntries((unread || []).map((r) => [r.project_id, r.unread_count]));
+
+  const clients = (profiles || []).filter((p) => !p.is_admin && !p.is_employee);
 
   const projectsByClient = {};
   (projects || []).forEach((p) => {
@@ -67,6 +70,21 @@ export default async function AdminClientsPage() {
                     >
                       {proj.name}
                       <span className={adminStyles.projectChipStatus}>{proj.status}</span>
+                      {unreadByProject[proj.id] > 0 && (
+                        <span
+                          style={{
+                            background: 'var(--gold)',
+                            color: 'var(--navy-dark)',
+                            fontSize: '0.62rem',
+                            fontWeight: 700,
+                            padding: '0.05rem 0.4rem',
+                            borderRadius: '999px',
+                            marginLeft: '0.4rem',
+                          }}
+                        >
+                          {unreadByProject[proj.id]}
+                        </span>
+                      )}
                     </Link>
                   ))}
                   {(!projectsByClient[client.id] || projectsByClient[client.id].length === 0) && (

@@ -10,6 +10,7 @@ const BADGE_CLASS = {
   new: styles.badgeNew,
   signed: styles.badgeSigned,
   pending: styles.badgePending,
+  contract: styles.badgeContract,
 };
 
 export default function AdminDocuments({ projectId, initialDocs }) {
@@ -123,6 +124,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               <option value="new">New</option>
               <option value="pending">Pending</option>
               <option value="signed">Signed</option>
+              <option value="contract">Contract</option>
             </select>
             <button
               type="button"

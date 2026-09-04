@@ -259,11 +259,22 @@
   color: #92400e;
 }
 
+.badgeContract {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1e40af;
+}
+
 /* Activity feed */
 .activityFeed {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.activityFeedScroll {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
 .activityItem {

@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 
 export default function SettingsForm({ profile, email }) {
   const supabase = createClient();
+  const router = useRouter();
+  const [retakingTour, setRetakingTour] = useState(false);
 
   const [firstName, setFirstName] = useState(profile?.first_name || '');
   const [lastName, setLastName] = useState(profile?.last_name || '');
@@ -12,6 +15,44 @@ export default function SettingsForm({ profile, email }) {
   const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState('');
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setPasswordMessage('');
+
+    if (newPassword.length < 8) {
+      setPasswordMessage('Password must be at least 8 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('Passwords do not match.');
+      return;
+    }
+
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPassword(false);
+
+    if (error) {
+      setPasswordMessage('Could not update your password. Please try again.');
+      return;
+    }
+
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordMessage('Password updated.');
+  }
+
+  async function handleRetakeTour() {
+    setRetakingTour(true);
+    await supabase.from('profiles').update({ has_seen_portal_tour: false }).eq('id', profile.id);
+    router.push('/portal');
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -52,6 +93,7 @@ export default function SettingsForm({ profile, email }) {
   };
 
   return (
+    <>
     <form onSubmit={handleSave}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
         <div>
@@ -119,5 +161,63 @@ export default function SettingsForm({ profile, email }) {
         {saving ? 'Saving...' : 'Save Changes'}
       </button>
     </form>
+
+    <form onSubmit={handleChangePassword} style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(62,84,104,0.12)' }}>
+      <h3 style={{ marginBottom: '1rem' }}>Change Password</h3>
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={labelStyle}>New Password</label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          style={inputStyle}
+        />
+      </div>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={labelStyle}>Confirm New Password</label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          style={inputStyle}
+        />
+      </div>
+      {passwordMessage && (
+        <p style={{ fontSize: '0.82rem', color: passwordMessage.includes('updated') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>
+          {passwordMessage}
+        </p>
+      )}
+      <button type="submit" className="btn-navy" disabled={changingPassword}>
+        {changingPassword ? 'Updating...' : 'Update Password'}
+      </button>
+    </form>
+
+    {!profile?.is_admin && !profile?.is_employee && (
+      <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(62,84,104,0.12)' }}>
+        <h3 style={{ marginBottom: '0.5rem' }}>Portal Tour</h3>
+        <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '1rem' }}>
+          Walk through the portal&apos;s sections again.
+        </p>
+        <button
+          type="button"
+          onClick={handleRetakeTour}
+          disabled={retakingTour}
+          style={{
+            background: 'none',
+            border: '1px solid rgba(62,84,104,0.25)',
+            color: 'var(--navy)',
+            padding: '0.6rem 1.1rem',
+            fontSize: '0.8rem',
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+        >
+          {retakingTour ? 'Starting...' : 'Take the tour again'}
+        </button>
+      </div>
+    )}
+    </>
   );
 }
