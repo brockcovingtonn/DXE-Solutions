@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { syncEventToGoogle } from '@/lib/google-calendar';
+import { createCalendarEvent } from '@/lib/calendar-events';
 
-async function requireAdmin(supabase) {
-  const { data: { user } } = await supabase.auth.getUser();
+async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
 
   const { data: profile } = await supabase
@@ -19,35 +19,16 @@ async function requireAdmin(supabase) {
 }
 
 export async function POST(request) {
-  const supabase = createClient();
-  const { user, error: authError } = await requireAdmin(supabase);
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
   if (authError) return authError;
 
   try {
     const body = await request.json();
-    const { projectId, title, description, startTime, endTime, allDay, visibleToClient } = body;
-
-    if (!title?.trim() || !startTime) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    const { data: event, error } = await supabase
-      .from('calendar_events')
-      .insert({
-        project_id: projectId || null,
-        title: title.trim(),
-        description: description || null,
-        start_time: startTime,
-        end_time: endTime || null,
-        all_day: !!allDay,
-        visible_to_client: !!visibleToClient,
-        created_by: user.id,
-      })
-      .select()
-      .single();
+    const { event, error, status } = await createCalendarEvent({ supabase, actorId: user.id, payload: body });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error }, { status: status || 400 });
     }
 
     try {

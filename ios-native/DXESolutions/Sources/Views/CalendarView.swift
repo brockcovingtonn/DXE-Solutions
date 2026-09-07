@@ -3,14 +3,21 @@ import SwiftUI
 struct CalendarView: View {
     let project: Project?
 
+    @EnvironmentObject var auth: AuthManager
+
     @State private var events: [CalendarEvent] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var refDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
+    @State private var showAddEvent = false
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
+
+    private var canAddEvents: Bool {
+        auth.profile?.isAdmin == true || auth.profile?.isEmployee == true
+    }
 
     var body: some View {
         Group {
@@ -31,7 +38,23 @@ struct CalendarView: View {
         }
         .navigationTitle("Calendar")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if canAddEvents {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showAddEvent = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                    }
+                }
+            }
+        }
         .task { await loadEvents() }
+        .sheet(isPresented: $showAddEvent) {
+            AddCalendarEventView(lockedProject: project, isAdmin: auth.profile?.isAdmin == true) {
+                Task { await loadEvents() }
+            }
+        }
     }
 
     // MARK: - Header
@@ -158,6 +181,9 @@ struct CalendarView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundColor(Theme.gold)
                 .frame(width: 70, alignment: .leading)
+            Image(systemName: typeIcon(event.eventType))
+                .font(.caption)
+                .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 3) {
                 Text(event.title).font(.subheadline.weight(.medium))
                 if let description = event.description, !description.isEmpty {
@@ -169,6 +195,17 @@ struct CalendarView: View {
         .padding(.horizontal, 10)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func typeIcon(_ type: String?) -> String {
+        switch type {
+        case "inspection": return "checklist"
+        case "meeting": return "person.2"
+        case "deadline": return "flag"
+        case "action_item": return "checkmark.circle"
+        case "other": return "calendar"
+        default: return "clock"
+        }
     }
 
     // MARK: - Data

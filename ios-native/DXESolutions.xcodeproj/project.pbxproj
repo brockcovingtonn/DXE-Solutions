@@ -69,6 +69,7 @@
 		E560AD659F28464AB3258AA1 /* AdminNewEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */; };
 		E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */; };
 		F98777AEA3C2C439C2CBEF06 /* AdminEmployeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */; };
+		FAA623A0418EB5A76F5FE8C0 /* AddCalendarEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */; };
 		FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */; };
 		FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */; };
 /* End PBXBuildFile section */
@@ -76,6 +77,7 @@
 /* Begin PBXFileReference section */
 		07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProjectDetailView.swift; sourceTree = "<group>"; };
 		0932077758FDD662093311B1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCalendarEventView.swift; sourceTree = "<group>"; };
 		0A56877301A622C00BF68FC4 /* AdminNewClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewClientView.swift; sourceTree = "<group>"; };
 		0D27F88BBEDBCB4B401A85F9 /* AdminClientDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminClientDetailView.swift; sourceTree = "<group>"; };
 		10F44A637646505F0FC42BF8 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 			isa = PBXGroup;
 			children = (
 				6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */,
+				0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */,
 				B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */,
 				B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */,
 				15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */,
@@ -334,6 +337,7 @@
 			files = (
 				378EABAC51227B6B5AA33FB8 /* APIClient.swift in Sources */,
 				32836CD90C9BDFC742C6DAF4 /* AccountingView.swift in Sources */,
+				FAA623A0418EB5A76F5FE8C0 /* AddCalendarEventView.swift in Sources */,
 				5789F8C82D7D71DF10C81F6A /* AdminAccountingEditor.swift in Sources */,
 				7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */,
 				ADEBB55A7922681FCBFCFB37 /* AdminActionItemsEditor.swift in Sources */,

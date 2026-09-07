@@ -5,10 +5,21 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import CalendarView from '@/components/CalendarView';
 import adminStyles from '@/components/admin.module.css';
 
+const EVENT_TYPES = [
+  { value: 'appointment', label: 'Appointment' },
+  { value: 'inspection', label: 'Inspection' },
+  { value: 'meeting', label: 'Meeting' },
+  { value: 'deadline', label: 'Deadline' },
+  { value: 'action_item', label: 'Action Item' },
+  { value: 'other', label: 'Other' },
+];
+
 const emptyForm = {
   title: '',
   description: '',
   projectId: '',
+  eventType: 'appointment',
+  assignedTo: '',
   date: '',
   startTime: '',
   endTime: '',
@@ -29,7 +40,7 @@ function toIso(date, time) {
   return new Date(`${date}T${time || '00:00'}`).toISOString();
 }
 
-export default function AdminCalendar({ initialEvents, projects, googleConnected }) {
+export default function AdminCalendar({ initialEvents, projects, people, googleConnected }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const googleStatus = searchParams.get('google');
@@ -52,6 +63,10 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
   async function handleAdd(e) {
     e.preventDefault();
     if (!form.title.trim() || !form.date) return;
+    if (form.eventType === 'action_item' && !form.projectId) {
+      setError('A project is required for an Action Item.');
+      return;
+    }
     setSaving(true);
     setError('');
 
@@ -63,6 +78,8 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
           projectId: form.projectId || null,
           title: form.title,
           description: form.description,
+          eventType: form.eventType,
+          assignedTo: form.assignedTo || null,
           startTime: toIso(form.date, form.allDay ? '00:00' : form.startTime),
           endTime: form.endTime ? toIso(form.date, form.endTime) : null,
           allDay: form.allDay,
@@ -90,6 +107,8 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
       title: event.title,
       description: event.description || '',
       projectId: event.project_id || '',
+      eventType: event.event_type || 'appointment',
+      assignedTo: event.assigned_to || '',
       date,
       startTime: time,
       endTime: endParts.time,
@@ -111,6 +130,8 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
           title: editForm.title,
           description: editForm.description,
           project_id: editForm.projectId || null,
+          event_type: editForm.eventType,
+          assigned_to: editForm.assignedTo || null,
           start_time: toIso(editForm.date, editForm.allDay ? '00:00' : editForm.startTime),
           end_time: editForm.endTime ? toIso(editForm.date, editForm.endTime) : null,
           all_day: editForm.allDay,
@@ -208,7 +229,7 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
       {adding && (
         <div className={adminStyles.utilityEntryForm} style={{ marginTop: '1.5rem' }}>
           <h3 style={{ marginBottom: '1rem' }}>New Event</h3>
-          <EventFields form={form} onChange={handleFormChange(setForm)} projects={projects} />
+          <EventFields form={form} onChange={handleFormChange(setForm)} projects={projects} people={people} />
           {error && <p className={adminStyles.formMsgError}>{error}</p>}
           <div className={adminStyles.entryFormActions}>
             <button type="button" className="btn-navy" onClick={handleAdd} disabled={saving || !form.title.trim() || !form.date}>
@@ -224,7 +245,7 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
       {selected && editForm && (
         <div className={adminStyles.utilityEntryForm} style={{ marginTop: '1.5rem' }}>
           <h3 style={{ marginBottom: '1rem' }}>Edit Event</h3>
-          <EventFields form={editForm} onChange={handleFormChange(setEditForm)} projects={projects} />
+          <EventFields form={editForm} onChange={handleFormChange(setEditForm)} projects={projects} people={people} />
           {error && <p className={adminStyles.formMsgError}>{error}</p>}
           <div className={adminStyles.entryFormActions} style={{ justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -250,21 +271,42 @@ export default function AdminCalendar({ initialEvents, projects, googleConnected
   );
 }
 
-function EventFields({ form, onChange, projects }) {
+function EventFields({ form, onChange, projects, people }) {
   return (
     <>
       <div className={adminStyles.fieldGroup}>
         <label className={adminStyles.fieldLabel}>Title</label>
         <input className={adminStyles.fieldInput} name="title" value={form.title} onChange={onChange} placeholder="e.g. Framing inspection" />
       </div>
-      <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Project (optional — leave blank for a general event)</label>
-        <select className={adminStyles.fieldInput} name="projectId" value={form.projectId} onChange={onChange}>
-          <option value="">General — no project</option>
-          {(projects || []).map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+      <div className={adminStyles.formGrid3}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Type</label>
+          <select className={adminStyles.fieldInput} name="eventType" value={form.eventType} onChange={onChange}>
+            {EVENT_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>
+            Project {form.eventType === 'action_item' ? '(required for an Action Item)' : '(optional — leave blank for a general event)'}
+          </label>
+          <select className={adminStyles.fieldInput} name="projectId" value={form.projectId} onChange={onChange}>
+            <option value="">General — no project</option>
+            {(projects || []).map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Assign to (optional)</label>
+          <select className={adminStyles.fieldInput} name="assignedTo" value={form.assignedTo} onChange={onChange}>
+            <option value="">Unassigned</option>
+            {(people || []).map((p) => (
+              <option key={p.id} value={p.id}>{`${p.first_name || ''} ${p.last_name || ''}`.trim()}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className={adminStyles.fieldGroup}>
         <label className={adminStyles.fieldLabel}>Description</label>

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import EmployeeActionItems from '@/components/EmployeeActionItems';
 import WeekStripCalendar from '@/components/WeekStripCalendar';
+import EmployeeCalendarQuickAdd from '@/components/EmployeeCalendarQuickAdd';
 
 export default async function EmployeeDashboardPage() {
   const supabase = createClient();
@@ -44,6 +45,7 @@ export default async function EmployeeDashboardPage() {
 
       <div className={styles.fullWidthCard}>
         <h3>This Week</h3>
+        <EmployeeCalendarQuickAdd projects={projects} />
         <WeekStripCalendar events={calendarEvents || []} viewAllHref="/employee/calendar" />
       </div>
 

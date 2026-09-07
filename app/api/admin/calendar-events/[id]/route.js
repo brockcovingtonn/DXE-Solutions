@@ -18,7 +18,7 @@ async function requireAdmin(supabase) {
   return { user };
 }
 
-const ALLOWED_FIELDS = ['title', 'description', 'start_time', 'end_time', 'all_day', 'visible_to_client', 'project_id'];
+const ALLOWED_FIELDS = ['title', 'description', 'start_time', 'end_time', 'all_day', 'visible_to_client', 'project_id', 'event_type', 'assigned_to'];
 
 export async function PATCH(request, { params }) {
   const supabase = createClient();

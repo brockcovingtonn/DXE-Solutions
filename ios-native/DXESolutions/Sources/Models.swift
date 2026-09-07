@@ -136,6 +136,8 @@ struct CalendarEvent: Codable, Identifiable, Hashable {
     let endTime: String?
     let allDay: Bool
     let visibleToClient: Bool
+    let eventType: String?
+    let assignedTo: String?
     let projects: AdminProjectRef?
 
     enum CodingKeys: String, CodingKey {
@@ -145,7 +147,28 @@ struct CalendarEvent: Codable, Identifiable, Hashable {
         case endTime = "end_time"
         case allDay = "all_day"
         case visibleToClient = "visible_to_client"
+        case eventType = "event_type"
+        case assignedTo = "assigned_to"
     }
+}
+
+struct ProjectRosterMember: Codable, Identifiable, Hashable {
+    let id: String
+    let firstName: String?
+    let lastName: String?
+    let role: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, role
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
+
+    var name: String { [firstName, lastName].compactMap { $0 }.joined(separator: " ") }
+}
+
+struct ProjectRoster: Codable {
+    let staff: [ProjectRosterMember]
 }
 
 struct Permit: Codable, Identifiable, Hashable {

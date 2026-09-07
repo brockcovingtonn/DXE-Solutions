@@ -15,6 +15,7 @@ import AdminUtilitiesEditor from '@/components/admin/AdminUtilitiesEditor';
 import AdminDocuments from '@/components/admin/AdminDocuments';
 import AdminPhotos from '@/components/admin/AdminPhotos';
 import AdminNotes from '@/components/admin/AdminNotes';
+import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -28,7 +29,7 @@ export default async function AdminProjectPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -43,6 +44,7 @@ export default async function AdminProjectPage({ params }) {
       supabase.from('invoices').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('profiles').select('id, first_name, last_name').eq('is_employee', true).order('first_name'),
       supabase.from('project_employees').select('employee_id').eq('project_id', projectId),
+      supabase.from('calendar_events').select('*').eq('project_id', projectId).order('start_time'),
     ]);
 
   const assignedEmployeeIds = (employeeAssignments || []).map((a) => a.employee_id);
@@ -138,6 +140,15 @@ export default async function AdminProjectPage({ params }) {
           projectId={projectId}
           initialItems={actionItems || []}
           assignablePeople={assignablePeople || []}
+        />
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Calendar</h3>
+        <ProjectCalendarEditor
+          projectId={projectId}
+          initialEvents={calendarEvents || []}
+          people={assignablePeople || []}
         />
       </div>
 
