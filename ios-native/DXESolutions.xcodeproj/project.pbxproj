@@ -34,6 +34,7 @@
 		5789F8C82D7D71DF10C81F6A /* AdminAccountingEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */; };
 		5B2952FC3CA427731B844EBC /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */; };
 		5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */; };
+		5EBB1D68780D9170DA5E5BCB /* AdminSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */; };
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
 		6C61F9C3C634D36A27A9DE9E /* CoverSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */; };
@@ -117,6 +118,7 @@
 		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
 		89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUtilitiesEditor.swift; sourceTree = "<group>"; };
 		8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookPreview.swift; sourceTree = "<group>"; };
+		90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminSearchView.swift; sourceTree = "<group>"; };
 		926968E764E16E46B0AA476D /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		9276FE0E4772501897C61A48 /* ProjectOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectOverviewView.swift; sourceTree = "<group>"; };
 		96A8EDC856961F1CA2AA278E /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */,
 				9A270B2F6972E90601183DDE /* AdminProjectListView.swift */,
 				FB9E990C472EBBD319C247F0 /* AdminReviewsListView.swift */,
+				90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */,
 				2953CB626BF873B468477CA2 /* AdminTabView.swift */,
 				1828210D57BD8D6D80E6EA8E /* AdminTeamEditor.swift */,
 				9DB799B82344845DEE91B9C1 /* AdminTemplatesView.swift */,
@@ -381,6 +384,7 @@
 				A6592951B64AF98BE8B7280F /* AdminProjectDetailView.swift in Sources */,
 				19817E31170FA85611BECB2A /* AdminProjectListView.swift in Sources */,
 				3D84CD6D84D500F1BB973E18 /* AdminReviewsListView.swift in Sources */,
+				5EBB1D68780D9170DA5E5BCB /* AdminSearchView.swift in Sources */,
 				A25E0822E937BEDFF38A161B /* AdminTabView.swift in Sources */,
 				2E4825328E203BF4C032EE88 /* AdminTeamEditor.swift in Sources */,
 				741D7C1E63E86AE1432BB7F9 /* AdminTemplatesView.swift in Sources */,

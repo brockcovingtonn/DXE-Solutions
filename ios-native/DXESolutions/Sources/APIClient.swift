@@ -57,8 +57,14 @@ enum APIClient {
         guard let session = try? await SupabaseConfig.client.auth.session else {
             throw APIError.unauthorized
         }
+        // Built via URL(string:relativeTo:) rather than appendingPathComponent
+        // — the latter percent-escapes "?"/"=" in a query string, which
+        // breaks any path that includes one (e.g. "api/admin/search?q=...").
+        guard let url = URL(string: path, relativeTo: AppConfig.siteURL) else {
+            throw APIError.server("Invalid request.")
+        }
 
-        var request = URLRequest(url: AppConfig.siteURL.appendingPathComponent(path))
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(session.accessToken)", forHTTPHeaderField: "Authorization")
 

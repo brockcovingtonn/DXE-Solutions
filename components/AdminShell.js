@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import FloatingChat from '@/components/FloatingChat';
 import FloatingAssistant from '@/components/FloatingAssistant';
+import GlobalSearch from '@/components/GlobalSearch';
 import styles from './PortalShell.module.css';
 
 export default function AdminShell({ profile, currentUserId, chatThreads, assistantProjects, children }) {
@@ -39,6 +40,7 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
           </div>
         </div>
         <div className={styles.navInner}>
+          <GlobalSearch />
           <div className={styles.userArea}>
             <span className={styles.welcome}>
               Signed in as <strong>{firstName}</strong>

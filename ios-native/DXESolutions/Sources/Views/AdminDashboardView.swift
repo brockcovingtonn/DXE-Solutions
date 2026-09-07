@@ -12,6 +12,7 @@ struct AdminDashboardView: View {
     @State private var utilityEntries: [AdminUtilityEntry] = []
     @State private var isLoading = true
     @State private var isOffline = false
+    @State private var showSearch = false
     @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
 
@@ -62,6 +63,13 @@ struct AdminDashboardView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showSearch = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Sign Out") {
                         Task { await auth.signOut() }
                     }
@@ -70,6 +78,9 @@ struct AdminDashboardView: View {
             }
             .task { await loadAll() }
             .refreshable { await loadAll() }
+            .sheet(isPresented: $showSearch) {
+                AdminSearchView()
+            }
         }
     }
 
