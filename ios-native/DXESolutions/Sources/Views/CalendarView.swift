@@ -8,12 +8,16 @@ struct CalendarView: View {
     @State private var events: [CalendarEvent] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    @State private var isOffline = false
+    @State private var lastSyncedAt: Date?
     @State private var refDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var showAddEvent = false
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
+
+    private var cacheKey: String { "calendar-\(project?.id ?? "global")" }
 
     private var canAddEvents: Bool {
         auth.profile?.isAdmin == true || auth.profile?.isEmployee == true
@@ -28,6 +32,9 @@ struct CalendarView: View {
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
+                        if isOffline {
+                            OfflineBanner(lastSyncedAt: lastSyncedAt)
+                        }
                         monthHeader
                         monthGrid
                         selectedDaySection
@@ -243,10 +250,16 @@ struct CalendarView: View {
     }
 
     private func loadEvents() async {
+        if events.isEmpty, let cached = OfflineCache.load([CalendarEvent].self, key: cacheKey) {
+            events = cached
+            lastSyncedAt = OfflineCache.lastSavedAt(key: cacheKey)
+            isLoading = false
+        }
+
         do {
-            let events: [CalendarEvent]
+            let freshEvents: [CalendarEvent]
             if let project {
-                events = try await SupabaseConfig.client
+                freshEvents = try await SupabaseConfig.client
                     .from("calendar_events")
                     .select()
                     .eq("project_id", value: project.id)
@@ -254,16 +267,23 @@ struct CalendarView: View {
                     .execute()
                     .value
             } else {
-                events = try await SupabaseConfig.client
+                freshEvents = try await SupabaseConfig.client
                     .from("calendar_events")
                     .select()
                     .order("start_time", ascending: true)
                     .execute()
                     .value
             }
-            self.events = events
+            events = freshEvents
+            isOffline = false
+            lastSyncedAt = Date()
+            OfflineCache.save(freshEvents, key: cacheKey)
         } catch {
-            errorMessage = "Could not load calendar events."
+            if events.isEmpty {
+                errorMessage = "Could not load calendar events."
+            } else {
+                isOffline = true
+            }
         }
         isLoading = false
     }

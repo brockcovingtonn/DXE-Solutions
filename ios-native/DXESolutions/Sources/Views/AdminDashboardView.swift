@@ -11,10 +11,23 @@ struct AdminDashboardView: View {
     @State private var milestones: [AdminMilestoneItem] = []
     @State private var utilityEntries: [AdminUtilityEntry] = []
     @State private var isLoading = true
+    @State private var isOffline = false
+    @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
+    private let cacheKey = "admin-dashboard"
+
+    private struct DashboardSnapshot: Codable {
+        let clientCount: Int
+        let totalProjects: Int
+        let activeProjects: Int
+        let events: [CalendarEvent]
+        let activity: [ActivityItem]
+        let milestones: [AdminMilestoneItem]
+        let utilityEntries: [AdminUtilityEntry]
+    }
     private let utilityLabels: [String: String] = ["electrical": "Electrical", "water": "Water", "gas": "Gas"]
     private let utilityStatusLabels: [String: String] = [
         "not_ready": "Not Ready", "pending": "Pending", "in_progress": "In Progress", "complete": "Complete",
@@ -27,6 +40,9 @@ struct AdminDashboardView: View {
                     if isLoading {
                         ProgressView().frame(maxWidth: .infinity).padding(.vertical, 40)
                     } else {
+                        if isOffline {
+                            OfflineBanner(lastSyncedAt: lastSyncedAt)
+                        }
                         statCards
                         weekSection
                         activitySection
@@ -295,62 +311,102 @@ struct AdminDashboardView: View {
     // MARK: - Data
 
     private func loadAll() async {
+        if events.isEmpty && activity.isEmpty && milestones.isEmpty && totalProjects == 0,
+           let cached = OfflineCache.load(DashboardSnapshot.self, key: cacheKey) {
+            clientCount = cached.clientCount
+            totalProjects = cached.totalProjects
+            activeProjects = cached.activeProjects
+            events = cached.events
+            activity = cached.activity
+            milestones = cached.milestones
+            utilityEntries = cached.utilityEntries
+            lastSyncedAt = OfflineCache.lastSavedAt(key: cacheKey)
+            isLoading = false
+        }
+
         struct ProfileFlags: Codable { let isAdmin: Bool; let isEmployee: Bool
             enum CodingKeys: String, CodingKey { case isAdmin = "is_admin"; case isEmployee = "is_employee" }
         }
         struct ProjectStatus: Codable { let status: String }
 
-        async let profilesTask: [ProfileFlags] = (try? await SupabaseConfig.client
-            .from("profiles").select("is_admin,is_employee").execute().value) ?? []
-        async let projectsTask: [ProjectStatus] = (try? await SupabaseConfig.client
-            .from("projects").select("status").execute().value) ?? []
+        async let profilesTask: [ProfileFlags] = SupabaseConfig.client
+            .from("profiles").select("is_admin,is_employee").execute().value
+        async let projectsTask: [ProjectStatus] = SupabaseConfig.client
+            .from("projects").select("status").execute().value
 
         let weekday = calendar.component(.weekday, from: Date())
         let weekStart = calendar.date(byAdding: .day, value: -(weekday - 1), to: calendar.startOfDay(for: Date()))!
         let windowEnd = calendar.date(byAdding: .day, value: 21, to: weekStart)!
         let iso = ISO8601DateFormatter()
 
-        async let eventsTask: [CalendarEvent] = (try? await SupabaseConfig.client
+        async let eventsTask: [CalendarEvent] = SupabaseConfig.client
             .from("calendar_events")
             .select("*, projects(id,name)")
             .gte("start_time", value: iso.string(from: weekStart))
             .lte("start_time", value: iso.string(from: windowEnd))
             .order("start_time", ascending: true)
-            .execute().value) ?? []
+            .execute().value
 
-        async let activityTask: [ActivityItem] = (try? await SupabaseConfig.client
+        async let activityTask: [ActivityItem] = SupabaseConfig.client
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
             .limit(15)
-            .execute().value) ?? []
+            .execute().value
 
-        async let milestonesTask: [AdminMilestoneItem] = (try? await SupabaseConfig.client
+        async let milestonesTask: [AdminMilestoneItem] = SupabaseConfig.client
             .from("milestones")
             .select("*, projects(id,name)")
             .neq("state", value: "done")
             .order("display_date", ascending: true)
             .limit(8)
-            .execute().value) ?? []
+            .execute().value
 
-        async let utilitiesTask: [AdminUtilityEntry] = (try? await SupabaseConfig.client
+        async let utilitiesTask: [AdminUtilityEntry] = SupabaseConfig.client
             .from("project_utility_entries")
             .select("*, project_utilities(utility_type,project_id,projects(id,name))")
             .in("status", values: ["pending", "in_progress"])
             .order("created_at", ascending: false)
             .limit(8)
-            .execute().value) ?? []
+            .execute().value
 
-        let profiles = await profilesTask
-        let projects = await projectsTask
-        clientCount = profiles.filter { !$0.isAdmin && !$0.isEmployee }.count
-        totalProjects = projects.count
-        activeProjects = projects.filter { $0.status == "active" }.count
+        do {
+            let profiles = try await profilesTask
+            let projects = try await projectsTask
+            let freshEvents = try await eventsTask
+            let freshActivity = try await activityTask
+            let freshMilestones = try await milestonesTask
+            let freshUtilities = try await utilitiesTask
 
-        events = await eventsTask
-        activity = await activityTask
-        milestones = await milestonesTask
-        utilityEntries = await utilitiesTask
+            let freshClientCount = profiles.filter { !$0.isAdmin && !$0.isEmployee }.count
+            let freshTotalProjects = projects.count
+            let freshActiveProjects = projects.filter { $0.status == "active" }.count
+
+            clientCount = freshClientCount
+            totalProjects = freshTotalProjects
+            activeProjects = freshActiveProjects
+            events = freshEvents
+            activity = freshActivity
+            milestones = freshMilestones
+            utilityEntries = freshUtilities
+            isOffline = false
+            lastSyncedAt = Date()
+
+            OfflineCache.save(
+                DashboardSnapshot(
+                    clientCount: freshClientCount,
+                    totalProjects: freshTotalProjects,
+                    activeProjects: freshActiveProjects,
+                    events: freshEvents,
+                    activity: freshActivity,
+                    milestones: freshMilestones,
+                    utilityEntries: freshUtilities
+                ),
+                key: cacheKey
+            )
+        } catch {
+            isOffline = true
+        }
         isLoading = false
     }
 }

@@ -8,16 +8,30 @@ struct EmployeeDashboardView: View {
     @State private var events: [CalendarEvent] = []
     @State private var activity: [ActivityItem] = []
     @State private var isLoading = true
+    @State private var isOffline = false
+    @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var busyItemId: String?
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
+    private let cacheKey = "employee-dashboard"
+
+    private struct DashboardSnapshot: Codable {
+        let projects: [Project]
+        let actionItems: [ActionItem]
+        let events: [CalendarEvent]
+        let activity: [ActivityItem]
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if isOffline {
+                        OfflineBanner(lastSyncedAt: lastSyncedAt)
+                    }
+
                     chatCard
 
                     VStack(alignment: .leading, spacing: 12) {
@@ -404,46 +418,70 @@ struct EmployeeDashboardView: View {
             return
         }
 
+        if projects.isEmpty && actionItems.isEmpty && events.isEmpty && activity.isEmpty,
+           let cached = OfflineCache.load(DashboardSnapshot.self, key: cacheKey) {
+            projects = cached.projects
+            actionItems = cached.actionItems
+            events = cached.events
+            activity = cached.activity
+            lastSyncedAt = OfflineCache.lastSavedAt(key: cacheKey)
+            isLoading = false
+        }
+
         struct AssignmentRow: Codable { let projects: Project? }
 
-        async let assignmentsTask: [AssignmentRow] = (try? await SupabaseConfig.client
+        async let assignmentsTask: [AssignmentRow] = SupabaseConfig.client
             .from("project_employees")
             .select("projects(*)")
             .eq("employee_id", value: userId)
-            .execute().value) ?? []
+            .execute().value
 
-        async let actionItemsTask: [ActionItem] = (try? await SupabaseConfig.client
+        async let actionItemsTask: [ActionItem] = SupabaseConfig.client
             .from("action_items")
             .select("*, projects(name)")
             .eq("assigned_to", value: userId)
             .order("due_date", ascending: true)
-            .execute().value) ?? []
+            .execute().value
 
         let weekday = calendar.component(.weekday, from: Date())
         let weekStart = calendar.date(byAdding: .day, value: -(weekday - 1), to: calendar.startOfDay(for: Date()))!
         let windowEnd = calendar.date(byAdding: .day, value: 21, to: weekStart)!
         let iso = ISO8601DateFormatter()
 
-        async let eventsTask: [CalendarEvent] = (try? await SupabaseConfig.client
+        async let eventsTask: [CalendarEvent] = SupabaseConfig.client
             .from("calendar_events")
             .select()
             .gte("start_time", value: iso.string(from: weekStart))
             .lte("start_time", value: iso.string(from: windowEnd))
             .order("start_time", ascending: true)
-            .execute().value) ?? []
+            .execute().value
 
-        async let activityTask: [ActivityItem] = (try? await SupabaseConfig.client
+        async let activityTask: [ActivityItem] = SupabaseConfig.client
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
             .limit(15)
-            .execute().value) ?? []
+            .execute().value
 
-        let assignments = await assignmentsTask
-        projects = assignments.compactMap { $0.projects }
-        actionItems = await actionItemsTask
-        events = await eventsTask
-        activity = await activityTask
+        do {
+            let assignments = try await assignmentsTask
+            let freshProjects = assignments.compactMap { $0.projects }
+            let freshActionItems = try await actionItemsTask
+            let freshEvents = try await eventsTask
+            let freshActivity = try await activityTask
+            projects = freshProjects
+            actionItems = freshActionItems
+            events = freshEvents
+            activity = freshActivity
+            isOffline = false
+            lastSyncedAt = Date()
+            OfflineCache.save(
+                DashboardSnapshot(projects: freshProjects, actionItems: freshActionItems, events: freshEvents, activity: freshActivity),
+                key: cacheKey
+            )
+        } catch {
+            isOffline = true
+        }
         isLoading = false
     }
 

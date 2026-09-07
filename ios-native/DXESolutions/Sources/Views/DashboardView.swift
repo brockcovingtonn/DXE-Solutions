@@ -6,7 +6,16 @@ struct DashboardView: View {
     @State private var events: [CalendarEvent] = []
     @State private var activity: [ActivityItem] = []
     @State private var isLoading = true
+    @State private var isOffline = false
+    @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
+
+    private let cacheKey = "client-dashboard"
+
+    private struct DashboardSnapshot: Codable {
+        let events: [CalendarEvent]
+        let activity: [ActivityItem]
+    }
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
@@ -15,6 +24,10 @@ struct DashboardView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    if isOffline {
+                        OfflineBanner(lastSyncedAt: lastSyncedAt)
+                    }
+
                     chatCard
 
                     VStack(alignment: .leading, spacing: 12) {
@@ -274,28 +287,44 @@ struct DashboardView: View {
     }
 
     private func loadAll() async {
+        if events.isEmpty && activity.isEmpty, let cached = OfflineCache.load(DashboardSnapshot.self, key: cacheKey) {
+            events = cached.events
+            activity = cached.activity
+            lastSyncedAt = OfflineCache.lastSavedAt(key: cacheKey)
+            isLoading = false
+        }
+
         let weekday = calendar.component(.weekday, from: Date())
         let weekStart = calendar.date(byAdding: .day, value: -(weekday - 1), to: calendar.startOfDay(for: Date()))!
         let windowEnd = calendar.date(byAdding: .day, value: 21, to: weekStart)!
         let iso = ISO8601DateFormatter()
 
-        async let eventsTask: [CalendarEvent] = (try? await SupabaseConfig.client
+        async let eventsTask: [CalendarEvent] = SupabaseConfig.client
             .from("calendar_events")
             .select()
             .gte("start_time", value: iso.string(from: weekStart))
             .lte("start_time", value: iso.string(from: windowEnd))
             .order("start_time", ascending: true)
-            .execute().value) ?? []
+            .execute().value
 
-        async let activityTask: [ActivityItem] = (try? await SupabaseConfig.client
+        async let activityTask: [ActivityItem] = SupabaseConfig.client
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
             .limit(15)
-            .execute().value) ?? []
+            .execute().value
 
-        events = await eventsTask
-        activity = await activityTask
+        do {
+            let freshEvents = try await eventsTask
+            let freshActivity = try await activityTask
+            events = freshEvents
+            activity = freshActivity
+            isOffline = false
+            lastSyncedAt = Date()
+            OfflineCache.save(DashboardSnapshot(events: freshEvents, activity: freshActivity), key: cacheKey)
+        } catch {
+            isOffline = true
+        }
         isLoading = false
     }
 }

@@ -53,6 +53,7 @@
 		AD845CC8DB01BADDAC680C28 /* AdminEmployeesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA459578E1BB19808238212 /* AdminEmployeesEditor.swift */; };
 		AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */; };
 		ADEBB55A7922681FCBFCFB37 /* AdminActionItemsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */; };
+		AEF3DA24FB4B9E0749330FCE /* OfflineCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */; };
 		B6AFD5A6E66449CEA6A27106 /* UtilitiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6D36460E80E987CDB7E48C /* UtilitiesView.swift */; };
 		B6DEEE56D8018C8EA544378A /* ReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B770A62E58C1A60B56DEF8FE /* ReviewView.swift */; };
 		BB2396FE76196F2E6C6D5CCA /* ProjectOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9276FE0E4772501897C61A48 /* ProjectOverviewView.swift */; };
@@ -132,6 +133,7 @@
 		CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverSheetView.swift; sourceTree = "<group>"; };
 		D0BA93DD88EDDD7155202691 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		D15181145E9C02C05D8C25B9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCache.swift; sourceTree = "<group>"; };
 		D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDashboardView.swift; sourceTree = "<group>"; };
 		E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewEmployeeView.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				D15181145E9C02C05D8C25B9 /* ContentView.swift */,
 				ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
+				D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */,
 				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
 				21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */,
 				96A8EDC856961F1CA2AA278E /* Theme.swift */,
@@ -392,6 +395,7 @@
 				AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */,
 				ABA38773BAD7388F28295320 /* Models.swift in Sources */,
 				A678594A1687066BA84A2C76 /* NotesView.swift in Sources */,
+				AEF3DA24FB4B9E0749330FCE /* OfflineCache.swift in Sources */,
 				D030E4B85A7A6DD7CEC5E8B3 /* PermitsView.swift in Sources */,
 				5138C8DE451F6BB995F4C778 /* PhotosView.swift in Sources */,
 				FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */,
