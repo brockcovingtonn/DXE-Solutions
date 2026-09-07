@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import CalendarView from '@/components/CalendarView';
+import AddToCalendarLink from '@/components/AddToCalendarLink';
 
 export default function ClientCalendar({ events }) {
   const [selected, setSelected] = useState(null);
@@ -12,7 +13,10 @@ export default function ClientCalendar({ events }) {
 
       {selected && (
         <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px solid rgba(62,84,104,0.12)', background: 'var(--surface)' }}>
-          <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--navy)' }}>{selected.title}</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--navy)' }}>{selected.title}</div>
+            <AddToCalendarLink event={selected} />
+          </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--gold)', marginTop: '0.3rem' }}>
             {selected.all_day
               ? new Date(selected.start_time).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })

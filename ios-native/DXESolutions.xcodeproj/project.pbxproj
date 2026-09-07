@@ -22,6 +22,7 @@
 		367D3983DDD42980C2A4A50F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FC99BEBEFE366DE169506F7 /* Assets.xcassets */; };
 		376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22DCC4C73CA14BDEC58B508 /* AuthManager.swift */; };
 		378EABAC51227B6B5AA33FB8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319A3974E3477D17BEA6B031 /* APIClient.swift */; };
+		397096935437D1E1A488CA01 /* CalendarExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */; };
 		3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */; };
 		3D84CD6D84D500F1BB973E18 /* AdminReviewsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9E990C472EBBD319C247F0 /* AdminReviewsListView.swift */; };
 		3F1D5BC65EE405A340B03CE1 /* ClientTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331740BCC45D93200407D340 /* ClientTabView.swift */; };
@@ -49,6 +50,7 @@
 		A43AABCECE1C8A606128AFDA /* DXESolutionsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */; };
 		A6592951B64AF98BE8B7280F /* AdminProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */; };
 		A678594A1687066BA84A2C76 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404C0F760DC8E54C35359A5 /* NotesView.swift */; };
+		A6AB80785BA049948A630D47 /* AddToCalendarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */; };
 		ABA38773BAD7388F28295320 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE5A372DFE173B50FEB1987 /* Models.swift */; };
 		AD845CC8DB01BADDAC680C28 /* AdminEmployeesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA459578E1BB19808238212 /* AdminEmployeesEditor.swift */; };
 		AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */; };
@@ -101,6 +103,7 @@
 		45771A049E23067317A74197 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		4ABBA5571AB04A7A9271D144 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
 		4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCalendarButton.swift; sourceTree = "<group>"; };
 		56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuth.swift; sourceTree = "<group>"; };
 		56BF6CC57968E832914576A0 /* PhotosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosView.swift; sourceTree = "<group>"; };
 		5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPhotosEditor.swift; sourceTree = "<group>"; };
@@ -109,6 +112,7 @@
 		6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountingView.swift; sourceTree = "<group>"; };
 		6DE0ED254AADEF7B8AE3A2FC /* AdminContactListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminContactListView.swift; sourceTree = "<group>"; };
 		6FC99BEBEFE366DE169506F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
 		89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUtilitiesEditor.swift; sourceTree = "<group>"; };
 		8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookPreview.swift; sourceTree = "<group>"; };
 		926968E764E16E46B0AA476D /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -182,6 +186,7 @@
 			children = (
 				6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */,
 				0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */,
+				53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */,
 				B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */,
 				B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */,
 				15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */,
@@ -255,6 +260,7 @@
 				C0B32D454514F3EFA7625834 /* AppDelegate.swift */,
 				F22DCC4C73CA14BDEC58B508 /* AuthManager.swift */,
 				56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */,
+				7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */,
 				D15181145E9C02C05D8C25B9 /* ContentView.swift */,
 				ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
@@ -347,6 +353,7 @@
 				378EABAC51227B6B5AA33FB8 /* APIClient.swift in Sources */,
 				32836CD90C9BDFC742C6DAF4 /* AccountingView.swift in Sources */,
 				FAA623A0418EB5A76F5FE8C0 /* AddCalendarEventView.swift in Sources */,
+				A6AB80785BA049948A630D47 /* AddToCalendarButton.swift in Sources */,
 				5789F8C82D7D71DF10C81F6A /* AdminAccountingEditor.swift in Sources */,
 				7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */,
 				ADEBB55A7922681FCBFCFB37 /* AdminActionItemsEditor.swift in Sources */,
@@ -378,6 +385,7 @@
 				376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */,
 				93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */,
 				DB68E213A6893E9DB3921E32 /* BiometricLockView.swift in Sources */,
+				397096935437D1E1A488CA01 /* CalendarExport.swift in Sources */,
 				0098A320ED4AF5A9CB48DBE3 /* CalendarView.swift in Sources */,
 				E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */,
 				73F8C14782FD4092163352D1 /* ChatView.swift in Sources */,

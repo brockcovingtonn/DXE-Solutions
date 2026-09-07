@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CalendarView from '@/components/CalendarView';
+import AddToCalendarLink from '@/components/AddToCalendarLink';
 import adminStyles from '@/components/admin.module.css';
 
 const EVENT_TYPES = [
@@ -244,7 +245,10 @@ export default function AdminCalendar({ initialEvents, projects, people, googleC
 
       {selected && editForm && (
         <div className={adminStyles.utilityEntryForm} style={{ marginTop: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>Edit Event</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ margin: 0 }}>Edit Event</h3>
+            <AddToCalendarLink event={selected} />
+          </div>
           <EventFields form={editForm} onChange={handleFormChange(setEditForm)} projects={projects} people={people} />
           {error && <p className={adminStyles.formMsgError}>{error}</p>}
           <div className={adminStyles.entryFormActions} style={{ justifyContent: 'space-between' }}>

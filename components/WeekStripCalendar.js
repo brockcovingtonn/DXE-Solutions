@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import AddToCalendarLink from '@/components/AddToCalendarLink';
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -112,10 +113,11 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
               <div style={{ fontSize: '0.72rem', color: 'var(--gold)', fontWeight: 600, flexShrink: 0, width: '4.2rem' }}>
                 {e.all_day ? 'All day' : formatTime(e.start_time)}
               </div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{e.title}</div>
                 {e.projects?.name && <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{e.projects.name}</div>}
               </div>
+              <AddToCalendarLink event={e} iconOnly />
             </div>
           ))}
         </div>

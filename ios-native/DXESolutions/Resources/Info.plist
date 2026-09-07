@@ -26,6 +26,10 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>DXE Solutions adds project events to your calendar when you tap "Add to Calendar".</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>DXE Solutions adds project events to your calendar when you tap "Add to Calendar".</string>
 	<key>NSCameraUsageDescription</key>
 	<string>DXE Solutions uses your camera to capture progress photos and scan documents for your projects.</string>
 	<key>NSFaceIDUsageDescription</key>

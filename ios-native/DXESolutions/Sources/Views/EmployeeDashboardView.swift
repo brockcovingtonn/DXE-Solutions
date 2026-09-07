@@ -196,6 +196,8 @@ struct EmployeeDashboardView: View {
                     Text(description).font(.caption).foregroundColor(.secondary)
                 }
             }
+            Spacer()
+            AddToCalendarButton(event: event)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)

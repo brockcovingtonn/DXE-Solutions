@@ -23,6 +23,8 @@ targets:
         LSRequiresIPhoneOS: true
         NSCameraUsageDescription: DXE Solutions uses your camera to capture progress photos and scan documents for your projects.
         NSFaceIDUsageDescription: DXE Solutions uses Face ID to quickly and securely unlock the app.
+        NSCalendarsUsageDescription: DXE Solutions adds project events to your calendar when you tap "Add to Calendar".
+        NSCalendarsFullAccessUsageDescription: DXE Solutions adds project events to your calendar when you tap "Add to Calendar".
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:
