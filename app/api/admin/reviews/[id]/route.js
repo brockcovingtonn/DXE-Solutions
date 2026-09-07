@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 
-async function requireAdmin(supabase) {
-  const { data: { user } } = await supabase.auth.getUser();
+async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
 
   const { data: profile } = await supabase
@@ -18,8 +17,8 @@ async function requireAdmin(supabase) {
 
 // Toggles whether a review is featured as a public testimonial
 export async function PATCH(request, { params }) {
-  const supabase = createClient();
-  const { error: authError } = await requireAdmin(supabase);
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
   if (authError) return authError;
 
   try {
@@ -44,8 +43,8 @@ export async function PATCH(request, { params }) {
 
 // Removes a review entirely (moderation)
 export async function DELETE(request, { params }) {
-  const supabase = createClient();
-  const { error: authError } = await requireAdmin(supabase);
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
   if (authError) return authError;
 
   try {
