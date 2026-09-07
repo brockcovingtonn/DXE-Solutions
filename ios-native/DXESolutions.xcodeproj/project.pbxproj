@@ -46,6 +46,7 @@
 		7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */; };
 		8C0761502D76BF8F499651B7 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
+		93DE9C8DCDA83707611E2F61 /* AdminChatThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */; };
 		98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */; };
 		9C6121BC348829DDFBD187BB /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */; };
 		9C82A5BC619614FDDDB94E1A /* RoleHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */; };
@@ -56,6 +57,7 @@
 		A678594A1687066BA84A2C76 /* NotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404C0F760DC8E54C35359A5 /* NotesView.swift */; };
 		A6AB80785BA049948A630D47 /* AddToCalendarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */; };
 		ABA38773BAD7388F28295320 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FE5A372DFE173B50FEB1987 /* Models.swift */; };
+		AC1EF7B0D7C765AE59BDD0D5 /* AdminChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B18B8BC32188870E3B713B /* AdminChatListView.swift */; };
 		AD845CC8DB01BADDAC680C28 /* AdminEmployeesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AA459578E1BB19808238212 /* AdminEmployeesEditor.swift */; };
 		AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */; };
 		ADEBB55A7922681FCBFCFB37 /* AdminActionItemsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */; };
@@ -102,6 +104,7 @@
 		304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 		319A3974E3477D17BEA6B031 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		331740BCC45D93200407D340 /* ClientTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTabView.swift; sourceTree = "<group>"; };
+		34B18B8BC32188870E3B713B /* AdminChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminChatListView.swift; sourceTree = "<group>"; };
 		3818DF9DB37FA921B849D4A9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		3D257CF59F321363E8147DF8 /* DXESolutions.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DXESolutions.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45771A049E23067317A74197 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCalendarButton.swift; sourceTree = "<group>"; };
 		56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuth.swift; sourceTree = "<group>"; };
 		56BF6CC57968E832914576A0 /* PhotosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosView.swift; sourceTree = "<group>"; };
+		5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminChatThreadView.swift; sourceTree = "<group>"; };
 		5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPhotosEditor.swift; sourceTree = "<group>"; };
 		6292F71DB994B94DCD3B84B9 /* AdminMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMoreView.swift; sourceTree = "<group>"; };
 		69F02EDDCAEBE42441638003 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
@@ -198,6 +202,8 @@
 				B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */,
 				B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */,
 				15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */,
+				34B18B8BC32188870E3B713B /* AdminChatListView.swift */,
+				5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */,
 				0D27F88BBEDBCB4B401A85F9 /* AdminClientDetailView.swift */,
 				9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */,
 				FDF69EFFB0186EBEFE075140 /* AdminContactDetailView.swift */,
@@ -369,6 +375,8 @@
 				5789F8C82D7D71DF10C81F6A /* AdminAccountingEditor.swift in Sources */,
 				7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */,
 				ADEBB55A7922681FCBFCFB37 /* AdminActionItemsEditor.swift in Sources */,
+				AC1EF7B0D7C765AE59BDD0D5 /* AdminChatListView.swift in Sources */,
+				93DE9C8DCDA83707611E2F61 /* AdminChatThreadView.swift in Sources */,
 				74160C950BD6EFBB7D730BC1 /* AdminClientDetailView.swift in Sources */,
 				5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */,
 				CF773CA0C144624E8F041D2C /* AdminContactDetailView.swift in Sources */,

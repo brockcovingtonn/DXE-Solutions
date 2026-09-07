@@ -3,7 +3,16 @@ import Supabase
 import PhotosUI
 import UniformTypeIdentifiers
 
-struct ChatView: View {
+// Admin's flexible chat thread — unlike ChatView (which only ever
+// talks to "my own DM with admin", for client/employee), admin can
+// open any project's group thread or any client/employee's DM. Kept
+// as its own view rather than generalizing ChatView in place, to avoid
+// touching the already-working client/employee chat experience.
+struct AdminChatThreadView: View {
+    let projectId: String?
+    let dmUserId: String?
+    let title: String
+
     @EnvironmentObject var auth: AuthManager
 
     @State private var messages: [ChatMessage] = []
@@ -26,7 +35,8 @@ struct ChatView: View {
     @State private var presenceChannel: RealtimeChannelV2?
     @State private var listenTasks: [Task<Void, Never>] = []
 
-    private var userId: String { auth.profile?.id ?? "" }
+    private var threadKey: String { projectId ?? dmUserId ?? "unknown" }
+    private var storageFolder: String { projectId.map { "project/\($0)" } ?? "dm/\(dmUserId ?? "")" }
 
     private var others: [RosterMember] {
         roster.filter { $0.id != auth.profile?.id }
@@ -129,7 +139,7 @@ struct ChatView: View {
             }
             .padding()
         }
-        .navigationTitle("Chat with DXE Solutions")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await loadRoster()
@@ -203,25 +213,75 @@ struct ChatView: View {
     // MARK: - Data loading
 
     private func loadRoster() async {
-        guard let admins: [Profile] = try? await SupabaseConfig.client
-            .from("profiles")
-            .select()
-            .eq("is_admin", value: true)
-            .execute().value else { return }
-        roster = admins.map { RosterMember(id: $0.id, name: fullName($0), role: "admin") }
+        if let dmUserId {
+            guard let contact: Profile = try? await SupabaseConfig.client
+                .from("profiles")
+                .select("id, first_name, last_name, is_admin, is_employee")
+                .eq("id", value: dmUserId)
+                .single()
+                .execute().value else { return }
+            roster = [RosterMember(id: contact.id, name: fullName(contact), role: contact.isEmployee ? "employee" : "client")]
+        } else if let projectId {
+            struct OwnerRow: Codable { let profiles: Profile? }
+            struct EmployeeRow: Codable { let profiles: Profile? }
+
+            async let ownerTask: OwnerRow? = try? await SupabaseConfig.client
+                .from("projects")
+                .select("profiles!projects_owner_id_fkey(id, first_name, last_name, is_admin, is_employee)")
+                .eq("id", value: projectId)
+                .single()
+                .execute().value
+
+            async let employeesTask: [EmployeeRow] = (try? await SupabaseConfig.client
+                .from("project_employees")
+                .select("profiles(id, first_name, last_name, is_admin, is_employee)")
+                .eq("project_id", value: projectId)
+                .execute().value) ?? []
+
+            async let adminsTask: [Profile] = (try? await SupabaseConfig.client
+                .from("profiles")
+                .select("id, first_name, last_name, is_admin, is_employee")
+                .eq("is_admin", value: true)
+                .execute().value) ?? []
+
+            var members: [RosterMember] = []
+            if let owner = await ownerTask?.profiles {
+                members.append(RosterMember(id: owner.id, name: fullName(owner), role: "client"))
+            }
+            for row in await employeesTask {
+                if let profile = row.profiles {
+                    members.append(RosterMember(id: profile.id, name: fullName(profile), role: "employee"))
+                }
+            }
+            for admin in await adminsTask {
+                members.append(RosterMember(id: admin.id, name: fullName(admin), role: "admin"))
+            }
+            roster = members
+        }
     }
 
     private func loadMessages() async {
         do {
-            let messages: [ChatMessage] = try await SupabaseConfig.client
-                .from("messages")
-                .select()
-                .is("project_id", value: nil)
-                .eq("dm_user_id", value: userId)
-                .order("created_at", ascending: true)
-                .execute()
-                .value
-            self.messages = messages
+            let fetched: [ChatMessage]
+            if let projectId {
+                fetched = try await SupabaseConfig.client
+                    .from("messages")
+                    .select()
+                    .eq("project_id", value: projectId)
+                    .order("created_at", ascending: true)
+                    .execute().value
+            } else if let dmUserId {
+                fetched = try await SupabaseConfig.client
+                    .from("messages")
+                    .select()
+                    .is("project_id", value: nil)
+                    .eq("dm_user_id", value: dmUserId)
+                    .order("created_at", ascending: true)
+                    .execute().value
+            } else {
+                fetched = []
+            }
+            messages = fetched
         } catch {
             errorMessage = "Could not load messages."
         }
@@ -229,11 +289,24 @@ struct ChatView: View {
     }
 
     private func loadReads() async {
-        guard let rows: [MessageRead] = try? await SupabaseConfig.client
-            .from("message_reads")
-            .select()
-            .eq("dm_user_id", value: userId)
-            .execute().value else { return }
+        let rows: [MessageRead]?
+        if let projectId {
+            rows = try? await SupabaseConfig.client
+                .from("message_reads")
+                .select()
+                .eq("project_id", value: projectId)
+                .execute().value
+        } else if let dmUserId {
+            rows = try? await SupabaseConfig.client
+                .from("message_reads")
+                .select()
+                .eq("dm_user_id", value: dmUserId)
+                .execute().value
+        } else {
+            rows = nil
+        }
+
+        guard let rows else { return }
         var map: [String: Date] = [:]
         for row in rows {
             if let date = parseDate(row.lastReadAt) { map[row.userId] = date }
@@ -242,27 +315,29 @@ struct ChatView: View {
     }
 
     private func markAsRead() async {
-        guard !userId.isEmpty, !messages.isEmpty else { return }
+        guard let currentUserId = auth.profile?.id, !messages.isEmpty else { return }
         let now = ISO8601DateFormatter().string(from: Date())
         struct ReadUpsert: Encodable {
-            let dm_user_id: String
+            let project_id: String?
+            let dm_user_id: String?
             let user_id: String
             let last_read_at: String
         }
-        let payload = ReadUpsert(dm_user_id: userId, user_id: userId, last_read_at: now)
+        let payload = ReadUpsert(project_id: projectId, dm_user_id: dmUserId, user_id: currentUserId, last_read_at: now)
         _ = try? await SupabaseConfig.client.from("message_reads").upsert(payload).execute()
-        if let date = parseDate(now) { reads[userId] = date }
+        if let date = parseDate(now) { reads[currentUserId] = date }
     }
 
     // MARK: - Realtime
 
     private func subscribeToMessages() async {
-        let channel = SupabaseConfig.client.channel("messages-dm-\(userId)")
+        let channel = SupabaseConfig.client.channel("messages-thread-\(threadKey)")
+        let filter = projectId != nil ? "project_id=eq.\(projectId!)" : "dm_user_id=eq.\(dmUserId ?? "")"
         let insertions = channel.postgresChange(
             InsertAction.self,
             schema: "public",
             table: "messages",
-            filter: "dm_user_id=eq.\(userId)"
+            filter: filter
         )
         messagesChannel = channel
         await channel.subscribe()
@@ -280,18 +355,19 @@ struct ChatView: View {
     }
 
     private func subscribeToReads() async {
-        let channel = SupabaseConfig.client.channel("reads-dm-\(userId)")
+        let channel = SupabaseConfig.client.channel("reads-thread-\(threadKey)")
+        let filter = projectId != nil ? "project_id=eq.\(projectId!)" : "dm_user_id=eq.\(dmUserId ?? "")"
         let inserts = channel.postgresChange(
             InsertAction.self,
             schema: "public",
             table: "message_reads",
-            filter: "dm_user_id=eq.\(userId)"
+            filter: filter
         )
         let updates = channel.postgresChange(
             UpdateAction.self,
             schema: "public",
             table: "message_reads",
-            filter: "dm_user_id=eq.\(userId)"
+            filter: filter
         )
         readsChannel = channel
         await channel.subscribe()
@@ -317,9 +393,9 @@ struct ChatView: View {
     }
 
     private func setupPresence() async {
-        guard !userId.isEmpty else { return }
-        let channel = SupabaseConfig.client.channel("messages:dm:\(userId)") { config in
-            config.presence.key = userId
+        guard let currentUserId = auth.profile?.id else { return }
+        let channel = SupabaseConfig.client.channel("presence-thread-\(threadKey)") { config in
+            config.presence.key = currentUserId
         }
         let presenceChanges = channel.presenceChange()
         presenceChannel = channel
@@ -340,49 +416,59 @@ struct ChatView: View {
 
     private func send() async {
         let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty, !userId.isEmpty else { return }
+        guard !text.isEmpty else { return }
         draft = ""
         isSending = true
         defer { isSending = false }
         HapticManager.impact(.light)
 
-        // Routed through the same API route the web app uses (rather than
-        // inserting directly) so the server can push-notify the other side
-        // and correctly derive sender_role from the caller's real profile
-        // — a native-only direct insert had been hardcoding "client" even
-        // for employee/admin senders.
-        struct Payload: Encodable {
-            let dmUserId: String
-            let text: String
-        }
         do {
-            try await APIClient.send("api/messages", method: "POST", body: Payload(dmUserId: userId, text: text))
+            if let projectId {
+                struct Payload: Encodable { let projectId: String; let text: String }
+                try await APIClient.send("api/messages", method: "POST", body: Payload(projectId: projectId, text: text))
+            } else if let dmUserId {
+                struct Payload: Encodable { let dmUserId: String; let text: String }
+                try await APIClient.send("api/messages", method: "POST", body: Payload(dmUserId: dmUserId, text: text))
+            }
         } catch {
             errorMessage = "Could not send message."
         }
     }
 
     private func sendAttachment(data: Data, fileName: String, fileType: String) async {
-        guard !userId.isEmpty else { return }
         isSending = true
         defer { isSending = false }
 
-        let filePath = "dm/\(userId)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
+        let filePath = "\(storageFolder)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
 
         do {
             try await SupabaseConfig.client.storage.from("chat-attachments").upload(filePath, data: data)
 
-            struct Payload: Encodable {
-                let dmUserId: String
-                let text: String
-                let attachmentPath: String
-                let attachmentName: String
-                let attachmentType: String
+            if let projectId {
+                struct Payload: Encodable {
+                    let projectId: String
+                    let text: String
+                    let attachmentPath: String
+                    let attachmentName: String
+                    let attachmentType: String
+                }
+                try await APIClient.send(
+                    "api/messages", method: "POST",
+                    body: Payload(projectId: projectId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
+                )
+            } else if let dmUserId {
+                struct Payload: Encodable {
+                    let dmUserId: String
+                    let text: String
+                    let attachmentPath: String
+                    let attachmentName: String
+                    let attachmentType: String
+                }
+                try await APIClient.send(
+                    "api/messages", method: "POST",
+                    body: Payload(dmUserId: dmUserId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
+                )
             }
-            try await APIClient.send(
-                "api/messages", method: "POST",
-                body: Payload(dmUserId: userId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
-            )
         } catch {
             errorMessage = "Could not send attachment."
         }
@@ -449,81 +535,5 @@ struct ChatView: View {
         if let date = iso.date(from: string) { return date }
         iso.formatOptions = [.withInternetDateTime]
         return iso.date(from: string)
-    }
-}
-
-struct MessageBubble: View {
-    let message: ChatMessage
-    let isMine: Bool
-    let showReadReceipt: Bool
-    let readByOther: Bool
-    let attachmentURL: URL?
-    let onTapAttachment: () -> Void
-
-    var body: some View {
-        HStack {
-            if isMine { Spacer(minLength: 40) }
-            VStack(alignment: isMine ? .trailing : .leading, spacing: 2) {
-                Text(isMine ? "You" : message.senderName)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundColor(.secondary)
-
-                if message.attachmentPath != nil {
-                    Button(action: onTapAttachment) {
-                        attachmentView
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                if !message.body.isEmpty {
-                    Text(message.body)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(isMine ? Theme.navy : Color(.secondarySystemBackground))
-                        .foregroundColor(isMine ? .white : .primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-
-                if showReadReceipt {
-                    Text(readByOther ? "✓✓ Read" : "✓ Sent")
-                        .font(.caption2)
-                        .foregroundColor(readByOther ? Theme.gold : .secondary)
-                }
-            }
-            if !isMine { Spacer(minLength: 40) }
-        }
-    }
-
-    @ViewBuilder
-    private var attachmentView: some View {
-        if message.attachmentType?.hasPrefix("image/") == true {
-            Group {
-                if let attachmentURL {
-                    AsyncImage(url: attachmentURL) { phase in
-                        if case .success(let image) = phase {
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } else {
-                            Color.gray.opacity(0.15)
-                        }
-                    }
-                } else {
-                    Color.gray.opacity(0.1)
-                }
-            }
-            .frame(width: 160, height: 160)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        } else {
-            HStack(spacing: 6) {
-                Image(systemName: "doc")
-                Text(message.attachmentName ?? "Attachment")
-                    .lineLimit(1)
-            }
-            .font(.caption)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(isMine ? Theme.navy.opacity(0.85) : Color(.secondarySystemBackground))
-            .foregroundColor(isMine ? .white : .primary)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
     }
 }
