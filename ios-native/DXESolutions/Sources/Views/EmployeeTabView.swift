@@ -7,6 +7,7 @@ struct EmployeeTabView: View {
         TabView {
             EmployeeDashboardView()
                 .tabItem { Label("My Projects", systemImage: "house.fill") }
+                .badge(auth.unreadMessageCount)
 
             NavigationStack {
                 CalendarView(project: nil)

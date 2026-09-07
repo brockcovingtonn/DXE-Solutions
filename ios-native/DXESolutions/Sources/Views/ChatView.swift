@@ -148,6 +148,7 @@ struct ChatView: View {
                 await messagesChannel?.unsubscribe()
                 await readsChannel?.unsubscribe()
                 await presenceChannel?.unsubscribe()
+                await auth.refreshUnreadCount()
             }
         }
         .onChange(of: pickerItems) { newItems in

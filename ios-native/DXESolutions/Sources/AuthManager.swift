@@ -28,6 +28,7 @@ final class AuthManager: ObservableObject {
     @Published var isLoading = false
     @Published var isRestoringSession = true
     @Published var isLockedByBiometrics = false
+    @Published var unreadMessageCount = 0
 
     private let client = SupabaseConfig.client
 
@@ -45,6 +46,19 @@ final class AuthManager: ObservableObject {
         if BiometricAuth.isEnabled && BiometricAuth.availableType != .none {
             isLockedByBiometrics = true
         }
+        await refreshUnreadCount()
+    }
+
+    // Badges the Dashboard tab (where chat is reached from) with the
+    // total across every thread this user can see — their own DM plus,
+    // for an employee, any assigned project's thread.
+    func refreshUnreadCount() async {
+        struct UnreadRow: Decodable {
+            let unreadCount: Int
+            enum CodingKeys: String, CodingKey { case unreadCount = "unread_count" }
+        }
+        guard let rows: [UnreadRow] = try? await client.rpc("get_unread_message_counts").execute().value else { return }
+        unreadMessageCount = rows.reduce(0) { $0 + $1.unreadCount }
     }
 
     func unlockWithBiometrics() async -> Bool {
@@ -62,6 +76,7 @@ final class AuthManager: ObservableObject {
             await loadProfile(userId: session.user.id.uuidString)
             PushNotificationManager.shared.userSignedIn(userId: session.user.id.uuidString)
             PushNotificationManager.shared.requestPermissionIfNeeded()
+            await refreshUnreadCount()
         } catch {
             errorMessage = "Incorrect email or password. Please try again."
         }
@@ -74,6 +89,7 @@ final class AuthManager: ObservableObject {
         isAuthenticated = false
         profile = nil
         isLockedByBiometrics = false
+        unreadMessageCount = 0
     }
 
     func refreshProfile() async {
