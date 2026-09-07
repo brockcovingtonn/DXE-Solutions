@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default function AdminPhotos({ projectId, initialPhotos }) {
   const supabase = createClient();
@@ -140,9 +141,8 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
           </div>
         ))}
         {initialPhotos.length === 0 && (
-          <div className={styles.emptyState}>
-            <i className="ti ti-photo-off" aria-hidden="true"></i>
-            <p>No photos uploaded yet for this project.</p>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Upload progress photos below to share them with the client." />
           </div>
         )}
       </div>

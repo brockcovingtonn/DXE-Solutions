@@ -40,7 +40,8 @@ struct AdminContactListView: View {
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if contacts.isEmpty {
-                Text("No contacts yet.").foregroundColor(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                EmptyStateView(icon: "person.crop.circle.badge.questionmark", title: "No contacts yet", subtitle: "Add a contact to build out your directory.")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 0) {
                     Picker("Category", selection: $categoryFilter) {

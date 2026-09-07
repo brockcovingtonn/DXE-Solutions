@@ -60,16 +60,8 @@ struct ProjectListView: View {
                 .foregroundColor(.red)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if projects.isEmpty {
-            VStack(spacing: 8) {
-                Text("No projects yet")
-                    .font(.headline)
-                Text("Once Dixie sets up your project, it'll show up here.")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            EmptyStateView(icon: "folder", title: "No projects yet", subtitle: "Once Dixie sets up your project, it'll show up here.")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if sizeClass == .regular {
             List(projects, selection: $selectedProject) { project in
                 ProjectRow(project: project).tag(project)

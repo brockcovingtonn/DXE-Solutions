@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import NewNoteForm from '@/components/NewNoteForm';
+import EmptyState from '@/components/EmptyState';
 
 export default async function NotesPage({ params }) {
   const supabase = createClient();
@@ -42,7 +43,7 @@ export default async function NotesPage({ params }) {
             </div>
           ))}
           {(!notes || notes.length === 0) && (
-            <p style={{ fontSize: '0.85rem', color: '#718096' }}>No notes yet.</p>
+            <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates from your project manager will appear here." />
           )}
         </div>
 

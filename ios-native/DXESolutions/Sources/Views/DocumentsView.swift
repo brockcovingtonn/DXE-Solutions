@@ -30,8 +30,7 @@ struct DocumentsView: View {
             } else if documents.isEmpty {
                 VStack(spacing: 16) {
                     Spacer()
-                    Text("No documents yet")
-                        .foregroundColor(.secondary)
+                    EmptyStateView(icon: "doc.text", title: "No documents yet", subtitle: "Scan or upload a document below to get started.")
                     uploadControls
                     Spacer()
                 }

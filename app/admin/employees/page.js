@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default async function AdminEmployeesPage() {
   const supabase = createClient();
@@ -40,9 +41,7 @@ export default async function AdminEmployeesPage() {
       <div className={styles.fullWidthCard}>
         <h3>All Employees ({(employees || []).length})</h3>
         {!employees || employees.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
-            No employee accounts yet. Click &quot;New Employee&quot; to add your first one.
-          </p>
+          <EmptyState icon="ti-user-cog" title="No employee accounts yet" subtitle='Click "New Employee" above to add your first one.' />
         ) : (
           <div className={adminStyles.clientList}>
             {employees.map((employee) => (

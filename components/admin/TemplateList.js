@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default function TemplateList({ templates, allProjects }) {
   const router = useRouter();
@@ -62,11 +63,7 @@ export default function TemplateList({ templates, allProjects }) {
   }
 
   if (!templates || templates.length === 0) {
-    return (
-      <p style={{ fontSize: '0.85rem', color: '#718096' }}>
-        No templates yet. Add one using the form above.
-      </p>
-    );
+    return <EmptyState icon="ti-copy" title="No templates yet" subtitle="Add a standard document template using the form above." />;
   }
 
   return (

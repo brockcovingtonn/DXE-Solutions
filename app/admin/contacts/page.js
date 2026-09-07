@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ContactCategoryFilter from '@/components/admin/ContactCategoryFilter';
+import EmptyState from '@/components/EmptyState';
 
 export default async function ContactsPage({ searchParams }) {
   const supabase = createClient();
@@ -39,11 +40,11 @@ export default async function ContactsPage({ searchParams }) {
           {categoryFilter ? `${categoryFilter} Contacts` : 'All Contacts'} ({contacts?.length || 0})
         </h3>
         {!contacts || contacts.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
-            {categoryFilter
-              ? `No contacts in "${categoryFilter}" yet.`
-              : 'No contacts yet. Click "New Contact" to add your first one.'}
-          </p>
+          <EmptyState
+            icon="ti-address-book"
+            title={categoryFilter ? `No contacts in "${categoryFilter}" yet` : 'No contacts yet'}
+            subtitle={categoryFilter ? 'Try a different category.' : 'Click "New Contact" above to add your first one.'}
+          />
         ) : (
           <div className={adminStyles.clientList}>
             {contacts.map((contact) => (

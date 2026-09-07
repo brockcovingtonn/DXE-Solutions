@@ -19,9 +19,7 @@ struct NotesView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         VStack(alignment: .leading, spacing: 12) {
                             if notes.isEmpty {
-                                Text("No notes yet.")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                EmptyStateView(icon: "note.text", title: "No notes yet", subtitle: "Updates on your project will show up here.")
                             } else {
                                 ForEach(notes) { note in
                                     noteCard(note)

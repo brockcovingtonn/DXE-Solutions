@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default async function AdminClientsPage() {
   const supabase = createClient();
@@ -46,9 +47,7 @@ export default async function AdminClientsPage() {
       <div className={styles.fullWidthCard}>
         <h3>All Clients ({clients.length})</h3>
         {clients.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
-            No clients yet. Click &quot;New Client &amp; Project&quot; to add your first one.
-          </p>
+          <EmptyState icon="ti-users" title="No clients yet" subtitle='Click "New Client & Project" above to add your first one.' />
         ) : (
           <div className={adminStyles.clientList}>
             {clients.map((client) => (

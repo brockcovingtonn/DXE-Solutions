@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SignaturePad from '@/components/SignaturePad';
+import EmptyState from '@/components/EmptyState';
 import styles from '@/components/portal-shared.module.css';
 
 const BADGE_CLASS = {
@@ -87,7 +88,9 @@ export default function DocumentsList({ docs, currentUserName }) {
           </div>
         );
       })}
-      {(!docs || docs.length === 0) && <p style={{ fontSize: '0.85rem', color: '#718096' }}>No documents yet.</p>}
+      {(!docs || docs.length === 0) && (
+        <EmptyState icon="ti-file-text" title="No documents yet" subtitle="Files DXE shares with you will show up here." />
+      )}
     </div>
   );
 }

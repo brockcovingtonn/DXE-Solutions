@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default async function AdminProjectsPage({ searchParams }) {
   const supabase = createClient();
@@ -42,7 +43,7 @@ export default async function AdminProjectsPage({ searchParams }) {
 
       <div className={styles.fullWidthCard}>
         {!projects || projects.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No projects found.</p>
+          <EmptyState icon="ti-folder" title="No projects found" subtitle="Try a different filter, or add a new client and project." />
         ) : (
           <div className={adminStyles.clientList}>
             {projects.map((p) => (

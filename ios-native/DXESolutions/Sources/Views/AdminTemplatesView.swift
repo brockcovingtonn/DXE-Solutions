@@ -79,7 +79,7 @@ struct AdminTemplatesView: View {
             if isLoading {
                 ProgressView()
             } else if templates.isEmpty {
-                Text("No templates yet. Add one above.").font(.subheadline).foregroundColor(.secondary)
+                EmptyStateView(icon: "doc.on.doc", title: "No templates yet", subtitle: "Add a standard document template above.")
             } else {
                 ForEach(templates) { template in
                     templateRow(template)

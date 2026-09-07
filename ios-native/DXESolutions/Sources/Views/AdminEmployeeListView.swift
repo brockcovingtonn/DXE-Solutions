@@ -49,7 +49,8 @@ struct AdminEmployeeListView: View {
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if employees.isEmpty {
-                Text("No employee accounts yet.").foregroundColor(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                EmptyStateView(icon: "person.badge.plus", title: "No employee accounts yet", subtitle: "Add an employee to get them set up.")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(filteredEmployees) { employee in
                     NavigationLink {

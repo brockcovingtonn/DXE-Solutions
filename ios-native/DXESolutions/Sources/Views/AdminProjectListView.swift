@@ -26,7 +26,8 @@ struct AdminProjectListView: View {
                 } else if let error = errorMessage {
                     Text(error).foregroundColor(.red).frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if projects.isEmpty {
-                    Text("No projects found.").foregroundColor(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                    EmptyStateView(icon: "folder", title: "No projects found", subtitle: "Try a different filter, or add a new client and project.")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List(filteredProjects) { project in
                         NavigationLink {

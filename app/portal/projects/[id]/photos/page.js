@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default async function PhotosPage({ params }) {
   const supabase = createClient();
@@ -44,9 +45,8 @@ export default async function PhotosPage({ params }) {
         <h3>Site Progress Photos</h3>
         <div className={styles.photosGrid}>
           {photosWithUrls.length === 0 ? (
-            <div className={styles.emptyState}>
-              <i className="ti ti-photo-off" aria-hidden="true"></i>
-              <p>No photos uploaded yet for this project.</p>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Your project manager will post progress photos here as work begins." />
             </div>
           ) : (
             photosWithUrls.map((p) => (

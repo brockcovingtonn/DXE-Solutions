@@ -44,8 +44,7 @@ struct ProjectContactsView: View {
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if contacts.isEmpty {
-                Text("No contacts linked to this project yet.")
-                    .foregroundColor(.secondary)
+                EmptyStateView(icon: "person.crop.circle.badge.questionmark", title: "No contacts yet", subtitle: "Contacts linked to this project will show up here.")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 0) {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 export default function AdminNotes({ projectId, initialNotes }) {
   const router = useRouter();
@@ -152,7 +153,7 @@ export default function AdminNotes({ projectId, initialNotes }) {
           </div>
         ))}
         {initialNotes.length === 0 && (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No notes yet.</p>
+          <EmptyState icon="ti-note" title="No notes yet" subtitle="Post an update below to keep the client in the loop." />
         )}
       </div>
 

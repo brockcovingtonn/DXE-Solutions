@@ -51,7 +51,8 @@ struct AdminClientListView: View {
                 if isLoading {
                     ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if clients.isEmpty {
-                    Text("No clients yet.").foregroundColor(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                    EmptyStateView(icon: "person.2", title: "No clients yet", subtitle: "New clients you add will show up here.")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List(filteredClients) { client in
                         NavigationLink {

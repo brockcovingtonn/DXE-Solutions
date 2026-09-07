@@ -11,7 +11,8 @@ struct AdminReviewsListView: View {
             if isLoading {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if reviews.isEmpty {
-                Text("No reviews submitted yet.").foregroundColor(.secondary).frame(maxWidth: .infinity, maxHeight: .infinity)
+                EmptyStateView(icon: "star", title: "No reviews yet", subtitle: "Client reviews will show up here once submitted.")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(spacing: 10) {

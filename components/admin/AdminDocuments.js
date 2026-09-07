@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import EmptyState from '@/components/EmptyState';
 
 const BADGE_CLASS = {
   new: styles.badgeNew,
@@ -150,7 +151,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
           </div>
         ))}
         {initialDocs.length === 0 && (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No documents yet.</p>
+          <EmptyState icon="ti-file-text" title="No documents yet" subtitle="Upload a contract, permit, or plan set below." />
         )}
       </div>
 

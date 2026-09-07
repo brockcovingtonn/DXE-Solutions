@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import adminStyles from '@/components/admin.module.css';
 import StarRating from '@/components/StarRating';
+import EmptyState from '@/components/EmptyState';
 
 export default function AdminReviewsList({ initialReviews }) {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function AdminReviewsList({ initialReviews }) {
   }
 
   if (!initialReviews || initialReviews.length === 0) {
-    return <p style={{ fontSize: '0.85rem', color: '#718096' }}>No reviews submitted yet.</p>;
+    return <EmptyState icon="ti-star" title="No reviews yet" subtitle="Client reviews will show up here once submitted." />;
   }
 
   return (

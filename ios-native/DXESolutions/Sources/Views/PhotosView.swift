@@ -26,10 +26,8 @@ struct PhotosView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
                         if photos.isEmpty {
-                            Text("No photos yet")
-                                .foregroundColor(.secondary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.top, 40)
+                            EmptyStateView(icon: "photo", title: "No photos yet", subtitle: "Take a photo or add one from your library below.")
+                                .padding(.top, 24)
                         } else {
                             LazyVGrid(columns: columns, spacing: 8) {
                                 ForEach(photos) { photo in
