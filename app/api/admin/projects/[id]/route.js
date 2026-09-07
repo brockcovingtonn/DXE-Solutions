@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
 
-async function requireAdmin(supabase) {
-  const { data: { user } } = await supabase.auth.getUser();
+async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
 
   const { data: profile } = await supabase
@@ -23,8 +22,8 @@ function capitalize(s) {
 }
 
 export async function PATCH(request, { params }) {
-  const supabase = createClient();
-  const { error: authError } = await requireAdmin(supabase);
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
   if (authError) return authError;
 
   try {
