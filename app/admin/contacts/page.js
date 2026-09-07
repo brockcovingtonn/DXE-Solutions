@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ContactCategoryFilter from '@/components/admin/ContactCategoryFilter';
+import ContactsList from '@/components/admin/ContactsList';
 import EmptyState from '@/components/EmptyState';
 
 export default async function ContactsPage({ searchParams }) {
@@ -46,36 +47,7 @@ export default async function ContactsPage({ searchParams }) {
             subtitle={categoryFilter ? 'Try a different category.' : 'Click "New Contact" above to add your first one.'}
           />
         ) : (
-          <div className={adminStyles.clientList}>
-            {contacts.map((contact) => (
-              <Link
-                href={`/admin/contacts/${contact.id}`}
-                key={contact.id}
-                className={adminStyles.contactRow}
-              >
-                <div className={adminStyles.clientInfo}>
-                  <div className={adminStyles.clientName}>{contact.name}</div>
-                  <div className={adminStyles.clientEmail}>
-                    {[contact.trade, contact.company].filter(Boolean).join(' · ') || '—'}
-                  </div>
-                </div>
-                <div className={adminStyles.clientProjects}>
-                  {(contact.project_contacts || []).map((pc) => (
-                    <span className={adminStyles.projectChip} key={pc.project_id}>
-                      {pc.projects?.name}
-                    </span>
-                  ))}
-                  {(!contact.project_contacts || contact.project_contacts.length === 0) && (
-                    <span style={{ fontSize: '0.78rem', color: '#a0aec0' }}>Not linked to a project</span>
-                  )}
-                </div>
-                <div className={adminStyles.contactMeta}>
-                  {contact.phone && <div>{contact.phone}</div>}
-                  {contact.email && <div>{contact.email}</div>}
-                </div>
-              </Link>
-            ))}
-          </div>
+          <ContactsList contacts={contacts} />
         )}
       </div>
     </div>

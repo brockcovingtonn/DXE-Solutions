@@ -12,6 +12,9 @@ struct AdminPhotosEditor: View {
     @State private var busyId: String?
     @State private var pickerItems: [PhotosPickerItem] = []
     @State private var showCamera = false
+    @State private var isSelecting = false
+    @State private var selectedIds: Set<String> = []
+    @State private var isBulkDeleting = false
 
     private let columns = [GridItem(.adaptive(minimum: 90), spacing: 8)]
 
@@ -21,8 +24,33 @@ struct AdminPhotosEditor: View {
                 ProgressView()
             } else {
                 if photos.isEmpty {
-                    Text("No photos yet.").font(.subheadline).foregroundColor(.secondary)
+                    EmptyStateView(icon: "photo", title: "No photos yet")
                 } else {
+                    HStack {
+                        Spacer()
+                        Button(isSelecting ? "Cancel" : "Select") {
+                            isSelecting.toggle()
+                            selectedIds = []
+                        }
+                        .font(.caption.weight(.medium))
+                    }
+
+                    if !selectedIds.isEmpty {
+                        HStack(spacing: 12) {
+                            Text("\(selectedIds.count) selected").font(.caption.weight(.medium))
+                            Spacer()
+                            Button(role: .destructive) {
+                                Task { await bulkDelete() }
+                            } label: {
+                                Text(isBulkDeleting ? "Working..." : "Delete").font(.caption)
+                            }
+                            .disabled(isBulkDeleting)
+                        }
+                        .padding(8)
+                        .background(Color(.tertiarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+
                     LazyVGrid(columns: columns, spacing: 8) {
                         ForEach(photos) { photo in
                             ZStack(alignment: .topTrailing) {
@@ -39,15 +67,26 @@ struct AdminPhotosEditor: View {
                                 } else {
                                     Color.gray.opacity(0.1).frame(width: 90, height: 90)
                                 }
-                                Button {
-                                    Task { await delete(photo) }
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.white)
-                                        .background(Circle().fill(Color.black.opacity(0.5)))
+                                if isSelecting {
+                                    Button {
+                                        if selectedIds.contains(photo.id) { selectedIds.remove(photo.id) } else { selectedIds.insert(photo.id) }
+                                    } label: {
+                                        Image(systemName: selectedIds.contains(photo.id) ? "checkmark.circle.fill" : "circle")
+                                            .foregroundColor(selectedIds.contains(photo.id) ? Theme.gold : .white)
+                                            .background(Circle().fill(Color.black.opacity(0.5)))
+                                    }
+                                    .padding(4)
+                                } else {
+                                    Button {
+                                        Task { await delete(photo) }
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.white)
+                                            .background(Circle().fill(Color.black.opacity(0.5)))
+                                    }
+                                    .padding(4)
+                                    .disabled(busyId == photo.id)
                                 }
-                                .padding(4)
-                                .disabled(busyId == photo.id)
                             }
                         }
                     }
@@ -176,5 +215,20 @@ struct AdminPhotosEditor: View {
         } catch {
             message = "Could not delete photo."
         }
+    }
+
+    private func bulkDelete() async {
+        isBulkDeleting = true
+        defer { isBulkDeleting = false }
+        await withTaskGroup(of: Void.self) { group in
+            for id in selectedIds {
+                group.addTask {
+                    try? await APIClient.send("api/admin/photos/\(id)", method: "DELETE", body: EmptyBody())
+                }
+            }
+        }
+        isSelecting = false
+        selectedIds = []
+        await load()
     }
 }

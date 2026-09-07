@@ -22,6 +22,54 @@ export default function AdminDocuments({ projectId, initialDocs }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [isBulkWorking, setIsBulkWorking] = useState(false);
+
+  function toggleSelected(id) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
+
+  async function handleBulkBadgeChange(badge) {
+    if (selectedIds.size === 0) return;
+    setIsBulkWorking(true);
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map((id) =>
+          fetch(`/api/admin/documents/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ badge }),
+          })
+        )
+      );
+      clearSelection();
+      router.refresh();
+    } finally {
+      setIsBulkWorking(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Delete ${selectedIds.size} document${selectedIds.size === 1 ? '' : 's'}? This cannot be undone.`)) return;
+    setIsBulkWorking(true);
+    try {
+      await Promise.all(Array.from(selectedIds).map((id) => fetch(`/api/admin/documents/${id}`, { method: 'DELETE' })));
+      clearSelection();
+      router.refresh();
+    } finally {
+      setIsBulkWorking(false);
+    }
+  }
 
   async function handleFiles(files) {
     if (!files || files.length === 0) return;
@@ -95,9 +143,72 @@ export default function AdminDocuments({ projectId, initialDocs }) {
 
   return (
     <div>
+      {selectedIds.size > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            padding: '0.6rem 0.85rem',
+            background: 'var(--surface)',
+            border: '1px solid rgba(62,84,104,0.15)',
+            marginBottom: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ fontSize: '0.82rem', color: 'var(--navy)', fontWeight: 500 }}>
+            {selectedIds.size} selected
+          </span>
+          <select
+            defaultValue=""
+            disabled={isBulkWorking}
+            onChange={(e) => {
+              if (e.target.value) handleBulkBadgeChange(e.target.value);
+              e.target.value = '';
+            }}
+            style={{
+              border: '1px solid rgba(62,84,104,0.14)',
+              background: 'var(--cream)',
+              color: 'var(--navy)',
+              padding: '0.3rem 0.5rem',
+              fontSize: '0.78rem',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          >
+            <option value="" disabled>Set badge to...</option>
+            <option value="new">New</option>
+            <option value="pending">Pending</option>
+            <option value="signed">Signed</option>
+            <option value="contract">Contract</option>
+          </select>
+          <button
+            type="button"
+            onClick={handleBulkDelete}
+            disabled={isBulkWorking}
+            style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
+          >
+            {isBulkWorking ? 'Working...' : 'Delete Selected'}
+          </button>
+          <button
+            type="button"
+            onClick={clearSelection}
+            style={{ background: 'none', border: 'none', color: '#718096', fontSize: '0.78rem', cursor: 'pointer' }}
+          >
+            Clear selection
+          </button>
+        </div>
+      )}
+
       <div className={styles.docList}>
         {initialDocs.map((d) => (
           <div className={styles.docItem} key={d.id}>
+            <input
+              type="checkbox"
+              checked={selectedIds.has(d.id)}
+              onChange={() => toggleSelected(d.id)}
+              style={{ width: '16px', height: '16px', accentColor: 'var(--gold)', flexShrink: 0, marginRight: '0.75rem' }}
+              aria-label={`Select ${d.file_name}`}
+            />
             <div className={styles.docIcon}>
               <i className="ti ti-file-text" aria-hidden="true"></i>
             </div>

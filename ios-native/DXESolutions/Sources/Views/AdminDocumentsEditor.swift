@@ -11,6 +11,9 @@ struct AdminDocumentsEditor: View {
     @State private var busyId: String?
     @State private var showImporter = false
     @State private var showScanner = false
+    @State private var isSelecting = false
+    @State private var selectedIds: Set<String> = []
+    @State private var isBulkWorking = false
 
     private let badges = ["new", "signed", "pending", "contract"]
 
@@ -20,8 +23,21 @@ struct AdminDocumentsEditor: View {
                 ProgressView()
             } else {
                 if documents.isEmpty {
-                    Text("No documents yet.").font(.subheadline).foregroundColor(.secondary)
+                    EmptyStateView(icon: "doc.text", title: "No documents yet")
                 } else {
+                    HStack {
+                        Spacer()
+                        Button(isSelecting ? "Cancel" : "Select") {
+                            isSelecting.toggle()
+                            selectedIds = []
+                        }
+                        .font(.caption.weight(.medium))
+                    }
+
+                    if !selectedIds.isEmpty {
+                        bulkActionBar
+                    }
+
                     ForEach(documents) { doc in
                         row(doc)
                     }
@@ -73,8 +89,41 @@ struct AdminDocumentsEditor: View {
         }
     }
 
+    private var bulkActionBar: some View {
+        HStack(spacing: 12) {
+            Text("\(selectedIds.count) selected").font(.caption.weight(.medium))
+            Spacer()
+            Menu {
+                ForEach(badges, id: \.self) { badge in
+                    Button(badge.capitalized) { Task { await bulkSetBadge(badge) } }
+                }
+            } label: {
+                Text("Set badge").font(.caption)
+            }
+            .disabled(isBulkWorking)
+            Button(role: .destructive) {
+                Task { await bulkDelete() }
+            } label: {
+                Text(isBulkWorking ? "Working..." : "Delete").font(.caption)
+            }
+            .disabled(isBulkWorking)
+        }
+        .padding(8)
+        .background(Color(.tertiarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
     private func row(_ doc: ProjectDocument) -> some View {
         HStack(alignment: .top, spacing: 10) {
+            if isSelecting {
+                Button {
+                    if selectedIds.contains(doc.id) { selectedIds.remove(doc.id) } else { selectedIds.insert(doc.id) }
+                } label: {
+                    Image(systemName: selectedIds.contains(doc.id) ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(selectedIds.contains(doc.id) ? Theme.gold : .secondary)
+                }
+                .buttonStyle(.plain)
+            }
             VStack(alignment: .leading, spacing: 3) {
                 Text(doc.fileName).font(.subheadline.weight(.medium))
                 Menu {
@@ -91,15 +140,17 @@ struct AdminDocumentsEditor: View {
                 }
             }
             Spacer()
-            if busyId == doc.id {
-                ProgressView()
-            } else {
-                Button {
-                    Task { await delete(doc) }
-                } label: {
-                    Image(systemName: "trash").foregroundColor(.red)
+            if !isSelecting {
+                if busyId == doc.id {
+                    ProgressView()
+                } else {
+                    Button {
+                        Task { await delete(doc) }
+                    } label: {
+                        Image(systemName: "trash").foregroundColor(.red)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
         .padding(10)
@@ -189,5 +240,36 @@ struct AdminDocumentsEditor: View {
         } catch {
             message = "Could not delete document."
         }
+    }
+
+    private func bulkSetBadge(_ badge: String) async {
+        isBulkWorking = true
+        defer { isBulkWorking = false }
+        struct Payload: Encodable { let badge: String }
+        await withTaskGroup(of: Void.self) { group in
+            for id in selectedIds {
+                group.addTask {
+                    try? await APIClient.send("api/admin/documents/\(id)", method: "PATCH", body: Payload(badge: badge))
+                }
+            }
+        }
+        isSelecting = false
+        selectedIds = []
+        await load()
+    }
+
+    private func bulkDelete() async {
+        isBulkWorking = true
+        defer { isBulkWorking = false }
+        await withTaskGroup(of: Void.self) { group in
+            for id in selectedIds {
+                group.addTask {
+                    try? await APIClient.send("api/admin/documents/\(id)", method: "DELETE", body: EmptyBody())
+                }
+            }
+        }
+        isSelecting = false
+        selectedIds = []
+        await load()
     }
 }

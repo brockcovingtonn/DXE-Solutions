@@ -5,6 +5,9 @@ struct AdminContactListView: View {
     @State private var isLoading = true
     @State private var searchText = ""
     @State private var categoryFilter = ""
+    @State private var editMode: EditMode = .inactive
+    @State private var selection: Set<String> = []
+    @State private var isBulkDeleting = false
 
     private let categories = [
         "Owner", "General Contractor", "Architect", "Civil Engineer", "Structural Engineer",
@@ -53,7 +56,23 @@ struct AdminContactListView: View {
                     .padding(.top, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                    List(filteredContacts) { contact in
+                    if editMode == .active && !selection.isEmpty {
+                        HStack(spacing: 12) {
+                            Text("\(selection.count) selected").font(.caption.weight(.medium))
+                            Spacer()
+                            Button(role: .destructive) {
+                                Task { await bulkDelete() }
+                            } label: {
+                                Text(isBulkDeleting ? "Working..." : "Delete").font(.caption)
+                            }
+                            .disabled(isBulkDeleting)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        .background(Color(.secondarySystemBackground))
+                    }
+
+                    List(filteredContacts, selection: $selection) { contact in
                         NavigationLink {
                             AdminContactDetailView(contactId: contact.id)
                         } label: {
@@ -65,9 +84,13 @@ struct AdminContactListView: View {
                 }
             }
         }
+        .environment(\.editMode, $editMode)
         .navigationTitle("Contacts")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                EditButton()
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
                     AdminContactDetailView(contactId: nil)
@@ -103,5 +126,20 @@ struct AdminContactListView: View {
             .order("name", ascending: true)
             .execute().value) ?? []
         isLoading = false
+    }
+
+    private func bulkDelete() async {
+        isBulkDeleting = true
+        defer { isBulkDeleting = false }
+        await withTaskGroup(of: Void.self) { group in
+            for id in selection {
+                group.addTask {
+                    try? await APIClient.send("api/admin/contacts/\(id)", method: "DELETE", body: EmptyBody())
+                }
+            }
+        }
+        selection = []
+        editMode = .inactive
+        await load()
     }
 }

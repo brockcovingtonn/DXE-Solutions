@@ -16,6 +16,34 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
   const [error, setError] = useState('');
   const [caption, setCaption] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  function toggleSelected(id) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Delete ${selectedIds.size} photo${selectedIds.size === 1 ? '' : 's'}? This cannot be undone.`)) return;
+    setIsBulkDeleting(true);
+    try {
+      await Promise.all(Array.from(selectedIds).map((id) => fetch(`/api/admin/photos/${id}`, { method: 'DELETE' })));
+      clearSelection();
+      router.refresh();
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  }
 
   async function handleFiles(files) {
     if (!files || files.length === 0) return;
@@ -77,6 +105,39 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
 
   return (
     <div>
+      {selectedIds.size > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            padding: '0.6rem 0.85rem',
+            background: 'var(--surface)',
+            border: '1px solid rgba(62,84,104,0.15)',
+            marginBottom: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ fontSize: '0.82rem', color: 'var(--navy)', fontWeight: 500 }}>
+            {selectedIds.size} selected
+          </span>
+          <button
+            type="button"
+            onClick={handleBulkDelete}
+            disabled={isBulkDeleting}
+            style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
+          >
+            {isBulkDeleting ? 'Deleting...' : 'Delete Selected'}
+          </button>
+          <button
+            type="button"
+            onClick={clearSelection}
+            style={{ background: 'none', border: 'none', color: '#718096', fontSize: '0.78rem', cursor: 'pointer' }}
+          >
+            Clear selection
+          </button>
+        </div>
+      )}
       <div className={styles.photosGrid}>
         {initialPhotos.map((p) => (
           <div
@@ -138,6 +199,20 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
             >
               <i className="ti ti-trash" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
             </button>
+            <input
+              type="checkbox"
+              checked={selectedIds.has(p.id)}
+              onChange={() => toggleSelected(p.id)}
+              aria-label="Select photo"
+              style={{
+                position: 'absolute',
+                bottom: '0.4rem',
+                right: '0.4rem',
+                width: '18px',
+                height: '18px',
+                accentColor: 'var(--gold)',
+              }}
+            />
           </div>
         ))}
         {initialPhotos.length === 0 && (
