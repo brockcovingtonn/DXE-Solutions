@@ -1,5 +1,7 @@
 import SwiftUI
 import Supabase
+import PhotosUI
+import UniformTypeIdentifiers
 
 struct ChatView: View {
     @EnvironmentObject var auth: AuthManager
@@ -12,6 +14,12 @@ struct ChatView: View {
     @State private var isLoading = true
     @State private var isSending = false
     @State private var errorMessage: String?
+
+    @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var showCamera = false
+    @State private var showImporter = false
+    @State private var attachmentURLs: [String: URL] = [:]
+    @State private var previewItem: PreviewItem?
 
     @State private var messagesChannel: RealtimeChannelV2?
     @State private var readsChannel: RealtimeChannelV2?
@@ -54,7 +62,9 @@ struct ChatView: View {
                                     message: message,
                                     isMine: isMine,
                                     showReadReceipt: isMine && message.id == lastMine?.id,
-                                    readByOther: readByOther
+                                    readByOther: readByOther,
+                                    attachmentURL: message.attachmentPath.flatMap { _ in attachmentURLs[message.id] },
+                                    onTapAttachment: { Task { await openAttachment(message) } }
                                 )
                                 .id(message.id)
                             }
@@ -65,7 +75,10 @@ struct ChatView: View {
                         if let last = messages.last {
                             withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
                         }
-                        Task { await markAsRead() }
+                        Task {
+                            await markAsRead()
+                            await loadAttachmentURLs()
+                        }
                     }
                 }
             }
@@ -78,6 +91,30 @@ struct ChatView: View {
             }
 
             HStack(alignment: .bottom, spacing: 8) {
+                Menu {
+                    PhotosPicker(selection: $pickerItems, matching: .images) {
+                        Label("Photo Library", systemImage: "photo")
+                    }
+                    if UIImagePickerController.isCameraAvailable {
+                        Button {
+                            showCamera = true
+                        } label: {
+                            Label("Take Photo", systemImage: "camera")
+                        }
+                    }
+                    Button {
+                        showImporter = true
+                    } label: {
+                        Label("Choose File", systemImage: "doc")
+                    }
+                } label: {
+                    Image(systemName: "paperclip")
+                        .font(.system(size: 20))
+                        .foregroundColor(Theme.navy)
+                        .padding(.bottom, 6)
+                }
+                .disabled(isSending)
+
                 TextField("Message", text: $draft, axis: .vertical)
                     .textFieldStyle(.roundedBorder)
                     .lineLimit(1...4)
@@ -99,6 +136,7 @@ struct ChatView: View {
             await loadMessages()
             await loadReads()
             await markAsRead()
+            await loadAttachmentURLs()
             await subscribeToMessages()
             await subscribeToReads()
             await setupPresence()
@@ -111,6 +149,33 @@ struct ChatView: View {
                 await readsChannel?.unsubscribe()
                 await presenceChannel?.unsubscribe()
             }
+        }
+        .onChange(of: pickerItems) { newItems in
+            guard let item = newItems.first else { return }
+            pickerItems = []
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self) {
+                    await sendAttachment(data: data, fileName: "\(Int(Date().timeIntervalSince1970 * 1000)).jpg", fileType: "image/jpeg")
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraCapture(
+                onCapture: { data in
+                    showCamera = false
+                    Task { await sendAttachment(data: data, fileName: "\(Int(Date().timeIntervalSince1970 * 1000)).jpg", fileType: "image/jpeg") }
+                },
+                onCancel: { showCamera = false }
+            )
+            .ignoresSafeArea()
+        }
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.item], allowsMultipleSelection: false) { result in
+            if case .success(let urls) = result, let url = urls.first {
+                Task { await sendPickedFile(url) }
+            }
+        }
+        .sheet(item: $previewItem) { item in
+            QuickLookPreview(url: item.url).ignoresSafeArea()
         }
     }
 
@@ -295,6 +360,81 @@ struct ChatView: View {
         }
     }
 
+    private func sendAttachment(data: Data, fileName: String, fileType: String) async {
+        guard !userId.isEmpty else { return }
+        isSending = true
+        defer { isSending = false }
+
+        let filePath = "dm/\(userId)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
+
+        do {
+            try await SupabaseConfig.client.storage.from("chat-attachments").upload(filePath, data: data)
+
+            struct Payload: Encodable {
+                let dmUserId: String
+                let text: String
+                let attachmentPath: String
+                let attachmentName: String
+                let attachmentType: String
+            }
+            try await APIClient.send(
+                "api/messages", method: "POST",
+                body: Payload(dmUserId: userId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
+            )
+        } catch {
+            errorMessage = "Could not send attachment."
+        }
+    }
+
+    private func sendPickedFile(_ url: URL) async {
+        guard url.startAccessingSecurityScopedResource() else {
+            errorMessage = "Could not access the selected file."
+            return
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
+
+        guard let data = try? Data(contentsOf: url) else {
+            errorMessage = "Could not read the selected file."
+            return
+        }
+
+        let ext = url.pathExtension.lowercased()
+        let mimeType = UTType(filenameExtension: ext)?.preferredMIMEType ?? "application/octet-stream"
+        await sendAttachment(data: data, fileName: url.lastPathComponent, fileType: mimeType)
+    }
+
+    private func loadAttachmentURLs() async {
+        let missing = messages.filter { $0.attachmentPath != nil && attachmentURLs[$0.id] == nil }
+        guard !missing.isEmpty else { return }
+
+        await withTaskGroup(of: (String, URL?).self) { group in
+            for message in missing {
+                guard let path = message.attachmentPath else { continue }
+                group.addTask {
+                    let url = try? await SupabaseConfig.client.storage
+                        .from("chat-attachments")
+                        .createSignedURL(path: path, expiresIn: 3600)
+                    return (message.id, url)
+                }
+            }
+            for await (id, url) in group {
+                if let url { attachmentURLs[id] = url }
+            }
+        }
+    }
+
+    private func openAttachment(_ message: ChatMessage) async {
+        guard let path = message.attachmentPath else { return }
+        do {
+            let data = try await SupabaseConfig.client.storage.from("chat-attachments").download(path: path)
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(message.attachmentName ?? "attachment")
+            try data.write(to: tempURL)
+            previewItem = PreviewItem(url: tempURL)
+        } catch {
+            errorMessage = "Could not open attachment."
+        }
+    }
+
     // MARK: - Helpers
 
     private func fullName(_ profile: Profile?) -> String {
@@ -315,6 +455,8 @@ private struct MessageBubble: View {
     let isMine: Bool
     let showReadReceipt: Bool
     let readByOther: Bool
+    let attachmentURL: URL?
+    let onTapAttachment: () -> Void
 
     var body: some View {
         HStack {
@@ -323,12 +465,23 @@ private struct MessageBubble: View {
                 Text(isMine ? "You" : message.senderName)
                     .font(.caption2.weight(.semibold))
                     .foregroundColor(.secondary)
-                Text(message.body)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(isMine ? Theme.navy : Color(.secondarySystemBackground))
-                    .foregroundColor(isMine ? .white : .primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                if message.attachmentPath != nil {
+                    Button(action: onTapAttachment) {
+                        attachmentView
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !message.body.isEmpty {
+                    Text(message.body)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(isMine ? Theme.navy : Color(.secondarySystemBackground))
+                        .foregroundColor(isMine ? .white : .primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
                 if showReadReceipt {
                     Text(readByOther ? "✓✓ Read" : "✓ Sent")
                         .font(.caption2)
@@ -336,6 +489,39 @@ private struct MessageBubble: View {
                 }
             }
             if !isMine { Spacer(minLength: 40) }
+        }
+    }
+
+    @ViewBuilder
+    private var attachmentView: some View {
+        if message.attachmentType?.hasPrefix("image/") == true {
+            Group {
+                if let attachmentURL {
+                    AsyncImage(url: attachmentURL) { phase in
+                        if case .success(let image) = phase {
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        } else {
+                            Color.gray.opacity(0.15)
+                        }
+                    }
+                } else {
+                    Color.gray.opacity(0.1)
+                }
+            }
+            .frame(width: 160, height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        } else {
+            HStack(spacing: 6) {
+                Image(systemName: "doc")
+                Text(message.attachmentName ?? "Attachment")
+                    .lineLimit(1)
+            }
+            .font(.caption)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(isMine ? Theme.navy.opacity(0.85) : Color(.secondarySystemBackground))
+            .foregroundColor(isMine ? .white : .primary)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }

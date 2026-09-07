@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { getProjectRoster } from '@/lib/project-access';
 import { sendPushToUser } from '@/lib/push-notifications';
 
@@ -14,15 +14,14 @@ import { sendPushToUser } from '@/lib/push-notifications';
 // forced to their own id, ignoring whatever the request sent) — only an
 // admin is allowed to target someone else's DM thread.
 export async function POST(request) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user } = await getRequestClient(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const body = await request.json();
-    const { projectId, dmUserId, text } = body;
+    const { projectId, dmUserId, text, attachmentPath, attachmentName, attachmentType } = body;
 
-    if ((!projectId && !dmUserId) || !text?.trim()) {
+    if ((!projectId && !dmUserId) || (!text?.trim() && !attachmentPath)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -88,7 +87,10 @@ export async function POST(request) {
         sender_id: user.id,
         sender_name: senderName,
         sender_role: senderRole,
-        body: text.trim(),
+        body: text?.trim() || '',
+        attachment_path: attachmentPath || null,
+        attachment_name: attachmentName || null,
+        attachment_type: attachmentType || null,
       })
       .select()
       .single();
@@ -111,11 +113,12 @@ export async function POST(request) {
         recipientIds = (admins || []).map((a) => a.id);
       }
 
+      const pushBody = text?.trim() ? text.trim().slice(0, 140) : `📎 ${attachmentName || 'Attachment'}`;
       await Promise.all(
         recipientIds.map((id) =>
           sendPushToUser(id, {
             title: senderName,
-            body: text.trim().slice(0, 140),
+            body: pushBody,
             data: { type: 'message', projectId: insertProjectId, dmUserId: insertDmUserId },
           })
         )

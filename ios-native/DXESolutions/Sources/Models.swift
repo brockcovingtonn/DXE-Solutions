@@ -95,6 +95,9 @@ struct ChatMessage: Codable, Identifiable, Hashable {
     let senderRole: String
     let body: String
     let createdAt: String
+    let attachmentPath: String?
+    let attachmentName: String?
+    let attachmentType: String?
 
     enum CodingKeys: String, CodingKey {
         case id, body
@@ -104,6 +107,9 @@ struct ChatMessage: Codable, Identifiable, Hashable {
         case senderName = "sender_name"
         case senderRole = "sender_role"
         case createdAt = "created_at"
+        case attachmentPath = "attachment_path"
+        case attachmentName = "attachment_name"
+        case attachmentType = "attachment_type"
     }
 }
 

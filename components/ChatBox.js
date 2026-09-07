@@ -22,7 +22,9 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
   const [error, setError] = useState('');
   const [onlineIds, setOnlineIds] = useState(new Set());
   const [reads, setReads] = useState({});
+  const [attachmentUrls, setAttachmentUrls] = useState({});
   const listRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const threadType = projectId ? 'project' : 'dm';
   const threadId = projectId || dmUserId;
@@ -109,6 +111,32 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
     }
   }, [messages]);
 
+  // Signed URLs for any attachments we don't already have one for.
+  useEffect(() => {
+    const missing = messages.filter((m) => m.attachment_path && !attachmentUrls[m.id]);
+    if (missing.length === 0) return;
+    let active = true;
+    Promise.all(
+      missing.map(async (m) => {
+        const { data } = await supabase.storage.from('chat-attachments').createSignedUrl(m.attachment_path, 3600);
+        return [m.id, data?.signedUrl];
+      })
+    ).then((pairs) => {
+      if (!active) return;
+      setAttachmentUrls((prev) => {
+        const next = { ...prev };
+        pairs.forEach(([id, url]) => {
+          if (url) next[id] = url;
+        });
+        return next;
+      });
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
   const myMessages = messages.filter((m) => m.sender_id === currentUserId);
   const lastMineId = myMessages.length > 0 ? myMessages[myMessages.length - 1].id : null;
   const lastMine = myMessages[myMessages.length - 1];
@@ -135,6 +163,40 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
       setText('');
     } catch {
       setError('Could not send. Please try again.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setSending(true);
+    setError('');
+
+    try {
+      const folder = projectId ? `project/${projectId}` : `dm/${dmUserId}`;
+      const filePath = `${folder}/${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage.from('chat-attachments').upload(filePath, file);
+      if (uploadError) throw uploadError;
+
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...(projectId ? { projectId } : { dmUserId }),
+          text: '',
+          attachmentPath: filePath,
+          attachmentName: file.name,
+          attachmentType: file.type,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+    } catch {
+      setError('Could not send attachment. Please try again.');
     } finally {
       setSending(false);
     }
@@ -200,18 +262,52 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                 >
                   {isMine ? 'You' : m.sender_name}
                 </div>
-                <div
-                  style={{
-                    padding: '0.6rem 0.85rem',
-                    fontSize: '0.85rem',
-                    lineHeight: 1.5,
-                    background: isMine ? 'var(--navy)' : 'var(--white)',
-                    color: isMine ? 'var(--white)' : 'var(--navy)',
-                    border: isMine ? 'none' : '1px solid rgba(62,84,104,0.1)',
-                  }}
-                >
-                  {m.body}
-                </div>
+                {m.attachment_path && (
+                  <div style={{ marginBottom: m.body ? '0.4rem' : 0 }}>
+                    {m.attachment_type?.startsWith('image/') ? (
+                      <a href={attachmentUrls[m.id] || '#'} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={attachmentUrls[m.id]}
+                          alt={m.attachment_name || 'Attachment'}
+                          style={{ maxWidth: '220px', maxHeight: '220px', display: 'block', border: '1px solid rgba(62,84,104,0.1)' }}
+                        />
+                      </a>
+                    ) : (
+                      <a
+                        href={attachmentUrls[m.id] || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          padding: '0.5rem 0.75rem',
+                          fontSize: '0.8rem',
+                          background: isMine ? 'rgba(255,255,255,0.12)' : 'var(--cream)',
+                          color: isMine ? 'var(--white)' : 'var(--navy)',
+                          border: isMine ? 'none' : '1px solid rgba(62,84,104,0.1)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        📎 {m.attachment_name || 'Attachment'}
+                      </a>
+                    )}
+                  </div>
+                )}
+                {m.body && (
+                  <div
+                    style={{
+                      padding: '0.6rem 0.85rem',
+                      fontSize: '0.85rem',
+                      lineHeight: 1.5,
+                      background: isMine ? 'var(--navy)' : 'var(--white)',
+                      color: isMine ? 'var(--white)' : 'var(--navy)',
+                      border: isMine ? 'none' : '1px solid rgba(62,84,104,0.1)',
+                    }}
+                  >
+                    {m.body}
+                  </div>
+                )}
                 <div
                   style={{
                     fontSize: '0.62rem',
@@ -234,6 +330,28 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
       </div>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.6rem', marginTop: '0.85rem', flexShrink: 0 }}>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={sending}
+          title="Attach a file"
+          style={{
+            border: '1px solid rgba(62,84,104,0.2)',
+            background: 'var(--white)',
+            color: 'var(--navy)',
+            padding: '0 0.75rem',
+            fontSize: '1rem',
+            cursor: sending ? 'default' : 'pointer',
+          }}
+        >
+          📎
+        </button>
         <input
           type="text"
           value={text}
