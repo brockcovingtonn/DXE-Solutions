@@ -29,13 +29,6 @@ export default async function PortalLayout({ children }) {
   const dmUnread = (unread || []).find((r) => !r.project_id)?.unread_count || 0;
 
   const chatThreads = [
-    ...(projects || []).map((p) => ({
-      key: `project-${p.id}`,
-      label: p.name,
-      sublabel: 'Project',
-      projectId: p.id,
-      unread: unreadByProject[p.id] || 0,
-    })),
     { key: 'admin-dm', label: 'Chat with DXE Solutions', sublabel: 'General', dmUserId: user.id, unread: dmUnread },
   ];
 

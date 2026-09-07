@@ -29,29 +29,18 @@ export default async function AdminLayout({ children }) {
     supabase.rpc('get_unread_message_counts'),
   ]);
 
-  const projectUnread = {};
   const dmUnread = {};
   (unread || []).forEach((r) => {
-    if (r.project_id) projectUnread[r.project_id] = r.unread_count;
-    else if (r.dm_user_id) dmUnread[r.dm_user_id] = r.unread_count;
+    if (r.dm_user_id) dmUnread[r.dm_user_id] = r.unread_count;
   });
 
-  const chatThreads = [
-    ...(people || []).map((p) => ({
-      key: `dm-${p.id}`,
-      label: `${p.first_name} ${p.last_name}`.trim() || 'Unnamed',
-      sublabel: p.is_employee ? 'Employee' : 'Client',
-      dmUserId: p.id,
-      unread: dmUnread[p.id] || 0,
-    })),
-    ...(projects || []).map((p) => ({
-      key: `project-${p.id}`,
-      label: p.profiles ? `${p.profiles.first_name} ${p.profiles.last_name} - ${p.name}` : p.name,
-      sublabel: 'Project',
-      projectId: p.id,
-      unread: projectUnread[p.id] || 0,
-    })),
-  ];
+  const chatThreads = (people || []).map((p) => ({
+    key: `dm-${p.id}`,
+    label: `${p.first_name} ${p.last_name}`.trim() || 'Unnamed',
+    sublabel: p.is_employee ? 'Employee' : 'Client',
+    dmUserId: p.id,
+    unread: dmUnread[p.id] || 0,
+  }));
 
   return (
     <AdminShell profile={profile} currentUserId={user.id} chatThreads={chatThreads} assistantProjects={projects || []}>

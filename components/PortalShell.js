@@ -20,9 +20,7 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
   const firstName = profile?.first_name || 'there';
 
   // Figure out which project is "active" based on the URL: /portal/projects/[id]/...
-  const activeProjectId = pathname.startsWith('/portal/projects/')
-    ? pathname.split('/')[3]
-    : projects?.[0]?.id;
+  const activeProjectId = pathname.startsWith('/portal/projects/') ? pathname.split('/')[3] : null;
 
   async function handleSignOut() {
     setSigningOut(true);
@@ -77,6 +75,14 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
 
       <div className={styles.body}>
         <aside className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ''}`} onClick={() => setNavOpen(false)}>
+          <SidebarLink href="/portal" icon="ti-home" label="Dashboard" active={pathname === '/portal'} />
+          <SidebarLink
+            href="/portal/calendar"
+            icon="ti-calendar"
+            label="Calendar"
+            active={pathname === '/portal/calendar'}
+          />
+
           {projects && projects.length > 0 && (
             <>
               <div className={styles.sidebarSectionLabel}>My Projects</div>

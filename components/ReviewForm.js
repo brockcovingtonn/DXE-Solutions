@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StarRating from '@/components/StarRating';
 
+const GOOGLE_PLACE_ID = process.env.NEXT_PUBLIC_GOOGLE_PLACE_ID;
+const GOOGLE_REVIEW_URL = GOOGLE_PLACE_ID
+  ? `https://search.google.com/local/writereview?placeid=${GOOGLE_PLACE_ID}`
+  : null;
+
 export default function ReviewForm({ projectId, initialReview }) {
   const router = useRouter();
   const [rating, setRating] = useState(initialReview?.rating || 0);
@@ -11,6 +16,9 @@ export default function ReviewForm({ projectId, initialReview }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState('');
+  const [justSaved, setJustSaved] = useState(false);
+
+  const showGoogleCta = GOOGLE_REVIEW_URL && rating >= 4 && (justSaved || !!initialReview);
 
   const labelStyle = {
     display: 'block',
@@ -48,6 +56,7 @@ export default function ReviewForm({ projectId, initialReview }) {
       if (!res.ok) throw new Error();
 
       setMessage('Thank you — your review has been saved.');
+      setJustSaved(true);
       router.refresh();
     } catch {
       setMessage('Could not save your review. Please try again.');
@@ -66,6 +75,7 @@ export default function ReviewForm({ projectId, initialReview }) {
       if (!res.ok) throw new Error();
       setRating(0);
       setBody('');
+      setJustSaved(false);
       router.refresh();
     } catch {
       setMessage('Could not remove your review.');
@@ -106,6 +116,35 @@ export default function ReviewForm({ projectId, initialReview }) {
         <p style={{ fontSize: '0.82rem', color: message.startsWith('Thank') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>
           {message}
         </p>
+      )}
+
+      {showGoogleCta && (
+        <div
+          style={{
+            marginBottom: '1.5rem',
+            padding: '1rem',
+            background: 'var(--surface)',
+            border: '1px solid rgba(62,84,104,0.12)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <p style={{ fontSize: '0.85rem', color: 'var(--navy)', margin: 0 }}>
+            Glad you enjoyed working with us — mind sharing this on Google too?
+          </p>
+          <a
+            href={GOOGLE_REVIEW_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-navy"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Leave a Google Review
+          </a>
+        </div>
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>

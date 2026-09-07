@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase-server';
 import { getToolDefinitions, executeTool } from '@/lib/assistant/tools';
+
+// The web portal authenticates via cookies (handled by lib/supabase-server).
+// The native app has no cookies — it sends its Supabase access token as a
+// Bearer header instead. When present, build a client scoped to that token
+// so RLS still applies exactly as it does for the mobile app's direct
+// Supabase queries; otherwise fall back to the normal cookie-based client.
+function getBearerToken(request) {
+  const header = request.headers.get('authorization');
+  return header?.startsWith('Bearer ') ? header.slice(7) : null;
+}
 
 const MODEL = 'claude-sonnet-5';
 const MAX_TOOL_ITERATIONS = 6;
@@ -27,8 +38,18 @@ Always use the available tools to look up real data before answering questions a
 }
 
 export async function POST(request) {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const bearerToken = getBearerToken(request);
+
+  const supabase = bearerToken
+    ? createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: `Bearer ${bearerToken}` } },
+        auth: { persistSession: false },
+      })
+    : createClient();
+
+  const {
+    data: { user },
+  } = bearerToken ? await supabase.auth.getUser(bearerToken) : await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   if (!process.env.ANTHROPIC_API_KEY) {

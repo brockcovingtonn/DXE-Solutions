@@ -26,22 +26,9 @@ export default async function EmployeeLayout({ children }) {
     supabase.rpc('get_unread_message_counts'),
   ]);
 
-  const projectUnread = Object.fromEntries(
-    (unread || []).filter((r) => r.project_id).map((r) => [r.project_id, r.unread_count])
-  );
   const dmUnread = (unread || []).find((r) => !r.project_id)?.unread_count || 0;
 
   const chatThreads = [
-    ...(assignments || [])
-      .map((a) => a.projects)
-      .filter(Boolean)
-      .map((p) => ({
-        key: `project-${p.id}`,
-        label: p.name,
-        sublabel: 'Project',
-        projectId: p.id,
-        unread: projectUnread[p.id] || 0,
-      })),
     { key: 'admin-dm', label: 'Dixie', sublabel: 'Direct message', dmUserId: user.id, unread: dmUnread },
   ];
 
