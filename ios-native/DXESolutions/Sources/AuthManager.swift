@@ -39,6 +39,8 @@ final class AuthManager: ObservableObject {
         guard let session = try? await client.auth.session else { return }
         isAuthenticated = true
         await loadProfile(userId: session.user.id.uuidString)
+        PushNotificationManager.shared.userSignedIn(userId: session.user.id.uuidString)
+        PushNotificationManager.shared.requestPermissionIfNeeded()
     }
 
     func signIn(email: String, password: String) async {
@@ -48,6 +50,8 @@ final class AuthManager: ObservableObject {
             let session = try await client.auth.signIn(email: email, password: password)
             isAuthenticated = true
             await loadProfile(userId: session.user.id.uuidString)
+            PushNotificationManager.shared.userSignedIn(userId: session.user.id.uuidString)
+            PushNotificationManager.shared.requestPermissionIfNeeded()
         } catch {
             errorMessage = "Incorrect email or password. Please try again."
         }
@@ -55,6 +59,7 @@ final class AuthManager: ObservableObject {
     }
 
     func signOut() async {
+        await PushNotificationManager.shared.userSignedOut()
         try? await client.auth.signOut()
         isAuthenticated = false
         profile = nil

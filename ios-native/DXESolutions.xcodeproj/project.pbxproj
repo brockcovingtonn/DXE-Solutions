@@ -28,6 +28,7 @@
 		48DCEF2CFD148D8E81012BAB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15181145E9C02C05D8C25B9 /* ContentView.swift */; };
 		5138C8DE451F6BB995F4C778 /* PhotosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF6CC57968E832914576A0 /* PhotosView.swift */; };
 		5789F8C82D7D71DF10C81F6A /* AdminAccountingEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */; };
+		5B2952FC3CA427731B844EBC /* PushNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */; };
 		5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */; };
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
@@ -59,6 +60,7 @@
 		CF773CA0C144624E8F041D2C /* AdminContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF69EFFB0186EBEFE075140 /* AdminContactDetailView.swift */; };
 		D030E4B85A7A6DD7CEC5E8B3 /* PermitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69F249416258705800C9407 /* PermitsView.swift */; };
 		D193D6DFBA23080B94ECA835 /* EmployeeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */; };
+		D403F9130FD5F3FBB7546347 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B32D454514F3EFA7625834 /* AppDelegate.swift */; };
 		D4E4542E875567563C7FE4C3 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BA93DD88EDDD7155202691 /* AppConfig.swift */; };
 		D65F58FFB6D302567FBA6A27 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1BC5D704AA740F73561D6F8 /* SplashView.swift */; };
 		DAD09E4A28DF7A9C10FE1ED5 /* AdminNewClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56877301A622C00BF68FC4 /* AdminNewClientView.swift */; };
@@ -115,10 +117,12 @@
 		B770A62E58C1A60B56DEF8FE /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeProjectDetailView.swift; sourceTree = "<group>"; };
 		B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAccountingEditor.swift; sourceTree = "<group>"; };
+		C0B32D454514F3EFA7625834 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C69F249416258705800C9407 /* PermitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermitsView.swift; sourceTree = "<group>"; };
 		CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverSheetView.swift; sourceTree = "<group>"; };
 		D0BA93DD88EDDD7155202691 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		D15181145E9C02C05D8C25B9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDashboardView.swift; sourceTree = "<group>"; };
 		E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewEmployeeView.swift; sourceTree = "<group>"; };
 		EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectContactsView.swift; sourceTree = "<group>"; };
@@ -232,10 +236,12 @@
 			children = (
 				319A3974E3477D17BEA6B031 /* APIClient.swift */,
 				D0BA93DD88EDDD7155202691 /* AppConfig.swift */,
+				C0B32D454514F3EFA7625834 /* AppDelegate.swift */,
 				F22DCC4C73CA14BDEC58B508 /* AuthManager.swift */,
 				D15181145E9C02C05D8C25B9 /* ContentView.swift */,
 				ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
+				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
 				21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */,
 				96A8EDC856961F1CA2AA278E /* Theme.swift */,
 				56D260485A0B852BC6C11858 /* Views */,
@@ -348,6 +354,7 @@
 				741D7C1E63E86AE1432BB7F9 /* AdminTemplatesView.swift in Sources */,
 				CA37D0D1C2172E514285498F /* AdminUtilitiesEditor.swift in Sources */,
 				D4E4542E875567563C7FE4C3 /* AppConfig.swift in Sources */,
+				D403F9130FD5F3FBB7546347 /* AppDelegate.swift in Sources */,
 				1FE534446585B2467EC8749A /* AssistantView.swift in Sources */,
 				376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */,
 				0098A320ED4AF5A9CB48DBE3 /* CalendarView.swift in Sources */,
@@ -370,6 +377,7 @@
 				FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */,
 				303BAC9A0B5F16185811D398 /* ProjectListView.swift in Sources */,
 				BB2396FE76196F2E6C6D5CCA /* ProjectOverviewView.swift in Sources */,
+				5B2952FC3CA427731B844EBC /* PushNotificationManager.swift in Sources */,
 				3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */,
 				B6DEEE56D8018C8EA544378A /* ReviewView.swift in Sources */,
 				9C82A5BC619614FDDDB94E1A /* RoleHomeView.swift in Sources */,
@@ -388,6 +396,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DXESolutions/Resources/DXESolutions.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -528,6 +537,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DXESolutions/Resources/DXESolutions.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
