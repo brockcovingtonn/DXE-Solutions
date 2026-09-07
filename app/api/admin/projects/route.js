@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { getPhaseTemplate } from '@/lib/constants';
 
-async function requireAdmin(supabase) {
-  const { data: { user } } = await supabase.auth.getUser();
+async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
 
   const { data: profile } = await supabase
@@ -18,8 +17,8 @@ async function requireAdmin(supabase) {
 }
 
 export async function POST(request) {
-  const supabase = createClient();
-  const { error: authError } = await requireAdmin(supabase);
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
   if (authError) return authError;
 
   try {
