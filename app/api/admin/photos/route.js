@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
 import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -55,7 +56,7 @@ export async function POST(request) {
       // Notify the client of the new photos
       const { data: project } = await supabase
         .from('projects')
-        .select('name, profiles!projects_owner_id_fkey(email, email_notifications)')
+        .select('name, owner_id, profiles!projects_owner_id_fkey(email, email_notifications)')
         .eq('id', projectId)
         .single();
 
@@ -67,6 +68,18 @@ export async function POST(request) {
           projectId,
           message: `${count} new progress photo${count === 1 ? '' : 's'} ${count === 1 ? 'was' : 'were'} added to your project${caption ? ` — ${caption}` : ''}.`,
         });
+      }
+
+      if (project?.owner_id) {
+        try {
+          await sendPushToUser(project.owner_id, {
+            title: `${project.name} — New Photo${count === 1 ? '' : 's'}`,
+            body: caption || `${count} new progress photo${count === 1 ? '' : 's'} added`,
+            data: { type: 'photo', projectId },
+          });
+        } catch (pushErr) {
+          console.error('Push notification error (admin photo):', pushErr);
+        }
       }
     }
 

@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import { notifyAdminOfClientActivity } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 // Registers a document record after the client has uploaded the file
 // to storage (from the browser). Logs activity and notifies the admin.
 export async function POST(request) {
-  const supabase = createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user } = await getRequestClient(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -60,6 +59,21 @@ export async function POST(request) {
       clientName,
       message: `uploaded a new document: "${fileName}"`,
     });
+
+    try {
+      const { data: admins } = await supabase.from('profiles').select('id').eq('is_admin', true);
+      await Promise.all(
+        (admins || []).map((a) =>
+          sendPushToUser(a.id, {
+            title: `${project.name} — New Document`,
+            body: `${clientName} uploaded "${fileName}"`,
+            data: { type: 'doc', projectId },
+          })
+        )
+      );
+    } catch (pushErr) {
+      console.error('Push notification error (client document):', pushErr);
+    }
 
     return NextResponse.json({ success: true, document: doc });
   } catch (err) {

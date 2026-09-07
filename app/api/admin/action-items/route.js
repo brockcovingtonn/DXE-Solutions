@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -44,6 +45,24 @@ export async function POST(request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (assigned_to) {
+      try {
+        const { data: project } = await supabase
+          .from('projects')
+          .select('name')
+          .eq('id', projectId)
+          .single();
+
+        await sendPushToUser(assigned_to, {
+          title: `New Action Item${project?.name ? ` — ${project.name}` : ''}`,
+          body: title.trim(),
+          data: { type: 'action_item', projectId, actionItemId: item.id },
+        });
+      } catch (pushErr) {
+        console.error('Push notification error (action item assigned):', pushErr);
+      }
     }
 
     return NextResponse.json({ success: true, item });

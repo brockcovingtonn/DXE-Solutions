@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
 import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -69,7 +70,7 @@ export async function PATCH(request, { params }) {
     if ('status' in update && update.status !== previousStatus) {
       const { data: project } = await supabase
         .from('projects')
-        .select('name, profiles!projects_owner_id_fkey(email, email_notifications)')
+        .select('name, owner_id, profiles!projects_owner_id_fkey(email, email_notifications)')
         .eq('id', params.id)
         .single();
 
@@ -81,6 +82,18 @@ export async function PATCH(request, { params }) {
           projectId: params.id,
           message: `Your project status changed to "${capitalize(update.status)}".`,
         });
+      }
+
+      if (project?.owner_id) {
+        try {
+          await sendPushToUser(project.owner_id, {
+            title: `${project.name} — Status Update`,
+            body: `Your project status changed to "${capitalize(update.status)}".`,
+            data: { type: 'status', projectId: params.id },
+          });
+        } catch (pushErr) {
+          console.error('Push notification error (project status):', pushErr);
+        }
       }
 
       await supabase.from('activity').insert({

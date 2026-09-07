@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
 import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -59,7 +60,7 @@ export async function POST(request) {
     // Notify the client of the new document
     const { data: project } = await supabase
       .from('projects')
-      .select('name, profiles!projects_owner_id_fkey(email, email_notifications)')
+      .select('name, owner_id, profiles!projects_owner_id_fkey(email, email_notifications)')
       .eq('id', projectId)
       .single();
 
@@ -71,6 +72,18 @@ export async function POST(request) {
         projectId,
         message: `A new document, "${fileName}", was added to your project.`,
       });
+    }
+
+    if (project?.owner_id) {
+      try {
+        await sendPushToUser(project.owner_id, {
+          title: `${project.name} — New Document`,
+          body: fileName,
+          data: { type: 'doc', projectId },
+        });
+      } catch (pushErr) {
+        console.error('Push notification error (admin document):', pushErr);
+      }
     }
 
     return NextResponse.json({ success: true, document: doc });

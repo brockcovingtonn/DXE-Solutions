@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
+import { getProjectRoster } from '@/lib/project-access';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 // Single send-message endpoint for both thread types:
 //  - Project threads (projectId set): client + admins + assigned
@@ -93,6 +95,33 @@ export async function POST(request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    // Push the other side(s) of this thread — never the sender.
+    try {
+      let recipientIds = [];
+
+      if (insertProjectId) {
+        const roster = await getProjectRoster(supabase, insertProjectId);
+        recipientIds = roster.map((p) => p.id).filter((id) => id !== user.id);
+      } else if (senderRole === 'admin') {
+        recipientIds = [insertDmUserId];
+      } else {
+        const { data: admins } = await supabase.from('profiles').select('id').eq('is_admin', true);
+        recipientIds = (admins || []).map((a) => a.id);
+      }
+
+      await Promise.all(
+        recipientIds.map((id) =>
+          sendPushToUser(id, {
+            title: senderName,
+            body: text.trim().slice(0, 140),
+            data: { type: 'message', projectId: insertProjectId, dmUserId: insertDmUserId },
+          })
+        )
+      );
+    } catch (pushErr) {
+      console.error('Push notification error (message):', pushErr);
     }
 
     return NextResponse.json({ success: true, message });

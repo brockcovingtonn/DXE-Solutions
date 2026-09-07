@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { getRequestClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import { notifyAdminOfClientActivity } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
 
 // Allows an authenticated client (or admin previewing) to post a note
 // on a project they own. Logs activity and notifies the admin.
 export async function POST(request) {
-  const supabase = createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user } = await getRequestClient(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -58,6 +57,21 @@ export async function POST(request) {
       clientName: authorName,
       message: `added a note: "${text.trim().slice(0, 140)}${text.trim().length > 140 ? '...' : ''}"`,
     });
+
+    try {
+      const { data: admins } = await supabase.from('profiles').select('id').eq('is_admin', true);
+      await Promise.all(
+        (admins || []).map((a) =>
+          sendPushToUser(a.id, {
+            title: `${authorName} — ${project.name}`,
+            body: `New note: ${text.trim().slice(0, 140)}`,
+            data: { type: 'note', projectId },
+          })
+        )
+      );
+    } catch (pushErr) {
+      console.error('Push notification error (client note):', pushErr);
+    }
 
     return NextResponse.json({ success: true, note });
   } catch (err) {

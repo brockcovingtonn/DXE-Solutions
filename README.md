@@ -127,6 +127,7 @@ There's now a built-in admin dashboard for this — no SQL required.
 23. Run `supabase/client_activity_log_migration.sql` any time. Adds the missing RLS policy letting a client's own session insert into `activity` for their own project — `/api/notes` and `/api/documents` were already trying to log client-authored notes/uploads there, but silently failing since only admins had an insert policy.
 24. Run `supabase/employee_project_team_migration.sql` any time after `employee_role_migration.sql`. Adds the missing RLS policy letting an assigned employee view `project_team` — the Cover Sheet page has been silently showing "No team members on file" for employees even when a team is on file, since only admins and the owning client ever had select access.
 25. Run `supabase/client_employee_contacts_migration.sql` any time after `contacts_migration.sql` and `employee_role_migration.sql`. Adds scoped select policies so a client sees contacts linked to a project they own, and an employee sees contacts linked to a project they're assigned to — `contacts`/`project_contacts` previously only had an admin-only policy.
+26. Run `supabase/push_notifications_migration.sql` any time. Adds a `device_tokens` table (one row per registered device, keyed to `user_id`) so the server can push native alerts via APNs for new chat messages, new documents/photos/notes, project status changes, and action item assignments. See "Push notifications setup" below to generate and configure the APNs credentials — without them, `sendPushToUser()` is a silent no-op.
 23. In Supabase, go to **Authentication > Users**, find Dixie's account (or create one for her the same way you created the demo client), and copy her User UID
 24. In the SQL editor, run:
 
@@ -155,6 +156,21 @@ Only needed once, before anyone clicks "Connect Google Calendar" in `/admin/cale
 7. Restart the dev server (or redeploy), then go to **Admin → Calendar** and click **Connect Google Calendar**.
 
 Once connected, any event created or edited from `/admin/calendar` is pushed to that admin's primary Google Calendar automatically (one-way: app → Google). Deleting an event in the app also removes it from Google Calendar.
+
+### Push notifications setup
+
+Only needed once, to enable native iOS push alerts (new chat message, new document/photo/note, project status change, action item assigned). `lib/push-notifications.js` talks to Apple's APNs directly over HTTP/2 — no third-party push service. Until the env vars below are set, `sendPushToUser()` silently no-ops so nothing else breaks.
+
+1. In [developer.apple.com](https://developer.apple.com/account) → **Certificates, Identifiers & Profiles → Keys**, create a new key with the **Apple Push Notifications service (APNs)** capability enabled. Download the `.p8` file — Apple only lets you download it once.
+2. Note the **Key ID** (shown on the key's page) and your **Team ID** (top-right of the developer account, or under Membership).
+3. Set these in `.env.local` (and your production environment variables — never commit the key):
+   - `APNS_KEY_ID` — the Key ID from step 2
+   - `APNS_TEAM_ID` — your Apple Developer Team ID
+   - `APNS_PRIVATE_KEY` — the full contents of the `.p8` file (including the `-----BEGIN/END PRIVATE KEY-----` lines; if pasting into a single-line env var, escape newlines as `\n`)
+   - `APNS_BUNDLE_ID` — optional, defaults to `com.dxesolutions.native`
+4. Restart the dev server (or redeploy).
+
+The `device_tokens` table (see migration 26 above) holds one row per device a user has granted notification permission on, with an `environment` of `production` or `sandbox` (TestFlight/App Store builds vs. local Xcode builds) so each token hits the matching APNs endpoint. Dead tokens (app uninstalled, etc.) are pruned automatically when Apple reports them invalid.
 
 ### AI Assistant setup
 
