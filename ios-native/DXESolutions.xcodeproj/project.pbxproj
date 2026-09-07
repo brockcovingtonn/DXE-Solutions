@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0098A320ED4AF5A9CB48DBE3 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F44A637646505F0FC42BF8 /* CalendarView.swift */; };
+		018E025FF4FCFDC080092351 /* AppearanceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B306722F9BDEE64D6EB6B00 /* AppearanceMode.swift */; };
 		05CF18C4D82ECCA0179052BE /* AdminDocumentsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3279152C0F443A1A9386791 /* AdminDocumentsEditor.swift */; };
 		19817E31170FA85611BECB2A /* AdminProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A270B2F6972E90601183DDE /* AdminProjectListView.swift */; };
 		1D34D391C61DB93CA87E1DD0 /* AdminNotesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D8312592E64FDB8E2394EF /* AdminNotesEditor.swift */; };
@@ -118,6 +119,7 @@
 		5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPhotosEditor.swift; sourceTree = "<group>"; };
 		6292F71DB994B94DCD3B84B9 /* AdminMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMoreView.swift; sourceTree = "<group>"; };
 		69F02EDDCAEBE42441638003 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
+		6B306722F9BDEE64D6EB6B00 /* AppearanceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceMode.swift; sourceTree = "<group>"; };
 		6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountingView.swift; sourceTree = "<group>"; };
 		6DE0ED254AADEF7B8AE3A2FC /* AdminContactListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminContactListView.swift; sourceTree = "<group>"; };
 		6FC99BEBEFE366DE169506F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				319A3974E3477D17BEA6B031 /* APIClient.swift */,
 				D0BA93DD88EDDD7155202691 /* AppConfig.swift */,
 				C0B32D454514F3EFA7625834 /* AppDelegate.swift */,
+				6B306722F9BDEE64D6EB6B00 /* AppearanceMode.swift */,
 				F22DCC4C73CA14BDEC58B508 /* AuthManager.swift */,
 				56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */,
 				7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */,
@@ -405,6 +408,7 @@
 				CA37D0D1C2172E514285498F /* AdminUtilitiesEditor.swift in Sources */,
 				D4E4542E875567563C7FE4C3 /* AppConfig.swift in Sources */,
 				D403F9130FD5F3FBB7546347 /* AppDelegate.swift in Sources */,
+				018E025FF4FCFDC080092351 /* AppearanceMode.swift in Sources */,
 				1FE534446585B2467EC8749A /* AssistantView.swift in Sources */,
 				376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */,
 				93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */,

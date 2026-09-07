@@ -24,6 +24,8 @@ struct SettingsView: View {
 
     @State private var hapticsEnabled = HapticManager.isEnabled
 
+    @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
+
     private var biometricType: BiometricType {
         BiometricAuth.availableType
     }
@@ -71,6 +73,18 @@ struct SettingsView: View {
                 }
             }
             .tint(Theme.gold)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Appearance")
+                    .font(.subheadline)
+                Picker("Appearance", selection: $appearanceMode) {
+                    ForEach(AppearanceMode.allCases) { mode in
+                        Text(mode.label).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+            .padding(.top, 6)
         }
     }
 
