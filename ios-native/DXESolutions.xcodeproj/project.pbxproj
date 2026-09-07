@@ -14,6 +14,7 @@
 		1FE534446585B2467EC8749A /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157B22EBAEEF952E297EDEE7 /* AssistantView.swift */; };
 		2845AF7C7210CAD8B3D93E38 /* AdminMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6292F71DB994B94DCD3B84B9 /* AdminMoreView.swift */; };
 		29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */; };
+		2D03A643414451D499AB7477 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45771A049E23067317A74197 /* DocumentScannerView.swift */; };
 		2E4825328E203BF4C032EE88 /* AdminTeamEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1828210D57BD8D6D80E6EA8E /* AdminTeamEditor.swift */; };
 		2FE08C8C3FF6F15C527C0519 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3836EE68A6F2DF4E083E200 /* Supabase */; };
 		303BAC9A0B5F16185811D398 /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F02EDDCAEBE42441638003 /* ProjectListView.swift */; };
@@ -66,6 +67,7 @@
 		DAD09E4A28DF7A9C10FE1ED5 /* AdminNewClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56877301A622C00BF68FC4 /* AdminNewClientView.swift */; };
 		E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932077758FDD662093311B1 /* SettingsView.swift */; };
 		E560AD659F28464AB3258AA1 /* AdminNewEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */; };
+		E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */; };
 		F98777AEA3C2C439C2CBEF06 /* AdminEmployeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */; };
 		FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */; };
 		FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */; };
@@ -91,6 +93,7 @@
 		331740BCC45D93200407D340 /* ClientTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTabView.swift; sourceTree = "<group>"; };
 		3818DF9DB37FA921B849D4A9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		3D257CF59F321363E8147DF8 /* DXESolutions.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DXESolutions.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		45771A049E23067317A74197 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		56BF6CC57968E832914576A0 /* PhotosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosView.swift; sourceTree = "<group>"; };
 		5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPhotosEditor.swift; sourceTree = "<group>"; };
@@ -112,6 +115,7 @@
 		A2ECC45E00D0B560C82CF395 /* AdminEmployeeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminEmployeeDetailView.swift; sourceTree = "<group>"; };
 		A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeTabView.swift; sourceTree = "<group>"; };
 		AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminEmployeeListView.swift; sourceTree = "<group>"; };
+		AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		B1BC5D704AA740F73561D6F8 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAccountingListView.swift; sourceTree = "<group>"; };
 		B770A62E58C1A60B56DEF8FE /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
@@ -196,10 +200,12 @@
 				89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */,
 				157B22EBAEEF952E297EDEE7 /* AssistantView.swift */,
 				10F44A637646505F0FC42BF8 /* CalendarView.swift */,
+				AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */,
 				926968E764E16E46B0AA476D /* ChatView.swift */,
 				331740BCC45D93200407D340 /* ClientTabView.swift */,
 				CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */,
 				3818DF9DB37FA921B849D4A9 /* DashboardView.swift */,
+				45771A049E23067317A74197 /* DocumentScannerView.swift */,
 				F1023192C3D89DE9C1F1B394 /* DocumentsView.swift */,
 				E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */,
 				B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */,
@@ -358,12 +364,14 @@
 				1FE534446585B2467EC8749A /* AssistantView.swift in Sources */,
 				376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */,
 				0098A320ED4AF5A9CB48DBE3 /* CalendarView.swift in Sources */,
+				E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */,
 				73F8C14782FD4092163352D1 /* ChatView.swift in Sources */,
 				3F1D5BC65EE405A340B03CE1 /* ClientTabView.swift in Sources */,
 				48DCEF2CFD148D8E81012BAB /* ContentView.swift in Sources */,
 				6C61F9C3C634D36A27A9DE9E /* CoverSheetView.swift in Sources */,
 				A43AABCECE1C8A606128AFDA /* DXESolutionsApp.swift in Sources */,
 				6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */,
+				2D03A643414451D499AB7477 /* DocumentScannerView.swift in Sources */,
 				7B6CBFF97861CA12A1E56138 /* DocumentsView.swift in Sources */,
 				D193D6DFBA23080B94ECA835 /* EmployeeDashboardView.swift in Sources */,
 				FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */,

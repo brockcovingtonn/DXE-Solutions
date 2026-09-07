@@ -21,6 +21,7 @@ targets:
         CFBundleIconName: AppIcon
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
+        NSCameraUsageDescription: DXE Solutions uses your camera to capture progress photos and scan documents for your projects.
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:

@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct DocumentsView: View {
     let project: Project
@@ -8,6 +9,10 @@ struct DocumentsView: View {
     @State private var errorMessage: String?
     @State private var downloadingId: String?
     @State private var previewItem: PreviewItem?
+    @State private var showScanner = false
+    @State private var showImporter = false
+    @State private var isUploading = false
+    @State private var uploadMessage: String?
 
     var body: some View {
         Group {
@@ -16,9 +21,15 @@ struct DocumentsView: View {
             } else if let error = errorMessage {
                 Text(error).foregroundColor(.red).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if documents.isEmpty {
-                Text("No documents yet")
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 16) {
+                    Spacer()
+                    Text("No documents yet")
+                        .foregroundColor(.secondary)
+                    uploadControls
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
             } else {
                 List(documents) { doc in
                     Button {
@@ -29,6 +40,11 @@ struct DocumentsView: View {
                     .disabled(downloadingId != nil)
                 }
                 .listStyle(.plain)
+                .safeAreaInset(edge: .bottom) {
+                    uploadControls
+                        .padding()
+                        .background(.bar)
+                }
             }
         }
         .navigationTitle("Documents")
@@ -36,6 +52,52 @@ struct DocumentsView: View {
         .task { await loadDocuments() }
         .sheet(item: $previewItem) { item in
             QuickLookPreview(url: item.url).ignoresSafeArea()
+        }
+        .fullScreenCover(isPresented: $showScanner) {
+            DocumentScannerView(
+                onScan: { data in
+                    showScanner = false
+                    Task { await uploadScanned(data) }
+                },
+                onCancel: { showScanner = false }
+            )
+            .ignoresSafeArea()
+        }
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.item], allowsMultipleSelection: false) { result in
+            if case .success(let urls) = result, let url = urls.first {
+                Task { await uploadFile(url) }
+            }
+        }
+    }
+
+    private var uploadControls: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 16) {
+                if DocumentScannerView.isSupported {
+                    Button {
+                        showScanner = true
+                    } label: {
+                        Label("Scan Document", systemImage: "doc.viewfinder")
+                    }
+                    .disabled(isUploading)
+                }
+
+                Button {
+                    showImporter = true
+                } label: {
+                    if isUploading {
+                        ProgressView()
+                    } else {
+                        Label("Upload File", systemImage: "doc.badge.plus")
+                    }
+                }
+                .disabled(isUploading)
+            }
+            .font(.caption.weight(.medium))
+
+            if let uploadMessage {
+                Text(uploadMessage).font(.caption).foregroundColor(.secondary)
+            }
         }
     }
 
@@ -115,6 +177,50 @@ struct DocumentsView: View {
             previewItem = PreviewItem(url: tempURL)
         } catch {
             errorMessage = "Could not open \(doc.fileName)."
+        }
+    }
+
+    private func uploadScanned(_ data: Data) async {
+        let fileName = "Scan \(Int(Date().timeIntervalSince1970 * 1000)).pdf"
+        await upload(data, fileName: fileName, fileType: "pdf")
+    }
+
+    private func uploadFile(_ url: URL) async {
+        guard url.startAccessingSecurityScopedResource() else {
+            uploadMessage = "Could not access the selected file."
+            return
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
+
+        guard let data = try? Data(contentsOf: url) else {
+            uploadMessage = "Could not read the selected file."
+            return
+        }
+
+        await upload(data, fileName: url.lastPathComponent, fileType: url.pathExtension)
+    }
+
+    private func upload(_ data: Data, fileName: String, fileType: String) async {
+        isUploading = true
+        uploadMessage = nil
+        defer { isUploading = false }
+
+        let filePath = "\(project.id)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
+
+        do {
+            try await SupabaseConfig.client.storage.from("project-documents").upload(filePath, data: data)
+
+            struct Payload: Encodable {
+                let projectId: String
+                let fileName: String
+                let filePath: String
+                let fileType: String
+            }
+            let payload = Payload(projectId: project.id, fileName: fileName, filePath: filePath, fileType: fileType)
+            try await APIClient.send("api/documents", method: "POST", body: payload)
+            await loadDocuments()
+        } catch {
+            uploadMessage = "Could not upload document."
         }
     }
 }

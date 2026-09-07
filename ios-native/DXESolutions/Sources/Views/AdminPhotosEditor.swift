@@ -11,6 +11,7 @@ struct AdminPhotosEditor: View {
     @State private var message: String?
     @State private var busyId: String?
     @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var showCamera = false
 
     private let columns = [GridItem(.adaptive(minimum: 90), spacing: 8)]
 
@@ -52,15 +53,26 @@ struct AdminPhotosEditor: View {
                     }
                 }
 
-                PhotosPicker(selection: $pickerItems, matching: .images) {
-                    if isUploading {
-                        ProgressView()
-                    } else {
-                        Label("Add Photos", systemImage: "photo.badge.plus")
+                HStack(spacing: 16) {
+                    if UIImagePickerController.isCameraAvailable {
+                        Button {
+                            showCamera = true
+                        } label: {
+                            Label("Take Photo", systemImage: "camera")
+                        }
+                        .disabled(isUploading)
                     }
+
+                    PhotosPicker(selection: $pickerItems, matching: .images) {
+                        if isUploading {
+                            ProgressView()
+                        } else {
+                            Label("Add Photos", systemImage: "photo.badge.plus")
+                        }
+                    }
+                    .disabled(isUploading)
                 }
                 .font(.caption.weight(.medium))
-                .disabled(isUploading)
                 .onChange(of: pickerItems) { newItems in
                     guard !newItems.isEmpty else { return }
                     Task { await upload(newItems) }
@@ -72,6 +84,16 @@ struct AdminPhotosEditor: View {
             }
         }
         .task { await load() }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraCapture(
+                onCapture: { data in
+                    showCamera = false
+                    Task { await uploadCaptured(data) }
+                },
+                onCancel: { showCamera = false }
+            )
+            .ignoresSafeArea()
+        }
     }
 
     private func load() async {
@@ -104,29 +126,43 @@ struct AdminPhotosEditor: View {
         var uploadedCount = 0
         for item in items {
             guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
-            let fileName = "\(Int(Date().timeIntervalSince1970 * 1000))-\(UUID().uuidString.prefix(8)).jpg"
-            let filePath = "\(projectId)/\(fileName)"
-            do {
-                try await SupabaseConfig.client.storage
-                    .from("project-photos")
-                    .upload(filePath, data: data)
-
-                struct Payload: Encodable {
-                    let projectId: String
-                    let filePath: String
-                    let logActivity: Bool
-                    let photoCount: Int
-                }
-                try await APIClient.send(
-                    "api/admin/photos", method: "POST",
-                    body: Payload(projectId: projectId, filePath: filePath, logActivity: true, photoCount: items.count)
-                )
-                uploadedCount += 1
-            } catch {
-                message = "Could not upload one or more photos."
-            }
+            if await uploadOne(data, photoCount: items.count) { uploadedCount += 1 }
         }
         if uploadedCount > 0 { await load() }
+    }
+
+    private func uploadCaptured(_ data: Data) async {
+        isUploading = true
+        message = nil
+        defer { isUploading = false }
+
+        if await uploadOne(data, photoCount: 1) { await load() }
+    }
+
+    @discardableResult
+    private func uploadOne(_ data: Data, photoCount: Int) async -> Bool {
+        let fileName = "\(Int(Date().timeIntervalSince1970 * 1000))-\(UUID().uuidString.prefix(8)).jpg"
+        let filePath = "\(projectId)/\(fileName)"
+        do {
+            try await SupabaseConfig.client.storage
+                .from("project-photos")
+                .upload(filePath, data: data)
+
+            struct Payload: Encodable {
+                let projectId: String
+                let filePath: String
+                let logActivity: Bool
+                let photoCount: Int
+            }
+            try await APIClient.send(
+                "api/admin/photos", method: "POST",
+                body: Payload(projectId: projectId, filePath: filePath, logActivity: true, photoCount: photoCount)
+            )
+            return true
+        } catch {
+            message = "Could not upload one or more photos."
+            return false
+        }
     }
 
     private func delete(_ photo: ProjectPhoto) async {

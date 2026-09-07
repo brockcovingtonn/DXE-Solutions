@@ -10,6 +10,7 @@ struct AdminDocumentsEditor: View {
     @State private var message: String?
     @State private var busyId: String?
     @State private var showImporter = false
+    @State private var showScanner = false
 
     private let badges = ["new", "signed", "pending", "contract"]
 
@@ -26,17 +27,28 @@ struct AdminDocumentsEditor: View {
                     }
                 }
 
-                Button {
-                    showImporter = true
-                } label: {
-                    if isUploading {
-                        ProgressView()
-                    } else {
-                        Label("Upload Document", systemImage: "doc.badge.plus")
+                HStack(spacing: 16) {
+                    if DocumentScannerView.isSupported {
+                        Button {
+                            showScanner = true
+                        } label: {
+                            Label("Scan Document", systemImage: "doc.viewfinder")
+                        }
+                        .disabled(isUploading)
                     }
+
+                    Button {
+                        showImporter = true
+                    } label: {
+                        if isUploading {
+                            ProgressView()
+                        } else {
+                            Label("Upload Document", systemImage: "doc.badge.plus")
+                        }
+                    }
+                    .disabled(isUploading)
                 }
                 .font(.caption.weight(.medium))
-                .disabled(isUploading)
 
                 if let message {
                     Text(message).font(.caption).foregroundColor(.secondary)
@@ -48,6 +60,16 @@ struct AdminDocumentsEditor: View {
             if case .success(let urls) = result, let url = urls.first {
                 Task { await upload(url) }
             }
+        }
+        .fullScreenCover(isPresented: $showScanner) {
+            DocumentScannerView(
+                onScan: { data in
+                    showScanner = false
+                    Task { await uploadScanned(data) }
+                },
+                onCancel: { showScanner = false }
+            )
+            .ignoresSafeArea()
         }
     }
 
@@ -103,7 +125,19 @@ struct AdminDocumentsEditor: View {
             return
         }
 
-        let fileName = url.lastPathComponent
+        await uploadData(data, fileName: url.lastPathComponent, fileType: url.pathExtension)
+    }
+
+    private func uploadScanned(_ data: Data) async {
+        isUploading = true
+        message = nil
+        defer { isUploading = false }
+
+        let fileName = "Scan \(Int(Date().timeIntervalSince1970 * 1000)).pdf"
+        await uploadData(data, fileName: fileName, fileType: "pdf")
+    }
+
+    private func uploadData(_ data: Data, fileName: String, fileType: String) async {
         let filePath = "\(projectId)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
 
         do {
@@ -118,7 +152,7 @@ struct AdminDocumentsEditor: View {
             }
             let payload = Payload(
                 projectId: projectId, fileName: fileName, filePath: filePath,
-                fileType: url.pathExtension, badge: "new"
+                fileType: fileType, badge: "new"
             )
             try await APIClient.send("api/admin/documents", method: "POST", body: payload)
             await load()
