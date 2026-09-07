@@ -505,6 +505,7 @@ struct EmployeeDashboardView: View {
             .update(payload)
             .eq("id", value: item.id)
             .execute()
+        HapticManager.selection()
         await loadAll()
     }
 }

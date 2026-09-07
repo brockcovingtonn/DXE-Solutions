@@ -20,6 +20,7 @@
 		2FE08C8C3FF6F15C527C0519 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3836EE68A6F2DF4E083E200 /* Supabase */; };
 		303BAC9A0B5F16185811D398 /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69F02EDDCAEBE42441638003 /* ProjectListView.swift */; };
 		32836CD90C9BDFC742C6DAF4 /* AccountingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */; };
+		361AFD8C4DD4B42339834058 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB8EE04D2F6140E079C1020A /* HapticManager.swift */; };
 		367D3983DDD42980C2A4A50F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FC99BEBEFE366DE169506F7 /* Assets.xcassets */; };
 		376A9FBA39B078C18CDD0857 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22DCC4C73CA14BDEC58B508 /* AuthManager.swift */; };
 		378EABAC51227B6B5AA33FB8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319A3974E3477D17BEA6B031 /* APIClient.swift */; };
@@ -145,6 +146,7 @@
 		E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewEmployeeView.swift; sourceTree = "<group>"; };
 		EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectContactsView.swift; sourceTree = "<group>"; };
 		EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleHomeView.swift; sourceTree = "<group>"; };
+		EB8EE04D2F6140E079C1020A /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DXESolutionsApp.swift; sourceTree = "<group>"; };
 		EF6D36460E80E987CDB7E48C /* UtilitiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilitiesView.swift; sourceTree = "<group>"; };
 		F1023192C3D89DE9C1F1B394 /* DocumentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentsView.swift; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 				7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */,
 				D15181145E9C02C05D8C25B9 /* ContentView.swift */,
 				ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */,
+				EB8EE04D2F6140E079C1020A /* HapticManager.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
 				D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */,
 				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
@@ -403,6 +406,7 @@
 				FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */,
 				29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */,
 				98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */,
+				361AFD8C4DD4B42339834058 /* HapticManager.swift in Sources */,
 				AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */,
 				ABA38773BAD7388F28295320 /* Models.swift in Sources */,
 				A678594A1687066BA84A2C76 /* NotesView.swift in Sources */,

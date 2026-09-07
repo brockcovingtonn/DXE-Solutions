@@ -214,11 +214,14 @@ struct AddCalendarEventView: View {
         let path = isAdmin ? "api/admin/calendar-events" : "api/calendar-events"
         do {
             try await APIClient.send(path, method: "POST", body: payload)
+            HapticManager.success()
             onSaved()
             dismiss()
         } catch let apiError as APIError {
+            HapticManager.error()
             errorMessage = apiError.errorDescription ?? "Could not save this event."
         } catch {
+            HapticManager.error()
             errorMessage = "Could not save this event."
         }
     }

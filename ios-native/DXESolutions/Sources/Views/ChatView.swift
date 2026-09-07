@@ -343,6 +343,7 @@ struct ChatView: View {
         draft = ""
         isSending = true
         defer { isSending = false }
+        HapticManager.impact(.light)
 
         // Routed through the same API route the web app uses (rather than
         // inserting directly) so the server can push-notify the other side

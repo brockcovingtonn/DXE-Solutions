@@ -267,8 +267,10 @@ struct DocumentsView: View {
             }
             let payload = Payload(projectId: project.id, fileName: fileName, filePath: filePath, fileType: fileType)
             try await APIClient.send("api/documents", method: "POST", body: payload)
+            HapticManager.success()
             await loadDocuments()
         } catch {
+            HapticManager.error()
             uploadMessage = "Could not upload document."
         }
     }

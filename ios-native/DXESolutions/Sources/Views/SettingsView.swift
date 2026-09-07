@@ -22,6 +22,8 @@ struct SettingsView: View {
     @State private var biometricEnabled = BiometricAuth.isEnabled
     @State private var biometricMessage: String?
 
+    @State private var hapticsEnabled = HapticManager.isEnabled
+
     private var biometricType: BiometricType {
         BiometricAuth.availableType
     }
@@ -30,6 +32,7 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 profileSection
+                preferencesSection
                 if biometricType != .none {
                     securitySection
                 }
@@ -40,6 +43,35 @@ struct SettingsView: View {
         .navigationTitle("Account Settings")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
+    }
+
+    private var preferencesSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Divider()
+
+            Text("PREFERENCES")
+                .font(.caption2.weight(.semibold))
+                .foregroundColor(.secondary)
+                .tracking(1)
+
+            Toggle(isOn: Binding(
+                get: { hapticsEnabled },
+                set: { newValue in
+                    hapticsEnabled = newValue
+                    HapticManager.isEnabled = newValue
+                    if newValue { HapticManager.selection() }
+                }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Haptic Feedback")
+                        .font(.subheadline)
+                    Text("Feel a light tap for taps, saves, and alerts")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .tint(Theme.gold)
+        }
     }
 
     private var securitySection: some View {

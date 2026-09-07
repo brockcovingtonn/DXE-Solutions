@@ -69,7 +69,10 @@ struct BiometricLockView: View {
         errorMessage = nil
         defer { isAuthenticating = false }
         let success = await auth.unlockWithBiometrics()
-        if !success {
+        if success {
+            HapticManager.success()
+        } else {
+            HapticManager.error()
             errorMessage = "Authentication failed. Try again or sign out."
         }
     }

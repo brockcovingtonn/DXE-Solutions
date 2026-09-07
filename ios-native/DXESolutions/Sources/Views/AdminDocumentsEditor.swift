@@ -160,8 +160,10 @@ struct AdminDocumentsEditor: View {
                 fileType: fileType, badge: "new"
             )
             try await APIClient.send("api/admin/documents", method: "POST", body: payload)
+            HapticManager.success()
             await load()
         } catch {
+            HapticManager.error()
             message = "Could not upload document."
         }
     }

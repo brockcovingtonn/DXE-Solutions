@@ -137,11 +137,14 @@ struct SignaturePadView: View {
                 "api/documents/\(documentId)/sign", method: "POST",
                 body: Payload(signatureDataUrl: dataUrl, signerName: signerName.trimmingCharacters(in: .whitespacesAndNewlines))
             )
+            HapticManager.success()
             onSigned()
             dismiss()
         } catch let apiError as APIError {
+            HapticManager.error()
             errorMessage = apiError.errorDescription ?? "Could not save your signature."
         } catch {
+            HapticManager.error()
             errorMessage = "Could not save your signature."
         }
     }

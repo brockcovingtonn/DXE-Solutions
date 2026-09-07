@@ -158,8 +158,10 @@ struct AdminPhotosEditor: View {
                 "api/admin/photos", method: "POST",
                 body: Payload(projectId: projectId, filePath: filePath, logActivity: true, photoCount: photoCount)
             )
+            HapticManager.success()
             return true
         } catch {
+            HapticManager.error()
             message = "Could not upload one or more photos."
             return false
         }

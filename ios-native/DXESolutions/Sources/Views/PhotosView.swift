@@ -122,8 +122,10 @@ struct PhotosView: View {
                 let filePath: String
             }
             try await APIClient.send("api/photos", method: "POST", body: Payload(projectId: project.id, filePath: filePath))
+            HapticManager.success()
             await loadPhotos()
         } catch {
+            HapticManager.error()
             uploadMessage = "Could not upload photo."
         }
     }

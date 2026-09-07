@@ -82,6 +82,9 @@ struct LoginView: View {
                 .frame(maxWidth: 420)
             }
         }
+        .onChange(of: auth.errorMessage) { newValue in
+            if newValue != nil { HapticManager.error() }
+        }
     }
 
     private var passwordField: some View {

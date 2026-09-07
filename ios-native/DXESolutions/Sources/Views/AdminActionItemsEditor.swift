@@ -141,8 +141,10 @@ struct AdminActionItemsEditor: View {
         let newStatus = item.status == "done" ? "open" : "done"
         do {
             try await APIClient.send("api/admin/action-items/\(item.id)", method: "PATCH", body: Payload(status: newStatus))
+            HapticManager.selection()
             await load()
         } catch {
+            HapticManager.error()
             message = "Could not update item."
         }
     }
