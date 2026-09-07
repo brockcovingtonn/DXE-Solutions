@@ -22,6 +22,7 @@ targets:
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
         NSCameraUsageDescription: DXE Solutions uses your camera to capture progress photos and scan documents for your projects.
+        NSFaceIDUsageDescription: DXE Solutions uses Face ID to quickly and securely unlock the app.
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:

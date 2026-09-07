@@ -19,10 +19,20 @@ struct SettingsView: View {
     @State private var passwordMessage: String?
     @State private var passwordMessageIsError = false
 
+    @State private var biometricEnabled = BiometricAuth.isEnabled
+    @State private var biometricMessage: String?
+
+    private var biometricType: BiometricType {
+        BiometricAuth.availableType
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 profileSection
+                if biometricType != .none {
+                    securitySection
+                }
                 passwordSection
             }
             .padding()
@@ -30,6 +40,56 @@ struct SettingsView: View {
         .navigationTitle("Account Settings")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
+    }
+
+    private var securitySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Divider()
+
+            Text("SECURITY")
+                .font(.caption2.weight(.semibold))
+                .foregroundColor(.secondary)
+                .tracking(1)
+
+            Toggle(isOn: Binding(
+                get: { biometricEnabled },
+                set: { handleBiometricToggle($0) }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Unlock with \(biometricType.label)")
+                        .font(.subheadline)
+                    Text("Require \(biometricType.label) each time you open the app")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .tint(Theme.gold)
+
+            if let biometricMessage {
+                Text(biometricMessage)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+        }
+    }
+
+    private func handleBiometricToggle(_ newValue: Bool) {
+        biometricMessage = nil
+        guard newValue else {
+            biometricEnabled = false
+            BiometricAuth.isEnabled = false
+            return
+        }
+        Task {
+            let success = await BiometricAuth.authenticate(reason: "Confirm \(biometricType.label) to enable app unlock")
+            if success {
+                biometricEnabled = true
+                BiometricAuth.isEnabled = true
+            } else {
+                biometricEnabled = false
+                biometricMessage = "Could not verify \(biometricType.label). Please try again."
+            }
+        }
     }
 
     private var profileSection: some View {

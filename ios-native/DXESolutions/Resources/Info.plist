@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>DXE Solutions uses your camera to capture progress photos and scan documents for your projects.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>DXE Solutions uses Face ID to quickly and securely unlock the app.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

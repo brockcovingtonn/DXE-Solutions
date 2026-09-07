@@ -15,6 +15,8 @@ struct ContentView: View {
         Group {
             if showSplash {
                 SplashView(namespace: logoNamespace)
+            } else if auth.isLockedByBiometrics {
+                BiometricLockView()
             } else if let profile = auth.profile {
                 if !profile.isAdmin && !profile.isEmployee {
                     ClientTabView()

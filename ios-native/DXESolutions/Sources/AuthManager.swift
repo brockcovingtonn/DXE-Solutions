@@ -27,6 +27,7 @@ final class AuthManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     @Published var isRestoringSession = true
+    @Published var isLockedByBiometrics = false
 
     private let client = SupabaseConfig.client
 
@@ -41,6 +42,15 @@ final class AuthManager: ObservableObject {
         await loadProfile(userId: session.user.id.uuidString)
         PushNotificationManager.shared.userSignedIn(userId: session.user.id.uuidString)
         PushNotificationManager.shared.requestPermissionIfNeeded()
+        if BiometricAuth.isEnabled && BiometricAuth.availableType != .none {
+            isLockedByBiometrics = true
+        }
+    }
+
+    func unlockWithBiometrics() async -> Bool {
+        let success = await BiometricAuth.authenticate(reason: "Unlock DXE Solutions")
+        if success { isLockedByBiometrics = false }
+        return success
     }
 
     func signIn(email: String, password: String) async {
@@ -63,6 +73,7 @@ final class AuthManager: ObservableObject {
         try? await client.auth.signOut()
         isAuthenticated = false
         profile = nil
+        isLockedByBiometrics = false
     }
 
     func refreshProfile() async {
