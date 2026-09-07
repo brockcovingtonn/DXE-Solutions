@@ -1,0 +1,48 @@
+name: DXESolutions
+options:
+  bundleIdPrefix: com.dxesolutions
+  deploymentTarget:
+    iOS: "16.0"
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.0.0
+targets:
+  DXESolutions:
+    type: application
+    platform: iOS
+    sources:
+      - path: DXESolutions/Sources
+      - path: DXESolutions/Resources/Assets.xcassets
+    info:
+      path: DXESolutions/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: DXE Solutions
+        CFBundleIconName: AppIcon
+        ITSAppUsesNonExemptEncryption: false
+        LSRequiresIPhoneOS: true
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+          UIImageName: LaunchLogo
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dxesolutions.native
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "2"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: JNQ2U9HTA3
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+    dependencies:
+      - package: Supabase
+        product: Supabase
