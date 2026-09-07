@@ -33,7 +33,7 @@ export default async function AdminProjectPage({ params }) {
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
-      supabase.from('documents').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+      supabase.from('documents').select('*, document_signatures(signer_name, created_at)').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('photos').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),

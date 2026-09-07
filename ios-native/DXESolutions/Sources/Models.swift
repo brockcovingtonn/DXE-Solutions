@@ -61,6 +61,7 @@ struct ProjectDocument: Codable, Identifiable, Hashable {
     let fileType: String?
     let badge: String?
     let createdAt: String?
+    let documentSignatures: [DocumentSignatureRef]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -68,6 +69,23 @@ struct ProjectDocument: Codable, Identifiable, Hashable {
         case filePath = "file_path"
         case fileType = "file_type"
         case badge
+        case createdAt = "created_at"
+        case documentSignatures = "document_signatures"
+    }
+
+    var isPdf: Bool {
+        (fileType ?? "").lowercased() == "pdf" || fileName.lowercased().hasSuffix(".pdf")
+    }
+
+    var signature: DocumentSignatureRef? { documentSignatures?.first }
+}
+
+struct DocumentSignatureRef: Codable, Hashable {
+    let signerName: String
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case signerName = "signer_name"
         case createdAt = "created_at"
     }
 }

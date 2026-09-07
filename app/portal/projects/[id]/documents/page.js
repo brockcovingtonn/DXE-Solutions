@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import DocumentUpload from '@/components/DocumentUpload';
+import DocumentsList from '@/components/DocumentsList';
 
 export default async function DocumentsPage({ params }) {
   const supabase = createClient();
@@ -15,18 +16,16 @@ export default async function DocumentsPage({ params }) {
 
   if (!project) notFound();
 
-  const { data: docs } = await supabase
-    .from('documents')
-    .select('*')
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: false });
+  const [{ data: docs }, { data: profile }] = await Promise.all([
+    supabase
+      .from('documents')
+      .select('*, document_signatures(signer_name, created_at)')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false }),
+    supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single(),
+  ]);
 
-  const BADGE_CLASS = {
-    new: styles.badgeNew,
-    signed: styles.badgeSigned,
-    pending: styles.badgePending,
-    contract: styles.badgeContract,
-  };
+  const currentUserName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
 
   return (
     <div>
@@ -39,42 +38,10 @@ export default async function DocumentsPage({ params }) {
 
       <div className={styles.fullWidthCard}>
         <h3>All Project Documents</h3>
-        <div className={styles.docList}>
-          {(docs || []).map((d) => (
-            <div className={styles.docItem} key={d.id}>
-              <div className={styles.docIcon}>
-                <i className="ti ti-file-text" aria-hidden="true"></i>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className={styles.docName}>{d.file_name}</div>
-                <div className={styles.docMeta}>
-                  {formatDate(d.created_at)} · Uploaded by{' '}
-                  {d.uploaded_by_role === 'dxe' ? 'DXE' : 'You'}
-                </div>
-              </div>
-              <span className={`${styles.docBadge} ${BADGE_CLASS[d.badge] || ''}`}>{d.badge}</span>
-              <a
-                href={`/api/documents/${d.id}/download`}
-                style={{ color: '#718096', fontSize: '1rem', marginLeft: '0.75rem', cursor: 'pointer' }}
-                title="Download"
-              >
-                <i className="ti ti-download" aria-hidden="true"></i>
-              </a>
-            </div>
-          ))}
-          {(!docs || docs.length === 0) && (
-            <p style={{ fontSize: '0.85rem', color: '#718096' }}>No documents yet.</p>
-          )}
-        </div>
+        <DocumentsList docs={docs} currentUserName={currentUserName} />
       </div>
 
       <DocumentUpload projectId={projectId} />
     </div>
   );
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }

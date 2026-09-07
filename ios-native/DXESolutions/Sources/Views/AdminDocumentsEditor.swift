@@ -84,6 +84,11 @@ struct AdminDocumentsEditor: View {
                 } label: {
                     Text(doc.badge?.capitalized ?? "New").font(.caption).foregroundColor(Theme.gold)
                 }
+                if let signature = doc.signature {
+                    Label("Signed by \(signature.signerName)", systemImage: "checkmark.seal.fill")
+                        .font(.caption2)
+                        .foregroundColor(.green)
+                }
             }
             Spacer()
             if busyId == doc.id {
@@ -104,7 +109,7 @@ struct AdminDocumentsEditor: View {
 
     private func load() async {
         documents = (try? await SupabaseConfig.client
-            .from("documents").select().eq("project_id", value: projectId)
+            .from("documents").select("*, document_signatures(signer_name, created_at)").eq("project_id", value: projectId)
             .order("created_at", ascending: false).execute().value) ?? []
         isLoading = false
     }

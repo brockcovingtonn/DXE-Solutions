@@ -4,6 +4,8 @@ import UniformTypeIdentifiers
 struct DocumentsView: View {
     let project: Project
 
+    @EnvironmentObject var auth: AuthManager
+
     @State private var documents: [ProjectDocument] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -13,6 +15,11 @@ struct DocumentsView: View {
     @State private var showImporter = false
     @State private var isUploading = false
     @State private var uploadMessage: String?
+    @State private var signingDocument: ProjectDocument?
+
+    private var defaultSignerName: String {
+        [auth.profile?.firstName, auth.profile?.lastName].compactMap { $0 }.joined(separator: " ")
+    }
 
     var body: some View {
         Group {
@@ -38,6 +45,16 @@ struct DocumentsView: View {
                         row(for: doc)
                     }
                     .disabled(downloadingId != nil)
+                    .swipeActions(edge: .trailing) {
+                        if doc.isPdf && doc.signature == nil {
+                            Button {
+                                signingDocument = doc
+                            } label: {
+                                Label("Sign", systemImage: "signature")
+                            }
+                            .tint(Theme.gold)
+                        }
+                    }
                 }
                 .listStyle(.plain)
                 .safeAreaInset(edge: .bottom) {
@@ -66,6 +83,11 @@ struct DocumentsView: View {
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.item], allowsMultipleSelection: false) { result in
             if case .success(let urls) = result, let url = urls.first {
                 Task { await uploadFile(url) }
+            }
+        }
+        .sheet(item: $signingDocument) { doc in
+            SignaturePadView(documentId: doc.id, defaultName: defaultSignerName) {
+                Task { await loadDocuments() }
             }
         }
     }
@@ -118,6 +140,11 @@ struct DocumentsView: View {
                         .foregroundColor(badgeColor(badge))
                         .clipShape(Capsule())
                 }
+                if let signature = doc.signature {
+                    Label("Signed by \(signature.signerName)", systemImage: "checkmark.seal.fill")
+                        .font(.caption2)
+                        .foregroundColor(.green)
+                }
             }
             Spacer()
             if downloadingId == doc.id {
@@ -153,7 +180,7 @@ struct DocumentsView: View {
         do {
             let documents: [ProjectDocument] = try await SupabaseConfig.client
                 .from("documents")
-                .select()
+                .select("*, document_signatures(signer_name, created_at)")
                 .eq("project_id", value: project.id)
                 .order("created_at", ascending: false)
                 .execute()
@@ -169,15 +196,37 @@ struct DocumentsView: View {
         downloadingId = doc.id
         defer { downloadingId = nil }
         do {
-            let data = try await SupabaseConfig.client.storage
-                .from("project-documents")
-                .download(path: doc.filePath)
+            let data: Data
+            if let signedPdfPath = await signedPdfPath(for: doc) {
+                data = try await SupabaseConfig.client.storage
+                    .from("document-signatures")
+                    .download(path: signedPdfPath)
+            } else {
+                data = try await SupabaseConfig.client.storage
+                    .from("project-documents")
+                    .download(path: doc.filePath)
+            }
             let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(doc.fileName)
             try data.write(to: tempURL)
             previewItem = PreviewItem(url: tempURL)
         } catch {
             errorMessage = "Could not open \(doc.fileName)."
         }
+    }
+
+    private func signedPdfPath(for doc: ProjectDocument) async -> String? {
+        guard doc.signature != nil else { return nil }
+        struct SignedPdfRow: Codable { let signedPdfPath: String
+            enum CodingKeys: String, CodingKey { case signedPdfPath = "signed_pdf_path" }
+        }
+        let row: SignedPdfRow? = try? await SupabaseConfig.client
+            .from("document_signatures")
+            .select("signed_pdf_path")
+            .eq("document_id", value: doc.id)
+            .single()
+            .execute()
+            .value
+        return row?.signedPdfPath
     }
 
     private func uploadScanned(_ data: Data) async {

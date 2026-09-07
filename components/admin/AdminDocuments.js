@@ -103,8 +103,19 @@ export default function AdminDocuments({ projectId, initialDocs }) {
             <div style={{ flex: 1 }}>
               <div className={styles.docName}>{d.file_name}</div>
               <div className={styles.docMeta}>
-                {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : 'Client'}
+                {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : d.uploaded_by_role === 'employee' ? 'Employee' : 'Client'}
               </div>
+              {(() => {
+                const signature = Array.isArray(d.document_signatures) ? d.document_signatures[0] : d.document_signatures;
+                return signature ? (
+                  <div style={{ fontSize: '0.72rem', color: '#22543d', marginTop: '0.2rem' }}>
+                    <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on {formatDate(signature.created_at)} ·{' '}
+                    <a href={`/api/documents/${d.id}/download`} style={{ color: '#22543d', fontWeight: 500 }}>
+                      View signed PDF
+                    </a>
+                  </div>
+                ) : null;
+              })()}
             </div>
             <select
               value={d.badge}

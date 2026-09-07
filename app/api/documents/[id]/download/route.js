@@ -25,9 +25,21 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { data, error } = await supabase.storage
-    .from('project-documents')
-    .createSignedUrl(doc.file_path, 60, { download: doc.file_name || true });
+  // Once signed, the stamped PDF (with the signature page) is the
+  // authoritative version everyone should see when downloading.
+  const { data: signature } = await supabase
+    .from('document_signatures')
+    .select('signed_pdf_path')
+    .eq('document_id', params.id)
+    .maybeSingle();
+
+  const { data, error } = signature
+    ? await supabase.storage
+        .from('document-signatures')
+        .createSignedUrl(signature.signed_pdf_path, 60, { download: doc.file_name || true })
+    : await supabase.storage
+        .from('project-documents')
+        .createSignedUrl(doc.file_path, 60, { download: doc.file_name || true });
 
   if (error || !data) {
     return NextResponse.json({ error: 'Could not generate download link' }, { status: 500 });
