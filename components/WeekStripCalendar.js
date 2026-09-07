@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AddToCalendarLink from '@/components/AddToCalendarLink';
+import { fetchWeather, weatherDisplay, weatherForDate } from '@/lib/weather-client';
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -40,6 +41,11 @@ function eventsOnDay(events, day) {
 export default function WeekStripCalendar({ events, viewAllHref }) {
   const today = startOfDay(new Date());
   const [selected, setSelected] = useState(today);
+  const [weatherDays, setWeatherDays] = useState([]);
+
+  useEffect(() => {
+    fetchWeather().then((data) => setWeatherDays(data.days || []));
+  }, []);
 
   const weekStart = startOfWeek(today);
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -95,6 +101,14 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
                   background: count > 0 ? (isSelected ? 'var(--gold-light)' : 'var(--gold)') : 'transparent',
                 }}
               />
+              {(() => {
+                const weather = weatherForDate(weatherDays, day);
+                return weather ? (
+                  <div style={{ fontSize: '0.6rem', marginTop: '0.2rem', color: isSelected ? 'rgba(255,255,255,0.7)' : '#a0aec0' }}>
+                    {weatherDisplay(weather.weatherCode).emoji} {weather.high}°
+                  </div>
+                ) : null;
+              })()}
             </button>
           );
         })}

@@ -47,6 +47,7 @@
 		8C0761502D76BF8F499651B7 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
 		98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */; };
+		9C6121BC348829DDFBD187BB /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */; };
 		9C82A5BC619614FDDDB94E1A /* RoleHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */; };
 		9E143D64347AAD08B0C0BE9C /* AdminContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE0ED254AADEF7B8AE3A2FC /* AdminContactListView.swift */; };
 		A25E0822E937BEDFF38A161B /* AdminTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2953CB626BF873B468477CA2 /* AdminTabView.swift */; };
@@ -118,6 +119,7 @@
 		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
 		89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUtilitiesEditor.swift; sourceTree = "<group>"; };
 		8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookPreview.swift; sourceTree = "<group>"; };
+		8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminSearchView.swift; sourceTree = "<group>"; };
 		926968E764E16E46B0AA476D /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		9276FE0E4772501897C61A48 /* ProjectOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectOverviewView.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
 				21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */,
 				96A8EDC856961F1CA2AA278E /* Theme.swift */,
+				8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */,
 				56D260485A0B852BC6C11858 /* Views */,
 			);
 			name = Sources;
@@ -430,6 +433,7 @@
 				5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */,
 				BEDD1CD571A0F90138766A05 /* Theme.swift in Sources */,
 				B6AFD5A6E66449CEA6A27106 /* UtilitiesView.swift in Sources */,
+				9C6121BC348829DDFBD187BB /* WeatherService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

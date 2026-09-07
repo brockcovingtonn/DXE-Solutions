@@ -13,6 +13,7 @@ struct CalendarView: View {
     @State private var refDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var showAddEvent = false
+    @State private var weatherDays: [WeatherDay] = []
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
@@ -57,6 +58,7 @@ struct CalendarView: View {
             }
         }
         .task { await loadEvents() }
+        .task { weatherDays = await WeatherService.days() }
         .sheet(isPresented: $showAddEvent) {
             AddCalendarEventView(lockedProject: project, isAdmin: auth.profile?.isAdmin == true) {
                 Task { await loadEvents() }
@@ -163,6 +165,15 @@ struct CalendarView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundColor(Theme.gold)
                 .tracking(1)
+
+            if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {
+                HStack(spacing: 6) {
+                    Text(WeatherDisplay.emoji(for: weather.weatherCode))
+                    Text("\(WeatherDisplay.label(for: weather.weatherCode)) · High \(weather.high)° / Low \(weather.low)°")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
 
             if dayEvents.isEmpty {
                 Text("Nothing on the calendar for this day.")

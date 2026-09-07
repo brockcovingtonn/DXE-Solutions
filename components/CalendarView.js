@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { fetchWeather, weatherDisplay, weatherForDate } from '@/lib/weather-client';
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -67,6 +68,11 @@ const activeTabStyle = { background: 'var(--navy)', color: 'var(--white)', borde
 export default function CalendarView({ events, onSelectEvent, selectedEventId, headerActions }) {
   const [view, setView] = useState('month');
   const [refDate, setRefDate] = useState(() => startOfDay(new Date()));
+  const [weatherDays, setWeatherDays] = useState([]);
+
+  useEffect(() => {
+    fetchWeather().then((data) => setWeatherDays(data.days || []));
+  }, []);
 
   function goToday() {
     setRefDate(startOfDay(new Date()));
@@ -129,19 +135,19 @@ export default function CalendarView({ events, onSelectEvent, selectedEventId, h
       </div>
 
       {view === 'month' && (
-        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} />
+        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
       )}
       {view === 'week' && (
-        <WeekGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} />
+        <WeekGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
       )}
       {view === 'day' && (
-        <DayBrief refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} />
+        <DayBrief refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
       )}
     </div>
   );
 }
 
-function MonthGrid({ refDate, events, onSelectEvent, selectedEventId }) {
+function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
   const monthStart = startOfMonth(refDate);
   const gridStart = startOfWeek(monthStart);
   const days = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
@@ -170,10 +176,18 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId }) {
         const inMonth = day.getMonth() === monthStart.getMonth();
         const dayEvents = eventsOnDay(events, day);
         const isToday = isSameDay(day, today);
+        const weather = weatherForDate(weatherDays, day);
         return (
           <div key={i} style={{ background: 'var(--white)', minHeight: '92px', padding: '0.4rem', opacity: inMonth ? 1 : 0.4 }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)', marginBottom: '0.3rem' }}>
-              {day.getDate()}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>
+                {day.getDate()}
+              </div>
+              {weather && (
+                <div title={`${weatherDisplay(weather.weatherCode).label} · High ${weather.high}° / Low ${weather.low}°`} style={{ fontSize: '0.68rem', color: '#a0aec0' }}>
+                  {weatherDisplay(weather.weatherCode).emoji} {weather.high}°
+                </div>
+              )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
               {dayEvents.slice(0, 3).map((e) => (
@@ -188,7 +202,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId }) {
   );
 }
 
-function WeekGrid({ refDate, events, onSelectEvent, selectedEventId }) {
+function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
   const start = startOfWeek(refDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const today = startOfDay(new Date());
@@ -198,11 +212,17 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId }) {
       {days.map((day, i) => {
         const dayEvents = eventsOnDay(events, day);
         const isToday = isSameDay(day, today);
+        const weather = weatherForDate(weatherDays, day);
         return (
           <div key={i} style={{ border: '1px solid var(--border)', minHeight: '170px' }}>
             <div style={{ padding: '0.5rem', background: isToday ? 'var(--surface)' : 'transparent', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
               <div style={{ fontSize: '0.62rem', color: '#a0aec0', textTransform: 'uppercase' }}>{WEEKDAY_LABELS[day.getDay()]}</div>
               <div style={{ fontSize: '0.95rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>{day.getDate()}</div>
+              {weather && (
+                <div style={{ fontSize: '0.68rem', color: '#a0aec0', marginTop: '0.15rem' }}>
+                  {weatherDisplay(weather.weatherCode).emoji} {weather.high}°/{weather.low}°
+                </div>
+              )}
             </div>
             <div style={{ padding: '0.4rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
               {dayEvents.map((e) => (
@@ -217,46 +237,58 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId }) {
   );
 }
 
-function DayBrief({ refDate, events, onSelectEvent, selectedEventId }) {
+function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
   const dayEvents = eventsOnDay(events, refDate);
-
-  if (dayEvents.length === 0) {
-    return <p style={{ fontSize: '0.85rem', color: '#718096' }}>Nothing on the calendar for this day.</p>;
-  }
+  const weather = weatherForDate(weatherDays, refDate);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-      {dayEvents.map((e) => (
-        <button
-          key={e.id}
-          type="button"
-          onClick={() => onSelectEvent(e)}
-          style={{
-            textAlign: 'left',
-            display: 'flex',
-            gap: '1rem',
-            alignItems: 'flex-start',
-            padding: '0.85rem',
-            border: '1px solid rgba(62,84,104,0.12)',
-            cursor: 'pointer',
-            background: e.id === selectedEventId ? 'var(--surface)' : 'var(--white)',
-          }}
-        >
-          <div style={{ fontSize: '0.78rem', color: 'var(--gold)', fontWeight: 600, flexShrink: 0, width: '5rem' }}>
-            {e.all_day ? 'All day' : formatTime(e.start_time)}
-          </div>
-          <div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--navy)' }}>{e.title}</div>
-            {e.description && <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>{e.description}</div>}
-            {e.projects?.name && (
-              <div style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.2rem' }}>
-                {e.projects.name}
-                {e.visible_to_client ? ' · Visible to client' : ''}
+    <div>
+      {weather && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--navy)', marginBottom: '0.85rem' }}>
+          <span style={{ fontSize: '1.3rem' }}>{weatherDisplay(weather.weatherCode).emoji}</span>
+          <span>
+            {weatherDisplay(weather.weatherCode).label} · High {weather.high}° / Low {weather.low}°
+            {weather.precipitationChance != null && weather.precipitationChance > 0 ? ` · ${weather.precipitationChance}% chance of rain` : ''}
+          </span>
+        </div>
+      )}
+      {dayEvents.length === 0 ? (
+        <p style={{ fontSize: '0.85rem', color: '#718096' }}>Nothing on the calendar for this day.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          {dayEvents.map((e) => (
+            <button
+              key={e.id}
+              type="button"
+              onClick={() => onSelectEvent(e)}
+              style={{
+                textAlign: 'left',
+                display: 'flex',
+                gap: '1rem',
+                alignItems: 'flex-start',
+                padding: '0.85rem',
+                border: '1px solid rgba(62,84,104,0.12)',
+                cursor: 'pointer',
+                background: e.id === selectedEventId ? 'var(--surface)' : 'var(--white)',
+              }}
+            >
+              <div style={{ fontSize: '0.78rem', color: 'var(--gold)', fontWeight: 600, flexShrink: 0, width: '5rem' }}>
+                {e.all_day ? 'All day' : formatTime(e.start_time)}
               </div>
-            )}
-          </div>
-        </button>
-      ))}
+              <div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--navy)' }}>{e.title}</div>
+                {e.description && <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>{e.description}</div>}
+                {e.projects?.name && (
+                  <div style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.2rem' }}>
+                    {e.projects.name}
+                    {e.visible_to_client ? ' · Visible to client' : ''}
+                  </div>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

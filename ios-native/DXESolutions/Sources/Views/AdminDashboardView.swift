@@ -12,6 +12,7 @@ struct AdminDashboardView: View {
     @State private var utilityEntries: [AdminUtilityEntry] = []
     @State private var isLoading = true
     @State private var isOffline = false
+    @State private var weatherDays: [WeatherDay] = []
     @State private var showSearch = false
     @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
@@ -77,6 +78,7 @@ struct AdminDashboardView: View {
                 }
             }
             .task { await loadAll() }
+            .task { weatherDays = await WeatherService.days() }
             .refreshable { await loadAll() }
             .sheet(isPresented: $showSearch) {
                 AdminSearchView()
@@ -136,6 +138,15 @@ struct AdminDashboardView: View {
                 }
             }
 
+            if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {
+                HStack(spacing: 6) {
+                    Text(WeatherDisplay.emoji(for: weather.weatherCode))
+                    Text("\(WeatherDisplay.label(for: weather.weatherCode)) · High \(weather.high)° / Low \(weather.low)°")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
             let dayEvents = eventsOn(selectedDate)
             if dayEvents.isEmpty {
                 Text("Nothing scheduled.").font(.subheadline).foregroundColor(.secondary)
@@ -175,6 +186,10 @@ struct AdminDashboardView: View {
                 Circle()
                     .fill(count == 0 ? Color.clear : (isSelected ? Color.white : Theme.gold))
                     .frame(width: 5, height: 5)
+                if let weather = WeatherService.day(for: day, in: weatherDays) {
+                    Text(WeatherDisplay.emoji(for: weather.weatherCode))
+                        .font(.system(size: 10))
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 56)
             .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))

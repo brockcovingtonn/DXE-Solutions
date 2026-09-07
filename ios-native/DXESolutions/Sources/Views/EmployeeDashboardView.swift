@@ -9,6 +9,7 @@ struct EmployeeDashboardView: View {
     @State private var activity: [ActivityItem] = []
     @State private var isLoading = true
     @State private var isOffline = false
+    @State private var weatherDays: [WeatherDay] = []
     @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var busyItemId: String?
@@ -81,6 +82,7 @@ struct EmployeeDashboardView: View {
                 }
             }
             .task { await loadAll() }
+            .task { weatherDays = await WeatherService.days() }
             .refreshable { await loadAll() }
         }
     }
@@ -150,6 +152,10 @@ struct EmployeeDashboardView: View {
                 Circle()
                     .fill(count == 0 ? Color.clear : (isSelected ? Color.white : Theme.gold))
                     .frame(width: 5, height: 5)
+                if let weather = WeatherService.day(for: day, in: weatherDays) {
+                    Text(WeatherDisplay.emoji(for: weather.weatherCode))
+                        .font(.system(size: 10))
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 56)
             .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))
@@ -164,6 +170,15 @@ struct EmployeeDashboardView: View {
             Text(selectedDateTitle)
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(Theme.navy)
+
+            if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {
+                HStack(spacing: 6) {
+                    Text(WeatherDisplay.emoji(for: weather.weatherCode))
+                    Text("\(WeatherDisplay.label(for: weather.weatherCode)) · High \(weather.high)° / Low \(weather.low)°")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
 
             if dayEvents.isEmpty {
                 Text("Nothing scheduled.")

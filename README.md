@@ -176,6 +176,10 @@ Only needed once, to enable native iOS push alerts (new chat message, new docume
 
 The `device_tokens` table (see migration 26 above) holds one row per device a user has granted notification permission on, with an `environment` of `production` or `sandbox` (TestFlight/App Store builds vs. local Xcode builds) so each token hits the matching APNs endpoint. Dead tokens (app uninstalled, etc.) are pruned automatically when Apple reports them invalid.
 
+### Weather on calendar
+
+No setup needed — `app/api/weather` calls Open-Meteo (free, no API key) and defaults to Los Angeles, CA, DXE's primary service area. If the firm's actual base is elsewhere, set `WEATHER_LATITUDE` / `WEATHER_LONGITUDE` env vars (decimal degrees) and redeploy. The forecast covers 16 days out and refreshes every 30 minutes; both the web calendar views and the native app call this same endpoint, so there's only one place to change the location.
+
 ### AI Assistant setup
 
 The Assistant (bottom of the sidebar, plus a floating icon on every page, in the Master account, the client portal, and the employee portal) is an actual tool-calling Claude agent — it can look up real project data, including permits, documents on file, and accounting balance. No new database migration is needed; it reads and writes through the same tables and RLS policies as the rest of the app, so each role only ever sees what that role can already see elsewhere in the portal:
