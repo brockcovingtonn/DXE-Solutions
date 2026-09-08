@@ -7,9 +7,13 @@ struct ClientTabView: View {
         TabView {
             DashboardView()
                 .tabItem { Label("Dashboard", systemImage: "house.fill") }
-                .badge(auth.unreadMessageCount)
             ProjectListView()
                 .tabItem { Label("Projects", systemImage: "folder.fill") }
+            NavigationStack {
+                ClientChatView()
+            }
+            .tabItem { Label("Chat", systemImage: "message.fill") }
+            .badge(auth.unreadMessageCount)
             NavigationStack {
                 AssistantView()
                     .toolbar {

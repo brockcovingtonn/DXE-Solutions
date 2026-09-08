@@ -5,6 +5,25 @@ private struct ProjectPickerRef: Codable, Identifiable, Hashable {
     let name: String
 }
 
+private struct AssignablePerson: Identifiable, Hashable {
+    let id: String
+    let name: String
+}
+
+private struct FirmMember: Decodable {
+    let id: String
+    let firstName: String?
+    let lastName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
+
+    var name: String { [firstName, lastName].compactMap { $0 }.joined(separator: " ") }
+}
+
 struct AddCalendarEventView: View {
     let lockedProject: Project?
     let isAdmin: Bool
@@ -25,7 +44,7 @@ struct AddCalendarEventView: View {
     @State private var visibleToClient = false
 
     @State private var projects: [ProjectPickerRef] = []
-    @State private var people: [ProjectRosterMember] = []
+    @State private var people: [AssignablePerson] = []
     @State private var isSaving = false
     @State private var errorMessage: String?
 
@@ -91,7 +110,6 @@ struct AddCalendarEventView: View {
                         }
                     }
                     .pickerStyle(.menu)
-                    .disabled(effectiveProjectId.isEmpty)
                 }
 
                 Section("When") {
@@ -132,6 +150,7 @@ struct AddCalendarEventView: View {
             .task {
                 if lockedProject == nil {
                     await loadProjects()
+                    await loadFirmwidePeople()
                 } else if let lockedProject {
                     await loadRoster(projectId: lockedProject.id)
                 }
@@ -139,7 +158,7 @@ struct AddCalendarEventView: View {
             .onChange(of: selectedProjectId) { newValue in
                 assignedTo = ""
                 if newValue.isEmpty {
-                    people = []
+                    Task { await loadFirmwidePeople() }
                 } else {
                     Task { await loadRoster(projectId: newValue) }
                 }
@@ -158,7 +177,20 @@ struct AddCalendarEventView: View {
 
     private func loadRoster(projectId: String) async {
         guard let roster: ProjectRoster = try? await APIClient.get("api/projects/\(projectId)/roster") else { return }
-        people = roster.staff
+        people = roster.staff.map { AssignablePerson(id: $0.id, name: $0.name) }
+    }
+
+    // Firm-wide assignee list for a general (no-project) item — matches
+    // the web master calendar, which isn't scoped to any project's team.
+    private func loadFirmwidePeople() async {
+        let rows: [FirmMember] = (try? await SupabaseConfig.client
+            .from("profiles")
+            .select("id, first_name, last_name")
+            .or("is_admin.eq.true,is_employee.eq.true")
+            .order("first_name", ascending: true)
+            .execute()
+            .value) ?? []
+        people = rows.map { AssignablePerson(id: $0.id, name: $0.name) }
     }
 
     private func save() async {

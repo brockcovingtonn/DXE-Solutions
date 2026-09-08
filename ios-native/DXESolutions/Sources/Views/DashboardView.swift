@@ -29,8 +29,6 @@ struct DashboardView: View {
                         OfflineBanner(lastSyncedAt: lastSyncedAt)
                     }
 
-                    chatCard
-
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Text("This Week")
@@ -85,7 +83,16 @@ struct DashboardView: View {
 
     private var activitySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+            NavigationLink {
+                ClientActivityListView()
+            } label: {
+                HStack {
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Spacer()
+                    Text("View All").font(.caption.weight(.semibold))
+                }
+            }
+            .buttonStyle(.plain)
             if activity.isEmpty {
                 Text("No recent activity.").font(.subheadline).foregroundColor(.secondary)
             } else {
@@ -132,36 +139,6 @@ struct DashboardView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d, yyyy"
         return formatter.string(from: date)
-    }
-
-    // MARK: - Chat
-
-    private var chatCard: some View {
-        NavigationLink {
-            ChatView()
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "message.fill")
-                    .font(.title2)
-                    .foregroundColor(Theme.gold)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Chat with DXE Solutions")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(Theme.navy)
-                    Text("Message Dixie and the team")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding()
-            .background(Theme.cream)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Week strip
@@ -328,7 +305,7 @@ struct DashboardView: View {
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
-            .limit(15)
+            .limit(6)
             .execute().value
 
         do {

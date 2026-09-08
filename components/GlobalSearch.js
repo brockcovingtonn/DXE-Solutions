@@ -3,13 +3,52 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-const emptyResults = { clients: [], projects: [], contacts: [], documents: [] };
+const CONFIGS = {
+  admin: {
+    endpoint: '/api/admin/search',
+    placeholder: 'Search clients, projects, contacts, documents...',
+    groups: ['clients', 'projects', 'contacts', 'documents'],
+    hrefs: {
+      clients: (item) => `/admin/clients/${item.id}`,
+      projects: (item) => `/admin/projects/${item.id}`,
+      contacts: (item) => `/admin/contacts/${item.id}`,
+      documents: (item) => `/admin/projects/${item.project_id}`,
+    },
+  },
+  client: {
+    endpoint: '/api/search',
+    placeholder: 'Search your projects, documents, contacts...',
+    groups: ['projects', 'documents', 'contacts'],
+    hrefs: {
+      projects: (item) => `/portal/projects/${item.id}/overview`,
+      documents: (item) => `/portal/projects/${item.project_id}/documents`,
+      contacts: null,
+    },
+  },
+  employee: {
+    endpoint: '/api/search',
+    placeholder: 'Search your projects, documents, contacts...',
+    groups: ['projects', 'documents', 'contacts'],
+    hrefs: {
+      projects: (item) => `/projects/${item.id}/cover-sheet`,
+      documents: (item) => `/projects/${item.project_id}/cover-sheet`,
+      contacts: null,
+    },
+  },
+};
 
-export default function GlobalSearch() {
+const LABELS = { clients: 'Clients', projects: 'Projects', contacts: 'Contacts', documents: 'Documents' };
+
+function emptyResultsFor(groups) {
+  return Object.fromEntries(groups.map((g) => [g, []]));
+}
+
+export default function GlobalSearch({ role = 'admin' }) {
+  const config = CONFIGS[role] || CONFIGS.admin;
   const router = useRouter();
   const containerRef = useRef(null);
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState(emptyResults);
+  const [results, setResults] = useState(() => emptyResultsFor(config.groups));
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,30 +65,70 @@ export default function GlobalSearch() {
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2) {
-      setResults(emptyResults);
+      setResults(emptyResultsFor(config.groups));
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
     const timeout = setTimeout(() => {
-      fetch(`/api/admin/search?q=${encodeURIComponent(q)}`)
-        .then((res) => (res.ok ? res.json() : emptyResults))
+      fetch(`${config.endpoint}?q=${encodeURIComponent(q)}`)
+        .then((res) => (res.ok ? res.json() : emptyResultsFor(config.groups)))
         .then((data) => setResults(data))
-        .catch(() => setResults(emptyResults))
+        .catch(() => setResults(emptyResultsFor(config.groups)))
         .finally(() => setIsLoading(false));
     }, 250);
 
     return () => clearTimeout(timeout);
-  }, [query]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, config.endpoint]);
 
-  const totalCount =
-    results.clients.length + results.projects.length + results.contacts.length + results.documents.length;
+  const totalCount = config.groups.reduce((sum, g) => sum + (results[g]?.length || 0), 0);
 
   function go(href) {
     setIsOpen(false);
     setQuery('');
     router.push(href);
+  }
+
+  function renderItem(group, item) {
+    switch (group) {
+      case 'clients':
+        return (
+          <>
+            <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>
+              {item.first_name} {item.last_name}
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.email}</div>
+          </>
+        );
+      case 'projects':
+        return (
+          <>
+            <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
+            {item.address && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.address}</div>}
+          </>
+        );
+      case 'contacts':
+        return (
+          <>
+            <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
+              {[item.company, item.trade].filter(Boolean).join(' · ')}
+              {item.phone ? ` · ${item.phone}` : ''}
+            </div>
+          </>
+        );
+      case 'documents':
+        return (
+          <>
+            <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.file_name}</div>
+            {item.projects?.name && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.projects.name}</div>}
+          </>
+        );
+      default:
+        return null;
+    }
   }
 
   return (
@@ -65,7 +144,7 @@ export default function GlobalSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search clients, projects, contacts, documents..."
+          placeholder={config.placeholder}
           style={{
             width: '100%',
             padding: '0.5rem 0.75rem 0.5rem 2.1rem',
@@ -100,58 +179,16 @@ export default function GlobalSearch() {
             <p style={{ padding: '0.85rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No results for &quot;{query}&quot;.</p>
           )}
 
-          {!isLoading && (
-            <>
+          {!isLoading &&
+            config.groups.map((group) => (
               <ResultGroup
-                label="Clients"
-                items={results.clients}
-                onSelect={(item) => go(`/admin/clients/${item.id}`)}
-                render={(item) => (
-                  <>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>
-                      {item.first_name} {item.last_name}
-                    </div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.email}</div>
-                  </>
-                )}
+                key={group}
+                label={LABELS[group]}
+                items={results[group] || []}
+                onSelect={config.hrefs[group] ? (item) => go(config.hrefs[group](item)) : null}
+                render={(item) => renderItem(group, item)}
               />
-              <ResultGroup
-                label="Projects"
-                items={results.projects}
-                onSelect={(item) => go(`/admin/projects/${item.id}`)}
-                render={(item) => (
-                  <>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
-                    {item.address && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.address}</div>}
-                  </>
-                )}
-              />
-              <ResultGroup
-                label="Contacts"
-                items={results.contacts}
-                onSelect={(item) => go(`/admin/contacts/${item.id}`)}
-                render={(item) => (
-                  <>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
-                      {[item.company, item.trade].filter(Boolean).join(' · ')}
-                    </div>
-                  </>
-                )}
-              />
-              <ResultGroup
-                label="Documents"
-                items={results.documents}
-                onSelect={(item) => go(`/admin/projects/${item.project_id}`)}
-                render={(item) => (
-                  <>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.file_name}</div>
-                    {item.projects?.name && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.projects.name}</div>}
-                  </>
-                )}
-              />
-            </>
-          )}
+            ))}
         </div>
       )}
     </div>
@@ -174,25 +211,37 @@ function ResultGroup({ label, items, onSelect, render }) {
       >
         {label}
       </div>
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => onSelect(item)}
-          style={{
-            display: 'block',
-            width: '100%',
-            textAlign: 'left',
-            padding: '0.5rem 0.85rem',
-            border: 'none',
-            borderTop: '1px solid rgba(var(--border-rgb),0.06)',
-            background: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          {render(item)}
-        </button>
-      ))}
+      {items.map((item) =>
+        onSelect ? (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onSelect(item)}
+            style={{
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '0.5rem 0.85rem',
+              border: 'none',
+              borderTop: '1px solid rgba(var(--border-rgb),0.06)',
+              background: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            {render(item)}
+          </button>
+        ) : (
+          <div
+            key={item.id}
+            style={{
+              padding: '0.5rem 0.85rem',
+              borderTop: '1px solid rgba(var(--border-rgb),0.06)',
+            }}
+          >
+            {render(item)}
+          </div>
+        )
+      )}
     </div>
   );
 }

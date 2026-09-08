@@ -11,9 +11,22 @@ export default function FloatingChat({ currentUserId, threads }) {
   const [activeKey, setActiveKey] = useState(threads.length === 1 ? threads[0].key : null);
   const [threadData, setThreadData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [readKeys, setReadKeys] = useState(new Set());
+
+  // threads is server-computed; ChatBox triggers a router.refresh() once
+  // the thread is marked read, so drop the optimistic override once that
+  // fresh data arrives (it'll already show unread: 0).
+  useEffect(() => {
+    setReadKeys(new Set());
+  }, [threads]);
+
+  function markThreadRead() {
+    if (!activeKey) return;
+    setReadKeys((prev) => new Set(prev).add(activeKey));
+  }
 
   const activeThread = threads.find((t) => t.key === activeKey);
-  const totalUnread = threads.reduce((sum, t) => sum + (t.unread || 0), 0);
+  const totalUnread = threads.reduce((sum, t) => sum + (readKeys.has(t.key) ? 0 : t.unread || 0), 0);
 
   useEffect(() => {
     if (!activeThread) {
@@ -171,7 +184,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                         <div style={{ fontSize: '0.85rem', color: 'var(--navy)', fontWeight: 500 }}>{t.label}</div>
                         {t.sublabel && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{t.sublabel}</div>}
                       </span>
-                      {t.unread > 0 && (
+                      {!readKeys.has(t.key) && t.unread > 0 && (
                         <span
                           style={{
                             background: 'var(--gold)',
@@ -206,6 +219,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                   participants={threadData?.participants || []}
                   currentUserId={currentUserId}
                   compact
+                  onRead={markThreadRead}
                 />
               </div>
             )}

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import WeekStripCalendar from '@/components/WeekStripCalendar';
-import ChatBox from '@/components/ChatBox';
+import ClientChatCard from '@/components/ClientChatCard';
 
 export default async function PortalIndexPage() {
   const supabase = createClient();
@@ -26,7 +26,7 @@ export default async function PortalIndexPage() {
   const windowEnd = new Date(weekStart);
   windowEnd.setDate(windowEnd.getDate() + 21);
 
-  const [{ data: projects }, { data: calendarEvents }, { data: admins }, { data: messages }] = await Promise.all([
+  const [{ data: projects }, { data: calendarEvents }, { data: admins }, { data: messages }, { data: unread }] = await Promise.all([
     supabase
       .from('projects')
       .select('id, name, status, address, project_type')
@@ -46,9 +46,11 @@ export default async function PortalIndexPage() {
       .is('project_id', null)
       .eq('dm_user_id', user.id)
       .order('created_at', { ascending: true }),
+    supabase.rpc('get_unread_message_counts'),
   ]);
 
   const participants = (admins || []).map((a) => ({ ...a, role: 'admin' }));
+  const unreadByProject = Object.fromEntries((unread || []).filter((r) => r.project_id).map((r) => [r.project_id, r.unread_count]));
 
   return (
     <div>
@@ -66,12 +68,11 @@ export default async function PortalIndexPage() {
         <div className={styles.portalCard} style={{ display: 'flex', flexDirection: 'column' }}>
           <h3>Chat with DXE Solutions</h3>
           <div style={{ flex: 1, minHeight: '420px', display: 'flex', flexDirection: 'column' }}>
-            <ChatBox
-              dmUserId={user.id}
-              initialMessages={messages || []}
-              participants={participants}
+            <ClientChatCard
               currentUserId={user.id}
-              compact
+              projects={(projects || []).map((p) => ({ id: p.id, name: p.name }))}
+              initialMessages={messages || []}
+              initialParticipants={participants}
             />
           </div>
         </div>
@@ -90,7 +91,24 @@ export default async function PortalIndexPage() {
                 className={styles.fullWidthCard}
                 style={{ margin: 0, display: 'block', color: 'inherit', textDecoration: 'none' }}
               >
-                <h3 style={{ marginBottom: '0.5rem' }}>{project.name}</h3>
+                <h3 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {project.name}
+                  {unreadByProject[project.id] > 0 && (
+                    <span
+                      title="Unread messages"
+                      style={{
+                        background: 'var(--gold)',
+                        color: 'var(--navy-dark)',
+                        fontSize: '0.62rem',
+                        fontWeight: 700,
+                        padding: '0.05rem 0.4rem',
+                        borderRadius: '999px',
+                      }}
+                    >
+                      {unreadByProject[project.id]}
+                    </span>
+                  )}
+                </h3>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
                   {project.address || 'No address on file'}
                 </p>

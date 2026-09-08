@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase-client';
 import FloatingChat from '@/components/FloatingChat';
 import FloatingAssistant from '@/components/FloatingAssistant';
 import OnboardingTour from '@/components/OnboardingTour';
+import GlobalSearch from '@/components/GlobalSearch';
 import { getStoredTheme } from '@/lib/theme';
 import styles from './PortalShell.module.css';
 
@@ -56,6 +57,7 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
           </div>
         </div>
         <div className={styles.navInner}>
+          <GlobalSearch role="client" />
           <div className={styles.userArea}>
             <span className={styles.welcome}>
               Welcome back, <strong>{firstName}</strong>

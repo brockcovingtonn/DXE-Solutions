@@ -46,7 +46,7 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
           </div>
         </div>
         <div className={styles.navInner}>
-          <GlobalSearch />
+          <GlobalSearch role="admin" />
           <div className={styles.userArea}>
             <span className={styles.welcome}>
               Signed in as <strong>{firstName}</strong>

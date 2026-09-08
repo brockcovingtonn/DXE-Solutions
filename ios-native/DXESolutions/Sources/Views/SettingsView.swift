@@ -1,5 +1,6 @@
 import SwiftUI
 import Supabase
+import UserNotifications
 
 struct SettingsView: View {
     @EnvironmentObject var auth: AuthManager
@@ -23,6 +24,7 @@ struct SettingsView: View {
     @State private var biometricMessage: String?
 
     @State private var hapticsEnabled = HapticManager.isEnabled
+    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
 
     @AppStorage("appearanceMode") private var appearanceMode: String = AppearanceMode.system.rawValue
 
@@ -74,6 +76,9 @@ struct SettingsView: View {
             }
             .tint(Theme.gold)
 
+            notificationsRow
+                .padding(.top, 6)
+
             VStack(alignment: .leading, spacing: 6) {
                 Text("Appearance")
                     .font(.subheadline)
@@ -85,6 +90,46 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
             }
             .padding(.top, 6)
+        }
+    }
+
+    @ViewBuilder
+    private var notificationsRow: some View {
+        switch notificationStatus {
+        case .denied:
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Notifications")
+                    .font(.subheadline)
+                Text("Off — you won't get alerts, sounds, or banners for new messages.")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Button("Open Settings to Enable") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundColor(Theme.gold)
+            }
+        case .notDetermined:
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Notifications")
+                    .font(.subheadline)
+                Text("Turn on notifications to be alerted right away for new messages and project updates.")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Button("Enable Notifications") {
+                    PushNotificationManager.shared.requestPermissionIfNeeded()
+                    Task {
+                        try? await Task.sleep(nanoseconds: 500_000_000)
+                        notificationStatus = await PushNotificationManager.shared.currentAuthorizationStatus()
+                    }
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundColor(Theme.gold)
+            }
+        default:
+            EmptyView()
         }
     }
 
@@ -266,6 +311,7 @@ struct SettingsView: View {
             phone = profile.phone ?? ""
             emailNotifications = profile.emailNotifications ?? true
         }
+        notificationStatus = await PushNotificationManager.shared.currentAuthorizationStatus()
     }
 
     private func save() async {

@@ -3,11 +3,12 @@ import Supabase
 import PhotosUI
 import UniformTypeIdentifiers
 
-// Admin's flexible chat thread — unlike ChatView (which only ever
-// talks to "my own DM with admin", for client/employee), admin can
-// open any project's group thread or any client/employee's DM. Kept
-// as its own view rather than generalizing ChatView in place, to avoid
-// touching the already-working client/employee chat experience.
+// Flexible chat thread, parameterized by projectId/dmUserId — RLS scopes
+// what each caller can actually reach. Admin can open any project's
+// group thread or any client/employee's DM (AdminChatListView); a
+// client can open their own projects' threads or their own DM with
+// Dixie (ClientChatView). Employee still uses the simpler, DM-only
+// ChatView for its one fixed thread.
 struct AdminChatThreadView: View {
     let projectId: String?
     let dmUserId: String?
@@ -422,13 +423,21 @@ struct AdminChatThreadView: View {
         defer { isSending = false }
         HapticManager.impact(.light)
 
+        struct Response: Decodable { let message: ChatMessage }
         do {
+            var response: Response?
             if let projectId {
                 struct Payload: Encodable { let projectId: String; let text: String }
-                try await APIClient.send("api/messages", method: "POST", body: Payload(projectId: projectId, text: text))
+                response = try await APIClient.sendDecoding("api/messages", method: "POST", body: Payload(projectId: projectId, text: text))
             } else if let dmUserId {
                 struct Payload: Encodable { let dmUserId: String; let text: String }
-                try await APIClient.send("api/messages", method: "POST", body: Payload(dmUserId: dmUserId, text: text))
+                response = try await APIClient.sendDecoding("api/messages", method: "POST", body: Payload(dmUserId: dmUserId, text: text))
+            }
+            // Append immediately rather than waiting for the Realtime echo
+            // — that round trip was showing up as a visible delay before
+            // the sender's own message appeared in the thread.
+            if let message = response?.message, !messages.contains(where: { $0.id == message.id }) {
+                messages.append(message)
             }
         } catch {
             errorMessage = "Could not send message."
@@ -441,9 +450,11 @@ struct AdminChatThreadView: View {
 
         let filePath = "\(storageFolder)/\(Int(Date().timeIntervalSince1970 * 1000))-\(fileName)"
 
+        struct Response: Decodable { let message: ChatMessage }
         do {
             try await SupabaseConfig.client.storage.from("chat-attachments").upload(filePath, data: data)
 
+            var response: Response?
             if let projectId {
                 struct Payload: Encodable {
                     let projectId: String
@@ -452,7 +463,7 @@ struct AdminChatThreadView: View {
                     let attachmentName: String
                     let attachmentType: String
                 }
-                try await APIClient.send(
+                response = try await APIClient.sendDecoding(
                     "api/messages", method: "POST",
                     body: Payload(projectId: projectId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
                 )
@@ -464,10 +475,13 @@ struct AdminChatThreadView: View {
                     let attachmentName: String
                     let attachmentType: String
                 }
-                try await APIClient.send(
+                response = try await APIClient.sendDecoding(
                     "api/messages", method: "POST",
                     body: Payload(dmUserId: dmUserId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
                 )
+            }
+            if let message = response?.message, !messages.contains(where: { $0.id == message.id }) {
+                messages.append(message)
             }
         } catch {
             errorMessage = "Could not send attachment."

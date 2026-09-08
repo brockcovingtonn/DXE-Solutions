@@ -96,6 +96,7 @@ struct AdminChatListView: View {
             .searchable(text: $searchText, prompt: "Search clients, employees, projects")
             .task { await load() }
             .refreshable { await load() }
+            .onAppear { Task { await refreshUnreadCounts() } }
         }
     }
 
@@ -132,13 +133,19 @@ struct AdminChatListView: View {
             .order("name", ascending: true)
             .execute().value
 
-        async let unreadTask: [UnreadRow] = SupabaseConfig.client
-            .rpc("get_unread_message_counts")
-            .execute().value
-
         contacts = (try? await contactsTask) ?? []
         projects = (try? await projectsTask) ?? []
-        let unread = (try? await unreadTask) ?? []
+        await refreshUnreadCounts()
+        isLoading = false
+    }
+
+    // Re-fetches just the unread counts, cheap enough to call every time
+    // the list reappears (e.g. popping back from a thread) so a just-read
+    // conversation's badge clears without a full reload.
+    private func refreshUnreadCounts() async {
+        let unread: [UnreadRow] = (try? await SupabaseConfig.client
+            .rpc("get_unread_message_counts")
+            .execute().value) ?? []
 
         var dmMap: [String: Int] = [:]
         var projectMap: [String: Int] = [:]
@@ -151,6 +158,5 @@ struct AdminChatListView: View {
         }
         unreadByDm = dmMap
         unreadByProject = projectMap
-        isLoading = false
     }
 }

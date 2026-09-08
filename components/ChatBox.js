@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 
 function formatTime(dateStr) {
@@ -14,8 +15,9 @@ function formatTime(dateStr) {
 
 // Either projectId (group thread) or dmUserId (direct thread with admin)
 // must be set — never both.
-export default function ChatBox({ projectId, dmUserId, initialMessages, currentUserId, participants, compact }) {
+export default function ChatBox({ projectId, dmUserId, initialMessages, currentUserId, participants, compact, onRead }) {
   const supabase = createClient();
+  const router = useRouter();
   const [messages, setMessages] = useState(initialMessages || []);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
@@ -101,7 +103,14 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
         user_id: currentUserId,
         last_read_at: now,
       })
-      .then(() => setReads((prev) => ({ ...prev, [currentUserId]: now })));
+      .then(() => {
+        setReads((prev) => ({ ...prev, [currentUserId]: now }));
+        onRead?.();
+        // Unread badges (sidebar, floating chat, tab counts) are computed
+        // server-side and handed down as props — refresh so they resync
+        // now that this thread is marked read.
+        router.refresh();
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, threadType, threadId, currentUserId]);
 
@@ -160,6 +169,13 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
 
       if (!res.ok) throw new Error();
 
+      // Append immediately rather than waiting for the Realtime echo —
+      // that round trip (insert -> broadcast -> subscriber) was showing
+      // up as a visible delay before the sender's own message appeared.
+      const { message } = await res.json();
+      if (message) {
+        setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
+      }
       setText('');
     } catch {
       setError('Could not send. Please try again.');
@@ -195,6 +211,11 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
       });
 
       if (!res.ok) throw new Error();
+
+      const { message } = await res.json();
+      if (message) {
+        setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
+      }
     } catch {
       setError('Could not send attachment. Please try again.');
     } finally {

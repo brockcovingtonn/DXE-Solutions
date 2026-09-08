@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
 import FloatingChat from '@/components/FloatingChat';
 import FloatingAssistant from '@/components/FloatingAssistant';
+import GlobalSearch from '@/components/GlobalSearch';
 import { getStoredTheme } from '@/lib/theme';
 import styles from './PortalShell.module.css';
 
@@ -45,6 +46,7 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
           </div>
         </div>
         <div className={styles.navInner}>
+          <GlobalSearch role="employee" />
           <div className={styles.userArea}>
             <span className={styles.welcome}>
               Signed in as <strong>{firstName}</strong>

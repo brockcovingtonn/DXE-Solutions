@@ -219,7 +219,16 @@ struct AdminDashboardView: View {
 
     private var activitySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+            NavigationLink {
+                AdminActivityListView()
+            } label: {
+                HStack {
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Spacer()
+                    Text("View All").font(.caption.weight(.semibold))
+                }
+            }
+            .buttonStyle(.plain)
             if activity.isEmpty {
                 Text("No recent activity.").font(.subheadline).foregroundColor(.secondary)
             } else {
@@ -232,7 +241,16 @@ struct AdminDashboardView: View {
 
     private var milestonesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Upcoming Milestones").font(.headline).foregroundColor(Theme.navy)
+            NavigationLink {
+                AdminMilestonesListView()
+            } label: {
+                HStack {
+                    Text("Upcoming Milestones").font(.headline).foregroundColor(Theme.navy)
+                    Spacer()
+                    Text("View All").font(.caption.weight(.semibold))
+                }
+            }
+            .buttonStyle(.plain)
             if milestones.isEmpty {
                 Text("No upcoming milestones.").font(.subheadline).foregroundColor(.secondary)
             } else {
@@ -290,7 +308,16 @@ struct AdminDashboardView: View {
 
     private var utilitiesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Utilities Needing Attention").font(.headline).foregroundColor(Theme.navy)
+            NavigationLink {
+                AdminUtilitiesListView()
+            } label: {
+                HStack {
+                    Text("Utilities Needing Attention").font(.headline).foregroundColor(Theme.navy)
+                    Spacer()
+                    Text("View All").font(.caption.weight(.semibold))
+                }
+            }
+            .buttonStyle(.plain)
             if utilityEntries.isEmpty {
                 Text("No utility entries currently pending or in progress.")
                     .font(.subheadline)
@@ -377,7 +404,7 @@ struct AdminDashboardView: View {
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
-            .limit(15)
+            .limit(6)
             .execute().value
 
         async let milestonesTask: [AdminMilestoneItem] = SupabaseConfig.client
@@ -385,7 +412,7 @@ struct AdminDashboardView: View {
             .select("*, projects(id,name)")
             .neq("state", value: "done")
             .order("display_date", ascending: true)
-            .limit(8)
+            .limit(6)
             .execute().value
 
         async let utilitiesTask: [AdminUtilityEntry] = SupabaseConfig.client
@@ -393,7 +420,7 @@ struct AdminDashboardView: View {
             .select("*, project_utilities(utility_type,project_id,projects(id,name))")
             .in("status", values: ["pending", "in_progress"])
             .order("created_at", ascending: false)
-            .limit(8)
+            .limit(6)
             .execute().value
 
         do {

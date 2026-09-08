@@ -20,7 +20,8 @@ export default async function AdminClientsPage() {
     .order('created_at', { ascending: false });
 
   const { data: unread } = await supabase.rpc('get_unread_message_counts');
-  const unreadByProject = Object.fromEntries((unread || []).map((r) => [r.project_id, r.unread_count]));
+  const unreadByProject = Object.fromEntries((unread || []).filter((r) => r.project_id).map((r) => [r.project_id, r.unread_count]));
+  const unreadByDm = Object.fromEntries((unread || []).filter((r) => !r.project_id && r.dm_user_id).map((r) => [r.dm_user_id, r.unread_count]));
 
   const clients = (profiles || []).filter((p) => !p.is_admin && !p.is_employee);
 
@@ -56,6 +57,22 @@ export default async function AdminClientsPage() {
                   <Link href={`/admin/clients/${client.id}`} className={adminStyles.clientNameLink}>
                     <div className={adminStyles.clientName}>
                       {client.first_name} {client.last_name}
+                      {unreadByDm[client.id] > 0 && (
+                        <span
+                          title="Unread messages"
+                          style={{
+                            background: 'var(--gold)',
+                            color: 'var(--navy-dark)',
+                            fontSize: '0.62rem',
+                            fontWeight: 700,
+                            padding: '0.05rem 0.4rem',
+                            borderRadius: '999px',
+                            marginLeft: '0.5rem',
+                          }}
+                        >
+                          {unreadByDm[client.id]}
+                        </span>
+                      )}
                     </div>
                   </Link>
                   <div className={adminStyles.clientEmail}>{client.email}</div>

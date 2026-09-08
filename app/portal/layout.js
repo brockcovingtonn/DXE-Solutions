@@ -30,6 +30,13 @@ export default async function PortalLayout({ children }) {
 
   const chatThreads = [
     { key: 'admin-dm', label: 'Chat with DXE Solutions', sublabel: 'General', dmUserId: user.id, unread: dmUnread },
+    ...(projects || []).map((p) => ({
+      key: `project-${p.id}`,
+      label: p.name,
+      sublabel: 'Project chat',
+      projectId: p.id,
+      unread: unreadByProject[p.id] || 0,
+    })),
   ];
 
   return (

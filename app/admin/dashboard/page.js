@@ -42,19 +42,19 @@ export default async function AdminDashboardPage() {
       .from('activity')
       .select('*, projects(id, name)')
       .order('created_at', { ascending: false })
-      .limit(15),
+      .limit(6),
     supabase
       .from('milestones')
       .select('*, projects(id, name)')
       .neq('state', 'done')
       .order('display_date', { ascending: true })
-      .limit(8),
+      .limit(6),
     supabase
       .from('project_utility_entries')
       .select('*, project_utilities(utility_type, project_id, projects(id, name))')
       .in('status', ['pending', 'in_progress'])
       .order('created_at', { ascending: false })
-      .limit(8),
+      .limit(6),
     supabase
       .from('calendar_events')
       .select('*, projects(id, name)')
@@ -122,6 +122,9 @@ export default async function AdminDashboardPage() {
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No recent activity.</p>
             )}
           </div>
+          <Link href="/admin/activity" style={{ fontSize: '0.78rem', color: 'var(--navy)', fontWeight: 500 }}>
+            View all activity →
+          </Link>
         </div>
 
         <div className={styles.portalCard}>
@@ -151,6 +154,9 @@ export default async function AdminDashboardPage() {
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No upcoming milestones.</p>
             )}
           </div>
+          <Link href="/admin/milestones" style={{ fontSize: '0.78rem', color: 'var(--navy)', fontWeight: 500 }}>
+            View all milestones →
+          </Link>
         </div>
       </div>
 
@@ -189,6 +195,11 @@ export default async function AdminDashboardPage() {
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             No utility entries currently pending or in progress.
           </p>
+        )}
+        {utilityEntries && utilityEntries.length > 0 && (
+          <Link href="/admin/utilities" style={{ fontSize: '0.78rem', color: 'var(--navy)', fontWeight: 500 }}>
+            View all utilities →
+          </Link>
         )}
       </div>
     </div>

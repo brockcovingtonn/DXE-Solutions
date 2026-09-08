@@ -28,6 +28,13 @@ final class PushNotificationManager {
         }
     }
 
+    // For Settings to show the user their current state — iOS has no
+    // API to silently grant alert/sound/banner permission, so a user
+    // who declined (or turned it off system-wide) needs a way back in.
+    func currentAuthorizationStatus() async -> UNAuthorizationStatus {
+        await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+    }
+
     func didRegister(tokenData: Data) {
         deviceToken = tokenData.map { String(format: "%02x", $0) }.joined()
         Task { await uploadTokenIfReady() }

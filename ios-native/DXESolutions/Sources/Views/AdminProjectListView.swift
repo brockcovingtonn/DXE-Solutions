@@ -1,9 +1,22 @@
 import SwiftUI
 
+private struct UnreadRow: Decodable {
+    let projectId: String?
+    let dmUserId: String?
+    let unreadCount: Int
+
+    enum CodingKeys: String, CodingKey {
+        case projectId = "project_id"
+        case dmUserId = "dm_user_id"
+        case unreadCount = "unread_count"
+    }
+}
+
 struct AdminProjectListView: View {
     @EnvironmentObject var auth: AuthManager
 
     @State private var projects: [AdminProjectListItem] = []
+    @State private var unreadByProject: [String: Int] = [:]
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var searchText = ""
@@ -51,12 +64,24 @@ struct AdminProjectListView: View {
             }
             .task { await load() }
             .refreshable { await load() }
+            .onAppear { Task { await refreshUnreadCounts() } }
         }
     }
 
     private func row(_ project: AdminProjectListItem) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(project.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            HStack(spacing: 6) {
+                Text(project.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                if let count = unreadByProject[project.id], count > 0 {
+                    Text("\(count)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Theme.gold)
+                        .clipShape(Capsule())
+                }
+            }
             Text([clientName(project), project.address ?? ""].filter { !$0.isEmpty }.joined(separator: " · "))
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -89,6 +114,24 @@ struct AdminProjectListView: View {
         } catch {
             errorMessage = "Could not load projects."
         }
+        await refreshUnreadCounts()
         isLoading = false
+    }
+
+    // Cheap enough to call every time the list reappears (e.g. popping
+    // back from a project's detail view) so a just-read conversation's
+    // badge clears without a full reload.
+    private func refreshUnreadCounts() async {
+        let unread: [UnreadRow] = (try? await SupabaseConfig.client
+            .rpc("get_unread_message_counts")
+            .execute().value) ?? []
+
+        var projectMap: [String: Int] = [:]
+        for row in unread {
+            if let proj = row.projectId {
+                projectMap[proj, default: 0] += row.unreadCount
+            }
+        }
+        unreadByProject = projectMap
     }
 }

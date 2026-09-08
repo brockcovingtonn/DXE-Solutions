@@ -355,8 +355,17 @@ struct ChatView: View {
             let dmUserId: String
             let text: String
         }
+        struct Response: Decodable { let message: ChatMessage }
         do {
-            try await APIClient.send("api/messages", method: "POST", body: Payload(dmUserId: userId, text: text))
+            let response: Response = try await APIClient.sendDecoding(
+                "api/messages", method: "POST", body: Payload(dmUserId: userId, text: text)
+            )
+            // Append immediately rather than waiting for the Realtime echo
+            // — that round trip was showing up as a visible delay before
+            // the sender's own message appeared in the thread.
+            if !messages.contains(where: { $0.id == response.message.id }) {
+                messages.append(response.message)
+            }
         } catch {
             errorMessage = "Could not send message."
         }
@@ -379,10 +388,14 @@ struct ChatView: View {
                 let attachmentName: String
                 let attachmentType: String
             }
-            try await APIClient.send(
+            struct Response: Decodable { let message: ChatMessage }
+            let response: Response = try await APIClient.sendDecoding(
                 "api/messages", method: "POST",
                 body: Payload(dmUserId: userId, text: "", attachmentPath: filePath, attachmentName: fileName, attachmentType: fileType)
             )
+            if !messages.contains(where: { $0.id == response.message.id }) {
+                messages.append(response.message)
+            }
         } catch {
             errorMessage = "Could not send attachment."
         }

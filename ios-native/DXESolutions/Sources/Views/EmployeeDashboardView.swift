@@ -256,7 +256,16 @@ struct EmployeeDashboardView: View {
 
     private var activitySection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+            NavigationLink {
+                EmployeeActivityListView()
+            } label: {
+                HStack {
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Spacer()
+                    Text("View All").font(.caption.weight(.semibold))
+                }
+            }
+            .buttonStyle(.plain)
             if activity.isEmpty {
                 Text("No recent activity.").font(.subheadline).foregroundColor(.secondary)
             } else {
@@ -477,7 +486,7 @@ struct EmployeeDashboardView: View {
             .from("activity")
             .select("*, projects(id,name)")
             .order("created_at", ascending: false)
-            .limit(15)
+            .limit(6)
             .execute().value
 
         do {
