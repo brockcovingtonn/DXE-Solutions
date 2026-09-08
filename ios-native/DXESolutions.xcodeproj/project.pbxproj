@@ -82,6 +82,7 @@
 		CA37D0D1C2172E514285498F /* AdminUtilitiesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */; };
 		CF773CA0C144624E8F041D2C /* AdminContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF69EFFB0186EBEFE075140 /* AdminContactDetailView.swift */; };
 		D030E4B85A7A6DD7CEC5E8B3 /* PermitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69F249416258705800C9407 /* PermitsView.swift */; };
+		D04FBEDD18D7874335CD5877 /* EmployeeMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D267A312C7B0E47FAA424D6 /* EmployeeMoreView.swift */; };
 		D193D6DFBA23080B94ECA835 /* EmployeeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */; };
 		D403F9130FD5F3FBB7546347 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B32D454514F3EFA7625834 /* AppDelegate.swift */; };
 		D4E4542E875567563C7FE4C3 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BA93DD88EDDD7155202691 /* AppConfig.swift */; };
@@ -138,6 +139,7 @@
 		69F02EDDCAEBE42441638003 /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
 		6B306722F9BDEE64D6EB6B00 /* AppearanceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceMode.swift; sourceTree = "<group>"; };
 		6BFE3A3BFDAAA08327D0FB1E /* AccountingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountingView.swift; sourceTree = "<group>"; };
+		6D267A312C7B0E47FAA424D6 /* EmployeeMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeMoreView.swift; sourceTree = "<group>"; };
 		6DE0ED254AADEF7B8AE3A2FC /* AdminContactListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminContactListView.swift; sourceTree = "<group>"; };
 		6FC99BEBEFE366DE169506F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				F1023192C3D89DE9C1F1B394 /* DocumentsView.swift */,
 				AE316F0BD4513147D1CB72E0 /* EmployeeActivityListView.swift */,
 				E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */,
+				6D267A312C7B0E47FAA424D6 /* EmployeeMoreView.swift */,
 				B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */,
 				BFBC376C53107412175FE950 /* EmployeeProjectHandoffView.swift */,
 				1968E713938BB8924E79B45B /* EmployeeSearchView.swift */,
@@ -469,6 +472,7 @@
 				7B6CBFF97861CA12A1E56138 /* DocumentsView.swift in Sources */,
 				4CCFB49F5F67803CB7F61B47 /* EmployeeActivityListView.swift in Sources */,
 				D193D6DFBA23080B94ECA835 /* EmployeeDashboardView.swift in Sources */,
+				D04FBEDD18D7874335CD5877 /* EmployeeMoreView.swift in Sources */,
 				FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */,
 				45705C9CCF7B03E244941DC7 /* EmployeeProjectHandoffView.swift in Sources */,
 				EE44949AF66C0CD5E33C0D39 /* EmployeeSearchView.swift in Sources */,

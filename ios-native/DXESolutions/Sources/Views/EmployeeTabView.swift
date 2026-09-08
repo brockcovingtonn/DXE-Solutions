@@ -22,19 +22,6 @@ struct EmployeeTabView: View {
             .tabItem { Label("Calendar", systemImage: "calendar") }
 
             NavigationStack {
-                EmployeeTrainingView()
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Sign Out") {
-                                Task { await auth.signOut() }
-                            }
-                            .font(.footnote)
-                        }
-                    }
-            }
-            .tabItem { Label("Training", systemImage: "graduationcap.fill") }
-
-            NavigationStack {
                 ChatView()
             }
             .tabItem { Label("Chat", systemImage: "message.fill") }
@@ -52,6 +39,9 @@ struct EmployeeTabView: View {
                     }
             }
             .tabItem { Label("Assistant", systemImage: "sparkles") }
+
+            EmployeeMoreView()
+                .tabItem { Label("More", systemImage: "ellipsis.circle.fill") }
         }
     }
 }
