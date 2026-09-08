@@ -10,6 +10,7 @@ struct DashboardView: View {
     @State private var weatherDays: [WeatherDay] = []
     @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
+    @State private var showSearch = false
 
     private let cacheKey = "client-dashboard"
 
@@ -67,6 +68,13 @@ struct DashboardView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showSearch = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Sign Out") {
                         Task { await auth.signOut() }
                     }
@@ -76,6 +84,9 @@ struct DashboardView: View {
             .task { await loadAll() }
             .task { weatherDays = await WeatherService.days() }
             .refreshable { await loadAll() }
+            .sheet(isPresented: $showSearch) {
+                ClientSearchView()
+            }
         }
     }
 

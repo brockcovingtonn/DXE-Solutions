@@ -1,5 +1,6 @@
 import Foundation
 import Supabase
+import UserNotifications
 
 struct Profile: Codable {
     let id: String
@@ -59,6 +60,10 @@ final class AuthManager: ObservableObject {
         }
         guard let rows: [UnreadRow] = try? await client.rpc("get_unread_message_counts").execute().value else { return }
         unreadMessageCount = rows.reduce(0) { $0 + $1.unreadCount }
+        // Keep the OS app-icon badge in sync with real state — pushes
+        // set it too, but this covers messages read in-app between
+        // pushes (and devices where a push never arrived at all).
+        try? await UNUserNotificationCenter.current().setBadgeCount(unreadMessageCount)
     }
 
     func unlockWithBiometrics() async -> Bool {

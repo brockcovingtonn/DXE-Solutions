@@ -13,6 +13,7 @@ struct EmployeeDashboardView: View {
     @State private var lastSyncedAt: Date?
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var busyItemId: String?
+    @State private var showSearch = false
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
@@ -75,6 +76,13 @@ struct EmployeeDashboardView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showSearch = true
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Sign Out") {
                         Task { await auth.signOut() }
                     }
@@ -84,6 +92,9 @@ struct EmployeeDashboardView: View {
             .task { await loadAll() }
             .task { weatherDays = await WeatherService.days() }
             .refreshable { await loadAll() }
+            .sheet(isPresented: $showSearch) {
+                EmployeeSearchView()
+            }
         }
     }
 

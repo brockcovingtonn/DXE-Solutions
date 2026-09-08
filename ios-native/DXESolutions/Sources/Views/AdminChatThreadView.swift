@@ -327,6 +327,10 @@ struct AdminChatThreadView: View {
         let payload = ReadUpsert(project_id: projectId, dm_user_id: dmUserId, user_id: currentUserId, last_read_at: now)
         _ = try? await SupabaseConfig.client.from("message_reads").upsert(payload).execute()
         if let date = parseDate(now) { reads[currentUserId] = date }
+        // Update the tab badge (and app icon badge) right away — this
+        // used to only refresh on .onDisappear, so it stayed stale the
+        // whole time the thread was open.
+        await auth.refreshUnreadCount()
     }
 
     // MARK: - Realtime

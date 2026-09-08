@@ -32,6 +32,7 @@
 		3D84CD6D84D500F1BB973E18 /* AdminReviewsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9E990C472EBBD319C247F0 /* AdminReviewsListView.swift */; };
 		3F1D5BC65EE405A340B03CE1 /* ClientTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331740BCC45D93200407D340 /* ClientTabView.swift */; };
 		42BF2EF32A983805D4AF5E43 /* AdminPhotosEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */; };
+		45705C9CCF7B03E244941DC7 /* EmployeeProjectHandoffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFBC376C53107412175FE950 /* EmployeeProjectHandoffView.swift */; };
 		48DCEF2CFD148D8E81012BAB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15181145E9C02C05D8C25B9 /* ContentView.swift */; };
 		4CCFB49F5F67803CB7F61B47 /* EmployeeActivityListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE316F0BD4513147D1CB72E0 /* EmployeeActivityListView.swift */; };
 		5138C8DE451F6BB995F4C778 /* PhotosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF6CC57968E832914576A0 /* PhotosView.swift */; };
@@ -50,6 +51,7 @@
 		741D7C1E63E86AE1432BB7F9 /* AdminTemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB799B82344845DEE91B9C1 /* AdminTemplatesView.swift */; };
 		7B6CBFF97861CA12A1E56138 /* DocumentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1023192C3D89DE9C1F1B394 /* DocumentsView.swift */; };
 		7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */; };
+		81DAFEF904CD576E36045AF3 /* ClientProjectHandoffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64F7C765F058C470BFD43FC /* ClientProjectHandoffView.swift */; };
 		8C0761502D76BF8F499651B7 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
 		93DE9C8DCDA83707611E2F61 /* AdminChatThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */; };
@@ -87,6 +89,8 @@
 		E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932077758FDD662093311B1 /* SettingsView.swift */; };
 		E560AD659F28464AB3258AA1 /* AdminNewEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */; };
 		E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */; };
+		EE44949AF66C0CD5E33C0D39 /* EmployeeSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1968E713938BB8924E79B45B /* EmployeeSearchView.swift */; };
+		F33221E84A5FADD5B1DD3A0C /* ClientSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39D2B414F43A21A3A06B4C6 /* ClientSearchView.swift */; };
 		F98777AEA3C2C439C2CBEF06 /* AdminEmployeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */; };
 		FAA623A0418EB5A76F5FE8C0 /* AddCalendarEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */; };
 		FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */; };
@@ -105,6 +109,7 @@
 		15C9EF2BC0A416EF5508D32C /* AdminActionItemsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminActionItemsEditor.swift; sourceTree = "<group>"; };
 		1828210D57BD8D6D80E6EA8E /* AdminTeamEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTeamEditor.swift; sourceTree = "<group>"; };
 		189BB6966905BD23E7197CAA /* AdminPermitsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPermitsEditor.swift; sourceTree = "<group>"; };
+		1968E713938BB8924E79B45B /* EmployeeSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeSearchView.swift; sourceTree = "<group>"; };
 		1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeTrainingView.swift; sourceTree = "<group>"; };
 		1FE5A372DFE173B50FEB1987 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
@@ -157,6 +162,7 @@
 		B770A62E58C1A60B56DEF8FE /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeProjectDetailView.swift; sourceTree = "<group>"; };
 		B89A5D1E0A0412C07ACD70EE /* AdminAccountingEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAccountingEditor.swift; sourceTree = "<group>"; };
+		BFBC376C53107412175FE950 /* EmployeeProjectHandoffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeProjectHandoffView.swift; sourceTree = "<group>"; };
 		C0B32D454514F3EFA7625834 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C4F230DC3FDB8154E17CF7F5 /* SignaturePadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePadView.swift; sourceTree = "<group>"; };
 		C69F249416258705800C9407 /* PermitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermitsView.swift; sourceTree = "<group>"; };
@@ -164,8 +170,10 @@
 		D0BA93DD88EDDD7155202691 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		D15181145E9C02C05D8C25B9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCache.swift; sourceTree = "<group>"; };
+		D39D2B414F43A21A3A06B4C6 /* ClientSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientSearchView.swift; sourceTree = "<group>"; };
 		D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationManager.swift; sourceTree = "<group>"; };
 		E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeDashboardView.swift; sourceTree = "<group>"; };
+		E64F7C765F058C470BFD43FC /* ClientProjectHandoffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientProjectHandoffView.swift; sourceTree = "<group>"; };
 		E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewEmployeeView.swift; sourceTree = "<group>"; };
 		EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectContactsView.swift; sourceTree = "<group>"; };
 		EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleHomeView.swift; sourceTree = "<group>"; };
@@ -253,6 +261,8 @@
 				926968E764E16E46B0AA476D /* ChatView.swift */,
 				AC09D9E2B356D55BA7BA0740 /* ClientActivityListView.swift */,
 				F67FD57225B4F07864AE15F4 /* ClientChatView.swift */,
+				E64F7C765F058C470BFD43FC /* ClientProjectHandoffView.swift */,
+				D39D2B414F43A21A3A06B4C6 /* ClientSearchView.swift */,
 				331740BCC45D93200407D340 /* ClientTabView.swift */,
 				CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */,
 				3818DF9DB37FA921B849D4A9 /* DashboardView.swift */,
@@ -261,6 +271,8 @@
 				AE316F0BD4513147D1CB72E0 /* EmployeeActivityListView.swift */,
 				E588EDA41B3E9D6DD4D0D4BE /* EmployeeDashboardView.swift */,
 				B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */,
+				BFBC376C53107412175FE950 /* EmployeeProjectHandoffView.swift */,
+				1968E713938BB8924E79B45B /* EmployeeSearchView.swift */,
 				A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */,
 				1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */,
 				8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */,
@@ -440,6 +452,8 @@
 				73F8C14782FD4092163352D1 /* ChatView.swift in Sources */,
 				1CA493BF1370BB084B9F06C7 /* ClientActivityListView.swift in Sources */,
 				398C938CDC7CF082EEC9ECEB /* ClientChatView.swift in Sources */,
+				81DAFEF904CD576E36045AF3 /* ClientProjectHandoffView.swift in Sources */,
+				F33221E84A5FADD5B1DD3A0C /* ClientSearchView.swift in Sources */,
 				3F1D5BC65EE405A340B03CE1 /* ClientTabView.swift in Sources */,
 				48DCEF2CFD148D8E81012BAB /* ContentView.swift in Sources */,
 				6C61F9C3C634D36A27A9DE9E /* CoverSheetView.swift in Sources */,
@@ -450,6 +464,8 @@
 				4CCFB49F5F67803CB7F61B47 /* EmployeeActivityListView.swift in Sources */,
 				D193D6DFBA23080B94ECA835 /* EmployeeDashboardView.swift in Sources */,
 				FF965C278C92FB4023FD0AB0 /* EmployeeProjectDetailView.swift in Sources */,
+				45705C9CCF7B03E244941DC7 /* EmployeeProjectHandoffView.swift in Sources */,
+				EE44949AF66C0CD5E33C0D39 /* EmployeeSearchView.swift in Sources */,
 				29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */,
 				98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */,
 				6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */,

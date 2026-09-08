@@ -41,6 +41,8 @@ targets:
       path: DXESolutions/Resources/DXESolutions.entitlements
       properties:
         aps-environment: development
+    scheme:
+      shared: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dxesolutions.native
