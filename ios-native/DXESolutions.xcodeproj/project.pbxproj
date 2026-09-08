@@ -30,6 +30,7 @@
 		398C938CDC7CF082EEC9ECEB /* ClientChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67FD57225B4F07864AE15F4 /* ClientChatView.swift */; };
 		3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */; };
 		3D84CD6D84D500F1BB973E18 /* AdminReviewsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9E990C472EBBD319C247F0 /* AdminReviewsListView.swift */; };
+		3E5880AE9971C4FF37164EED /* SwipeBackEnabler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */; };
 		3F1D5BC65EE405A340B03CE1 /* ClientTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331740BCC45D93200407D340 /* ClientTabView.swift */; };
 		42BF2EF32A983805D4AF5E43 /* AdminPhotosEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */; };
 		45705C9CCF7B03E244941DC7 /* EmployeeProjectHandoffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFBC376C53107412175FE950 /* EmployeeProjectHandoffView.swift */; };
@@ -43,6 +44,7 @@
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
 		6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */; };
+		6BE771DBE5C2CC733BE896A2 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */; };
 		6C61F9C3C634D36A27A9DE9E /* CoverSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */; };
 		6F33E7B3F06A6DA6B65FFFFA /* AdminMilestonesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23318D848D19D0A00E2C60CB /* AdminMilestonesListView.swift */; };
 		6F428D795A36A9C46DDB2B9D /* AdminEmployeeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ECC45E00D0B560C82CF395 /* AdminEmployeeDetailView.swift */; };
@@ -98,6 +100,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
+		05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackEnabler.swift; sourceTree = "<group>"; };
 		07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProjectDetailView.swift; sourceTree = "<group>"; };
 		0932077758FDD662093311B1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCalendarEventView.swift; sourceTree = "<group>"; };
@@ -316,10 +320,12 @@
 				D15181145E9C02C05D8C25B9 /* ContentView.swift */,
 				ED0C15C4E249782A5DFBDABD /* DXESolutionsApp.swift */,
 				EB8EE04D2F6140E079C1020A /* HapticManager.swift */,
+				045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
 				D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */,
 				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
 				21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */,
+				05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */,
 				96A8EDC856961F1CA2AA278E /* Theme.swift */,
 				8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */,
 				56D260485A0B852BC6C11858 /* Views */,
@@ -470,6 +476,7 @@
 				98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */,
 				6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */,
 				361AFD8C4DD4B42339834058 /* HapticManager.swift in Sources */,
+				6BE771DBE5C2CC733BE896A2 /* KeyboardDismiss.swift in Sources */,
 				AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */,
 				ABA38773BAD7388F28295320 /* Models.swift in Sources */,
 				A678594A1687066BA84A2C76 /* NotesView.swift in Sources */,
@@ -487,6 +494,7 @@
 				1EAA242983742B8BB8CE5FFD /* SignaturePadView.swift in Sources */,
 				D65F58FFB6D302567FBA6A27 /* SplashView.swift in Sources */,
 				5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */,
+				3E5880AE9971C4FF37164EED /* SwipeBackEnabler.swift in Sources */,
 				BEDD1CD571A0F90138766A05 /* Theme.swift in Sources */,
 				B6AFD5A6E66449CEA6A27106 /* UtilitiesView.swift in Sources */,
 				9C6121BC348829DDFBD187BB /* WeatherService.swift in Sources */,

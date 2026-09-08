@@ -34,8 +34,6 @@ struct EmployeeDashboardView: View {
                         OfflineBanner(lastSyncedAt: lastSyncedAt)
                     }
 
-                    chatCard
-
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Text("This Week")
@@ -96,36 +94,6 @@ struct EmployeeDashboardView: View {
                 EmployeeSearchView()
             }
         }
-    }
-
-    // MARK: - Chat
-
-    private var chatCard: some View {
-        NavigationLink {
-            ChatView()
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "message.fill")
-                    .font(.title2)
-                    .foregroundColor(Theme.gold)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Message Dixie")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(Theme.navy)
-                    Text("Direct message")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding()
-            .background(Theme.cream)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Week strip

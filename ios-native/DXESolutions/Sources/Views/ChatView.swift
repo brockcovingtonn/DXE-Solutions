@@ -71,6 +71,7 @@ struct ChatView: View {
                         }
                         .padding()
                     }
+                    .dismissKeyboardOnTap()
                     .onChange(of: messages.count) { _ in
                         if let last = messages.last {
                             withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
@@ -131,6 +132,7 @@ struct ChatView: View {
         }
         .navigationTitle("Chat with DXE Solutions")
         .navigationBarTitleDisplayMode(.inline)
+        .enableSwipeBack()
         .task {
             await loadRoster()
             await loadMessages()

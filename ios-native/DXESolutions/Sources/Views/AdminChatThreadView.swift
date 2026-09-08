@@ -82,6 +82,7 @@ struct AdminChatThreadView: View {
                         }
                         .padding()
                     }
+                    .dismissKeyboardOnTap()
                     .onChange(of: messages.count) { _ in
                         if let last = messages.last {
                             withAnimation { proxy.scrollTo(last.id, anchor: .bottom) }
@@ -142,6 +143,7 @@ struct AdminChatThreadView: View {
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
+        .enableSwipeBack()
         .task {
             await loadRoster()
             await loadMessages()

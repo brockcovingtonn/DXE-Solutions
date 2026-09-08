@@ -7,7 +7,6 @@ struct EmployeeTabView: View {
         TabView {
             EmployeeDashboardView()
                 .tabItem { Label("My Projects", systemImage: "house.fill") }
-                .badge(auth.unreadMessageCount)
 
             NavigationStack {
                 CalendarView(project: nil)
@@ -34,6 +33,12 @@ struct EmployeeTabView: View {
                     }
             }
             .tabItem { Label("Training", systemImage: "graduationcap.fill") }
+
+            NavigationStack {
+                ChatView()
+            }
+            .tabItem { Label("Chat", systemImage: "message.fill") }
+            .badge(auth.unreadMessageCount)
 
             NavigationStack {
                 AssistantView()
