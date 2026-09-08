@@ -97,6 +97,12 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             label="Assistant"
             active={pathname.startsWith('/employee/assistant')}
           />
+          <SidebarLink
+            href="/portal/settings"
+            icon="ti-settings"
+            label="Account Settings"
+            active={pathname === '/portal/settings'}
+          />
         </aside>
 
         <main className={styles.main}>{children}</main>

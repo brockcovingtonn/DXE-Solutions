@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import WeekStripCalendar from '@/components/WeekStripCalendar';
-import ClientChatCard from '@/components/ClientChatCard';
 
 export default async function PortalIndexPage() {
   const supabase = createClient();
@@ -26,7 +25,7 @@ export default async function PortalIndexPage() {
   const windowEnd = new Date(weekStart);
   windowEnd.setDate(windowEnd.getDate() + 21);
 
-  const [{ data: projects }, { data: calendarEvents }, { data: admins }, { data: messages }, { data: unread }] = await Promise.all([
+  const [{ data: projects }, { data: calendarEvents }, { data: unread }] = await Promise.all([
     supabase
       .from('projects')
       .select('id, name, status, address, project_type')
@@ -39,17 +38,9 @@ export default async function PortalIndexPage() {
       .gte('start_time', weekStart.toISOString())
       .lte('start_time', windowEnd.toISOString())
       .order('start_time'),
-    supabase.from('profiles').select('id, first_name, last_name').eq('is_admin', true),
-    supabase
-      .from('messages')
-      .select('*')
-      .is('project_id', null)
-      .eq('dm_user_id', user.id)
-      .order('created_at', { ascending: true }),
     supabase.rpc('get_unread_message_counts'),
   ]);
 
-  const participants = (admins || []).map((a) => ({ ...a, role: 'admin' }));
   const unreadByProject = Object.fromEntries((unread || []).filter((r) => r.project_id).map((r) => [r.project_id, r.unread_count]));
 
   return (
@@ -59,23 +50,9 @@ export default async function PortalIndexPage() {
         <p>Here&apos;s what&apos;s coming up and a direct line to Dixie.</p>
       </div>
 
-      <div className={styles.portalGrid}>
-        <div className={styles.portalCard}>
-          <h3>This Week</h3>
-          <WeekStripCalendar events={calendarEvents || []} viewAllHref="/portal/calendar" />
-        </div>
-
-        <div className={styles.portalCard} style={{ display: 'flex', flexDirection: 'column' }}>
-          <h3>Chat with DXE Solutions</h3>
-          <div style={{ flex: 1, minHeight: '420px', display: 'flex', flexDirection: 'column' }}>
-            <ClientChatCard
-              currentUserId={user.id}
-              projects={(projects || []).map((p) => ({ id: p.id, name: p.name }))}
-              initialMessages={messages || []}
-              initialParticipants={participants}
-            />
-          </div>
-        </div>
+      <div className={styles.fullWidthCard}>
+        <h3>This Week</h3>
+        <WeekStripCalendar events={calendarEvents || []} viewAllHref="/portal/calendar" />
       </div>
 
       {projects && projects.length > 0 ? (

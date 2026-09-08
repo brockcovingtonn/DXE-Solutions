@@ -132,6 +132,12 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             label="Assistant"
             active={pathname.startsWith('/admin/assistant')}
           />
+          <SidebarLink
+            href="/portal/settings"
+            icon="ti-settings"
+            label="Account Settings"
+            active={pathname === '/portal/settings'}
+          />
         </aside>
 
         <main className={styles.main}>{children}</main>
