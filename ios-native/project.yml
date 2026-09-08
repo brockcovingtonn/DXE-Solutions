@@ -47,7 +47,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dxesolutions.native
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "2"
+        CURRENT_PROJECT_VERSION: "3"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: JNQ2U9HTA3
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
