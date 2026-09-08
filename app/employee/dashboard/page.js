@@ -56,7 +56,7 @@ export default async function EmployeeDashboardPage() {
 
       {projects.length === 0 ? (
         <div className={styles.fullWidthCard}>
-          <p style={{ fontSize: '0.9rem', color: '#718096' }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
             You haven&apos;t been assigned to any projects yet. Once an admin assigns you to a
             project, it will show up here.
           </p>
@@ -66,17 +66,17 @@ export default async function EmployeeDashboardPage() {
           {projects.map((project) => (
             <div key={project.id} className={styles.fullWidthCard} style={{ margin: 0 }}>
               <h3 style={{ marginBottom: '0.5rem' }}>{project.name}</h3>
-              <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '0.25rem' }}>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
                 {project.address || 'No address on file'}
               </p>
-              <p style={{ fontSize: '0.78rem', color: '#a0aec0', marginBottom: '0.75rem' }}>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginBottom: '0.75rem' }}>
                 {project.project_type || 'Project type not set'}
               </p>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginBottom: '0.75rem' }}>
                 <span style={{ textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold)', fontWeight: 600 }}>
                   {project.status}
                 </span>
-                <span style={{ color: '#a0aec0' }}>
+                <span style={{ color: 'var(--text-tertiary)' }}>
                   {project.profiles ? `${project.profiles.first_name} ${project.profiles.last_name}` : 'Client'}
                 </span>
               </div>

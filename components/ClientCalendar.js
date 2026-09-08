@@ -12,7 +12,7 @@ export default function ClientCalendar({ events }) {
       <CalendarView events={events} onSelectEvent={setSelected} selectedEventId={selected?.id} />
 
       {selected && (
-        <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px solid rgba(62,84,104,0.12)', background: 'var(--surface)' }}>
+        <div style={{ marginTop: '1.5rem', padding: '1rem', border: '1px solid rgba(var(--border-rgb),0.12)', background: 'var(--surface)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
             <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--navy)' }}>{selected.title}</div>
             <AddToCalendarLink event={selected} />
@@ -23,7 +23,7 @@ export default function ClientCalendar({ events }) {
               : new Date(selected.start_time).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
           </div>
           {selected.description && (
-            <p style={{ fontSize: '0.85rem', color: '#4a5568', lineHeight: 1.6, marginTop: '0.6rem' }}>{selected.description}</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginTop: '0.6rem' }}>{selected.description}</p>
           )}
         </div>
       )}

@@ -28,7 +28,7 @@ export default async function PermitsPage({ params }) {
 
       <div className={styles.fullWidthCard}>
         {!permits || permits.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             No permits have been added for this project yet.
           </p>
         ) : (
@@ -41,7 +41,7 @@ export default async function PermitsPage({ params }) {
                   gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
                   gap: '0.75rem',
                   padding: '0.9rem 1rem',
-                  border: '1px solid rgba(62,84,104,0.1)',
+                  border: '1px solid rgba(var(--border-rgb),0.1)',
                 }}
               >
                 <div>

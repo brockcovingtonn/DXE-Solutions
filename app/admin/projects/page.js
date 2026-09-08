@@ -56,7 +56,7 @@ export default async function AdminProjectsPage({ searchParams }) {
                   </div>
                 </div>
                 <div className={adminStyles.contactMeta}>
-                  <span style={{ fontSize: '0.72rem', color: '#a0aec0', marginRight: '0.75rem' }}>{p.project_type}</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginRight: '0.75rem' }}>{p.project_type}</span>
                   <span className={adminStyles.projectChipStatus}>{p.status}</span>
                   {unreadByProject[p.id] > 0 && (
                     <span

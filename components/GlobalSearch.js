@@ -58,7 +58,7 @@ export default function GlobalSearch() {
         <i
           className="ti ti-search"
           aria-hidden="true"
-          style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#a0aec0', fontSize: '0.9rem' }}
+          style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)', fontSize: '0.9rem' }}
         ></i>
         <input
           type="text"
@@ -87,17 +87,17 @@ export default function GlobalSearch() {
             left: 0,
             right: 0,
             background: 'var(--white)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
             maxHeight: '420px',
             overflowY: 'auto',
             zIndex: 200,
           }}
         >
-          {isLoading && <p style={{ padding: '0.85rem', fontSize: '0.8rem', color: '#718096' }}>Searching...</p>}
+          {isLoading && <p style={{ padding: '0.85rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Searching...</p>}
 
           {!isLoading && totalCount === 0 && (
-            <p style={{ padding: '0.85rem', fontSize: '0.8rem', color: '#718096' }}>No results for &quot;{query}&quot;.</p>
+            <p style={{ padding: '0.85rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No results for &quot;{query}&quot;.</p>
           )}
 
           {!isLoading && (
@@ -111,7 +111,7 @@ export default function GlobalSearch() {
                     <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>
                       {item.first_name} {item.last_name}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{item.email}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.email}</div>
                   </>
                 )}
               />
@@ -122,7 +122,7 @@ export default function GlobalSearch() {
                 render={(item) => (
                   <>
                     <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
-                    {item.address && <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{item.address}</div>}
+                    {item.address && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.address}</div>}
                   </>
                 )}
               />
@@ -133,7 +133,7 @@ export default function GlobalSearch() {
                 render={(item) => (
                   <>
                     <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.name}</div>
-                    <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
                       {[item.company, item.trade].filter(Boolean).join(' · ')}
                     </div>
                   </>
@@ -146,7 +146,7 @@ export default function GlobalSearch() {
                 render={(item) => (
                   <>
                     <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{item.file_name}</div>
-                    {item.projects?.name && <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{item.projects.name}</div>}
+                    {item.projects?.name && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{item.projects.name}</div>}
                   </>
                 )}
               />
@@ -167,7 +167,7 @@ function ResultGroup({ label, items, onSelect, render }) {
           padding: '0.5rem 0.85rem 0.3rem',
           fontSize: '0.65rem',
           fontWeight: 600,
-          color: '#a0aec0',
+          color: 'var(--text-tertiary)',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
         }}
@@ -185,7 +185,7 @@ function ResultGroup({ label, items, onSelect, render }) {
             textAlign: 'left',
             padding: '0.5rem 0.85rem',
             border: 'none',
-            borderTop: '1px solid rgba(62,84,104,0.06)',
+            borderTop: '1px solid rgba(var(--border-rgb),0.06)',
             background: 'none',
             cursor: 'pointer',
           }}

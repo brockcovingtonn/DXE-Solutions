@@ -107,7 +107,7 @@ export default async function AdminProjectPage({ params }) {
             margin: '1.5rem 0 1rem',
             color: 'var(--navy)',
             paddingTop: '1.5rem',
-            borderTop: '1px solid rgba(62,84,104,0.08)',
+            borderTop: '1px solid rgba(var(--border-rgb),0.08)',
           }}
         >
           Assigned employees

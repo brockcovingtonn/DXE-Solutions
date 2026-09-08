@@ -151,7 +151,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
             gap: '1rem',
             padding: '0.6rem 0.85rem',
             background: 'var(--surface)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             marginBottom: '1rem',
             flexWrap: 'wrap',
           }}
@@ -167,7 +167,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               e.target.value = '';
             }}
             style={{
-              border: '1px solid rgba(62,84,104,0.14)',
+              border: '1px solid rgba(var(--border-rgb),0.14)',
               background: 'var(--cream)',
               color: 'var(--navy)',
               padding: '0.3rem 0.5rem',
@@ -185,14 +185,14 @@ export default function AdminDocuments({ projectId, initialDocs }) {
             type="button"
             onClick={handleBulkDelete}
             disabled={isBulkWorking}
-            style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             {isBulkWorking ? 'Working...' : 'Delete Selected'}
           </button>
           <button
             type="button"
             onClick={clearSelection}
-            style={{ background: 'none', border: 'none', color: '#718096', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             Clear selection
           </button>
@@ -220,9 +220,9 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               {(() => {
                 const signature = Array.isArray(d.document_signatures) ? d.document_signatures[0] : d.document_signatures;
                 return signature ? (
-                  <div style={{ fontSize: '0.72rem', color: '#22543d', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-success)', marginTop: '0.2rem' }}>
                     <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on {formatDate(signature.created_at)} ·{' '}
-                    <a href={`/api/documents/${d.id}/download`} style={{ color: '#22543d', fontWeight: 500 }}>
+                    <a href={`/api/documents/${d.id}/download`} style={{ color: 'var(--text-success)', fontWeight: 500 }}>
                       View signed PDF
                     </a>
                   </div>
@@ -234,7 +234,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               onChange={(e) => handleBadgeChange(d.id, e.target.value)}
               disabled={savingId === d.id}
               style={{
-                border: '1px solid rgba(62,84,104,0.14)',
+                border: '1px solid rgba(var(--border-rgb),0.14)',
                 background: 'var(--cream)',
                 color: 'var(--navy)',
                 padding: '0.3rem 0.5rem',
@@ -285,7 +285,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
         <p style={{ fontSize: '0.72rem', marginTop: '0.3rem' }}>PDF, DOCX, DWG, XLSX — max 50MB</p>
         <input ref={fileInputRef} type="file" multiple disabled={uploading} onChange={(e) => handleFiles(e.target.files)} />
       </label>
-      {error && <p style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.75rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginTop: '0.75rem' }}>{error}</p>}
     </div>
   );
 }

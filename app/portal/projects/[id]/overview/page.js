@@ -219,7 +219,7 @@ export default async function ProjectOverviewPage({ params }) {
               </div>
             ))}
             {(!milestones || milestones.length === 0) && (
-              <p style={{ fontSize: '0.85rem', color: '#718096' }}>No milestones yet.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No milestones yet.</p>
             )}
           </div>
         </div>
@@ -239,7 +239,7 @@ export default async function ProjectOverviewPage({ params }) {
               </div>
             ))}
             {(!activity || activity.length === 0) && (
-              <p style={{ fontSize: '0.85rem', color: '#718096' }}>No recent activity.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No recent activity.</p>
             )}
           </div>
         </div>
@@ -269,7 +269,7 @@ export default async function ProjectOverviewPage({ params }) {
               </div>
             ))}
             {recentDocs.length === 0 && (
-              <p style={{ fontSize: '0.85rem', color: '#718096' }}>No documents yet.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No documents yet.</p>
             )}
           </div>
         </div>
@@ -283,7 +283,7 @@ export default async function ProjectOverviewPage({ params }) {
               <div className={styles.noteTime}>{formatDate(notes[0].created_at)}</div>
             </div>
           ) : (
-            <p style={{ fontSize: '0.85rem', color: '#718096' }}>No notes yet.</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No notes yet.</p>
           )}
         </div>
       </div>

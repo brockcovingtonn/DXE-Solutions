@@ -86,15 +86,15 @@ export default function SignaturePad({ documentId, defaultName, onSigned, onCanc
   }
 
   return (
-    <div style={{ padding: '1rem', border: '1px solid rgba(62,84,104,0.15)', background: 'var(--surface)', marginTop: '0.75rem' }}>
-      <p style={{ fontSize: '0.8rem', color: '#718096', marginBottom: '0.6rem' }}>
+    <div style={{ padding: '1rem', border: '1px solid rgba(var(--border-rgb),0.15)', background: 'var(--surface)', marginTop: '0.75rem' }}>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.6rem' }}>
         Sign below with your mouse or finger, confirm your name, then submit.
       </p>
       <canvas
         ref={canvasRef}
         width={500}
         height={180}
-        style={{ width: '100%', maxWidth: '500px', height: '180px', border: '1px solid rgba(62,84,104,0.2)', touchAction: 'none', background: '#fff' }}
+        style={{ width: '100%', maxWidth: '500px', height: '180px', border: '1px solid rgba(var(--border-rgb),0.2)', touchAction: 'none', background: '#fff' }}
         onMouseDown={startDraw}
         onMouseMove={draw}
         onMouseUp={endDraw}
@@ -107,7 +107,7 @@ export default function SignaturePad({ documentId, defaultName, onSigned, onCanc
         <button
           type="button"
           onClick={clear}
-          style={{ fontSize: '0.75rem', color: '#718096', background: 'none', border: '1px solid rgba(62,84,104,0.2)', padding: '0.4rem 0.8rem', cursor: 'pointer' }}
+          style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'none', border: '1px solid rgba(var(--border-rgb),0.2)', padding: '0.4rem 0.8rem', cursor: 'pointer' }}
         >
           Clear
         </button>
@@ -116,7 +116,7 @@ export default function SignaturePad({ documentId, defaultName, onSigned, onCanc
           value={signerName}
           onChange={(e) => setSignerName(e.target.value)}
           placeholder="Type your full name"
-          style={{ flex: 1, minWidth: '160px', border: '1px solid rgba(62,84,104,0.2)', padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
+          style={{ flex: 1, minWidth: '160px', border: '1px solid rgba(var(--border-rgb),0.2)', padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
         />
         <button
           type="button"
@@ -131,13 +131,13 @@ export default function SignaturePad({ documentId, defaultName, onSigned, onCanc
           <button
             type="button"
             onClick={onCancel}
-            style={{ fontSize: '0.75rem', color: '#718096', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer' }}
           >
             Cancel
           </button>
         )}
       </div>
-      {error && <p style={{ fontSize: '0.78rem', color: '#dc2626', marginTop: '0.5rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.78rem', color: 'var(--text-error)', marginTop: '0.5rem' }}>{error}</p>}
     </div>
   );
 }

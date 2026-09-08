@@ -116,10 +116,10 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
           alignItems: 'center',
         }}
       >
-        <span style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#718096', fontWeight: 600 }}>
+        <span style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 600 }}>
           Balance Due
         </span>
-        <span style={{ fontSize: '1.3rem', fontWeight: 600, color: balanceDue > 0 ? '#b91c1c' : 'var(--navy)' }}>
+        <span style={{ fontSize: '1.3rem', fontWeight: 600, color: balanceDue > 0 ? 'var(--text-error)' : 'var(--navy)' }}>
           {formatCurrency(balanceDue)}
         </span>
       </div>
@@ -133,7 +133,7 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
               alignItems: 'center',
               gap: '0.75rem',
               padding: '0.75rem',
-              border: '1px solid rgba(62,84,104,0.12)',
+              border: '1px solid rgba(var(--border-rgb),0.12)',
               opacity: busyId === item.id ? 0.6 : 1,
             }}
           >
@@ -153,7 +153,7 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
             </span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{item.description}</div>
-              <div style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.15rem' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
                 {item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}
                 {item.file_name && (
                   <>
@@ -175,7 +175,7 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
                 disabled={busyId === item.id}
                 className={adminStyles.iconBtn}
                 title={item.status === 'paid' ? 'Paid — click to mark unpaid' : 'Unpaid — click to mark paid'}
-                style={{ color: item.status === 'paid' ? '#065f46' : '#b91c1c' }}
+                style={{ color: item.status === 'paid' ? 'var(--text-success)' : 'var(--text-error)' }}
               >
                 <i className={`ti ${item.status === 'paid' ? 'ti-circle-check' : 'ti-circle-dashed'}`} aria-hidden="true"></i>
               </button>
@@ -192,7 +192,7 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
           </div>
         ))}
         {(!initialInvoices || initialInvoices.length === 0) && (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No invoices or receipts yet.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No invoices or receipts yet.</p>
         )}
       </div>
 

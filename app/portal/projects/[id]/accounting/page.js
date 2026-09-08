@@ -47,20 +47,20 @@ export default async function AccountingPage({ params }) {
           }}
         >
           <div>
-            <div style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#718096', fontWeight: 600 }}>
+            <div style={{ fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 600 }}>
               Balance Due
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#a0aec0', marginTop: '0.15rem' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
               {balanceDue > 0 ? 'Payable to DXE Solutions' : 'You’re all caught up'}
             </div>
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 600, color: balanceDue > 0 ? '#b91c1c' : '#065f46' }}>
+          <div style={{ fontSize: '1.6rem', fontWeight: 600, color: balanceDue > 0 ? 'var(--text-error)' : 'var(--text-success)' }}>
             {formatCurrency(balanceDue)}
           </div>
         </div>
 
         {!invoices || invoices.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No invoices or receipts on file yet.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No invoices or receipts on file yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {invoices.map((item) => (
@@ -71,7 +71,7 @@ export default async function AccountingPage({ params }) {
                   alignItems: 'center',
                   gap: '0.75rem',
                   padding: '0.85rem',
-                  border: '1px solid rgba(62,84,104,0.1)',
+                  border: '1px solid rgba(var(--border-rgb),0.1)',
                 }}
               >
                 <span
@@ -90,7 +90,7 @@ export default async function AccountingPage({ params }) {
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{item.description}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.15rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
                     {item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}
                     {item.status === 'unpaid' && ' · Unpaid'}
                     {item.file_name && (

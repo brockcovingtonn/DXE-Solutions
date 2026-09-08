@@ -266,7 +266,7 @@ export default function PermitsEditor({ projectId, initialPermits }) {
       )}
 
       {(!initialPermits || initialPermits.length === 0) && !adding && (
-        <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.75rem' }}>No permits on file yet.</p>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>No permits on file yet.</p>
       )}
 
       {adding ? (

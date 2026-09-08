@@ -56,7 +56,7 @@ export default function ContactsList({ contacts }) {
             gap: '1rem',
             padding: '0.6rem 0.85rem',
             background: 'var(--surface)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             marginBottom: '1rem',
             flexWrap: 'wrap',
           }}
@@ -68,20 +68,20 @@ export default function ContactsList({ contacts }) {
             type="button"
             onClick={handleBulkDelete}
             disabled={isDeleting}
-            style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             {isDeleting ? 'Deleting...' : 'Delete Selected'}
           </button>
           <button
             type="button"
             onClick={clearSelection}
-            style={{ background: 'none', border: 'none', color: '#718096', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             Clear selection
           </button>
         </div>
       )}
-      {error && <p style={{ fontSize: '0.8rem', color: '#dc2626', marginBottom: '0.75rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginBottom: '0.75rem' }}>{error}</p>}
 
       <div className={adminStyles.clientList}>
         {contacts.map((contact) => (
@@ -107,7 +107,7 @@ export default function ContactsList({ contacts }) {
                   </span>
                 ))}
                 {(!contact.project_contacts || contact.project_contacts.length === 0) && (
-                  <span style={{ fontSize: '0.78rem', color: '#a0aec0' }}>Not linked to a project</span>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>Not linked to a project</span>
                 )}
               </div>
               <div className={adminStyles.contactMeta}>

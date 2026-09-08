@@ -130,7 +130,7 @@ export default function TrainingStepsEditor({ category, initialSteps }) {
                 alignItems: 'flex-start',
                 gap: '0.75rem',
                 padding: '0.75rem',
-                border: '1px solid rgba(62,84,104,0.12)',
+                border: '1px solid rgba(var(--border-rgb),0.12)',
                 opacity: busyId === step.id ? 0.6 : 1,
               }}
             >
@@ -149,7 +149,7 @@ export default function TrainingStepsEditor({ category, initialSteps }) {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.9rem', color: 'var(--navy)', fontWeight: 500 }}>{step.title}</div>
                 {step.description && (
-                  <div style={{ fontSize: '0.82rem', color: '#718096', marginTop: '0.25rem', lineHeight: 1.6 }}>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.6 }}>
                     {step.description}
                   </div>
                 )}
@@ -170,7 +170,7 @@ export default function TrainingStepsEditor({ category, initialSteps }) {
           )
         )}
         {(!initialSteps || initialSteps.length === 0) && !adding && (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No steps in this category yet.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No steps in this category yet.</p>
         )}
       </div>
 

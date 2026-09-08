@@ -91,10 +91,10 @@ export default async function PortalIndexPage() {
                 style={{ margin: 0, display: 'block', color: 'inherit', textDecoration: 'none' }}
               >
                 <h3 style={{ marginBottom: '0.5rem' }}>{project.name}</h3>
-                <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '0.25rem' }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
                   {project.address || 'No address on file'}
                 </p>
-                <p style={{ fontSize: '0.78rem', color: '#a0aec0', marginBottom: '0.75rem' }}>
+                <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginBottom: '0.75rem' }}>
                   {project.project_type || 'Project type not set'}
                 </p>
                 <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold)', fontWeight: 600 }}>
@@ -106,7 +106,7 @@ export default async function PortalIndexPage() {
         </div>
       ) : (
         <div className={styles.fullWidthCard}>
-          <p style={{ fontSize: '0.9rem', color: '#4a5568', lineHeight: 1.7 }}>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
             No projects have been added to your account yet. Once Dixie sets up your project, it will
             appear here automatically with status updates, documents, photos, and notes.
           </p>

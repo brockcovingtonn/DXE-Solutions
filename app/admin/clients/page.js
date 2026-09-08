@@ -87,7 +87,7 @@ export default async function AdminClientsPage() {
                     </Link>
                   ))}
                   {(!projectsByClient[client.id] || projectsByClient[client.id].length === 0) && (
-                    <span style={{ fontSize: '0.78rem', color: '#a0aec0' }}>No projects</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>No projects</span>
                   )}
                 </div>
                 <Link href={`/admin/clients/${client.id}`} className={adminStyles.addProjectLink}>

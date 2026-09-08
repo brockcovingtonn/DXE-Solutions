@@ -47,7 +47,7 @@ export default function FloatingAssistant({ projects, initialProjectId }) {
             height: '540px',
             maxHeight: 'calc(100vh - 12rem)',
             background: 'var(--white)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             boxShadow: '0 20px 50px rgba(44,62,80,0.25)',
             zIndex: 200,
             display: 'flex',

@@ -14,6 +14,67 @@
   --text-muted: #93A6B7;
   --white: #FFFFFF;
   --border: #DCE5EC;
+  --border-rgb: 62, 84, 104;
+  --text-secondary: #718096;
+  --text-tertiary: #A0AEC0;
+  --text-faint: #CBD5E0;
+  --text-error: #DC2626;
+  --text-success: #065F46;
+}
+
+/* =====================================================================
+   Dark theme — scoped to the logged-in app shell (.portal, shared by
+   the client/employee/admin layouts), never the public marketing site.
+   "System" (no explicit choice) follows the OS via the media query;
+   an explicit choice on [data-theme] always wins in both directions.
+   ===================================================================== */
+@media (prefers-color-scheme: dark) {
+  .portal:not([data-theme='light']) {
+    --navy: #C7D2DC;
+    --cream: #12181F;
+    --surface: #1B2530;
+    --white: #1F2A36;
+    --border: #2C3947;
+    --border-rgb: 255, 255, 255;
+    --text-muted: #8CA0B3;
+    --text-secondary: #94A3B4;
+    --text-tertiary: #7C8FA3;
+    --text-faint: #5C6B7C;
+    --text-error: #F87171;
+    --text-success: #4ADE80;
+  }
+}
+
+.portal[data-theme='dark'] {
+  --navy: #C7D2DC;
+  --cream: #12181F;
+  --surface: #1B2530;
+  --white: #1F2A36;
+  --border: #2C3947;
+  --border-rgb: 255, 255, 255;
+  --text-muted: #8CA0B3;
+  --text-secondary: #94A3B4;
+  --text-tertiary: #7C8FA3;
+  --text-faint: #5C6B7C;
+  --text-error: #F87171;
+  --text-success: #4ADE80;
+}
+
+/* Branded elements that intentionally keep a fixed navy/gold background
+   + white text regardless of theme (buttons, badges, small accents) —
+   without this, redefining --navy/--white above for body text would
+   also flip these, since they read from the same tokens. */
+.portal[data-theme='dark'] .btn-navy,
+.portal[data-theme='dark'] .btn-primary,
+.portal:not([data-theme='light']) .btn-navy,
+.portal:not([data-theme='light']) .btn-primary {
+  background: #3E5468;
+  color: #fff;
+}
+
+.portal[data-theme='dark'] .btn-gold,
+.portal:not([data-theme='light']) .btn-gold {
+  color: #fff;
 }
 
 * {

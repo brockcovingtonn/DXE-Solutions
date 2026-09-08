@@ -47,7 +47,7 @@ function eventsOnDay(events, day) {
 
 const navBtnStyle = {
   background: 'none',
-  border: '1px solid rgba(62,84,104,0.15)',
+  border: '1px solid rgba(var(--border-rgb),0.15)',
   padding: '0.4rem 0.7rem',
   fontSize: '0.8rem',
   color: 'var(--navy)',
@@ -56,7 +56,7 @@ const navBtnStyle = {
 
 const tabBtnStyle = {
   background: 'none',
-  border: '1px solid rgba(62,84,104,0.15)',
+  border: '1px solid rgba(var(--border-rgb),0.15)',
   padding: '0.4rem 0.8rem',
   fontSize: '0.78rem',
   color: 'var(--navy)',
@@ -164,7 +164,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
             fontSize: '0.65rem',
             textAlign: 'center',
             fontWeight: 600,
-            color: '#718096',
+            color: 'var(--text-secondary)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
           }}
@@ -184,7 +184,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
                 {day.getDate()}
               </div>
               {weather && (
-                <div title={`${weatherDisplay(weather.weatherCode).label} · High ${weather.high}° / Low ${weather.low}°`} style={{ fontSize: '0.68rem', color: '#a0aec0' }}>
+                <div title={`${weatherDisplay(weather.weatherCode).label} · High ${weather.high}° / Low ${weather.low}°`} style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)' }}>
                   {weatherDisplay(weather.weatherCode).emoji} {weather.high}°
                 </div>
               )}
@@ -193,7 +193,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
               {dayEvents.slice(0, 3).map((e) => (
                 <EventChip key={e.id} event={e} selected={e.id === selectedEventId} onClick={() => onSelectEvent(e)} />
               ))}
-              {dayEvents.length > 3 && <div style={{ fontSize: '0.65rem', color: '#a0aec0' }}>+{dayEvents.length - 3} more</div>}
+              {dayEvents.length > 3 && <div style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)' }}>+{dayEvents.length - 3} more</div>}
             </div>
           </div>
         );
@@ -216,10 +216,10 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays
         return (
           <div key={i} style={{ border: '1px solid var(--border)', minHeight: '170px' }}>
             <div style={{ padding: '0.5rem', background: isToday ? 'var(--surface)' : 'transparent', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.62rem', color: '#a0aec0', textTransform: 'uppercase' }}>{WEEKDAY_LABELS[day.getDay()]}</div>
+              <div style={{ fontSize: '0.62rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{WEEKDAY_LABELS[day.getDay()]}</div>
               <div style={{ fontSize: '0.95rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>{day.getDate()}</div>
               {weather && (
-                <div style={{ fontSize: '0.68rem', color: '#a0aec0', marginTop: '0.15rem' }}>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
                   {weatherDisplay(weather.weatherCode).emoji} {weather.high}°/{weather.low}°
                 </div>
               )}
@@ -228,7 +228,7 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays
               {dayEvents.map((e) => (
                 <EventChip key={e.id} event={e} selected={e.id === selectedEventId} onClick={() => onSelectEvent(e)} showTime />
               ))}
-              {dayEvents.length === 0 && <div style={{ fontSize: '0.68rem', color: '#cbd5e0' }}>—</div>}
+              {dayEvents.length === 0 && <div style={{ fontSize: '0.68rem', color: 'var(--text-faint)' }}>—</div>}
             </div>
           </div>
         );
@@ -253,7 +253,7 @@ function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays
         </div>
       )}
       {dayEvents.length === 0 ? (
-        <p style={{ fontSize: '0.85rem', color: '#718096' }}>Nothing on the calendar for this day.</p>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Nothing on the calendar for this day.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           {dayEvents.map((e) => (
@@ -267,7 +267,7 @@ function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays
                 gap: '1rem',
                 alignItems: 'flex-start',
                 padding: '0.85rem',
-                border: '1px solid rgba(62,84,104,0.12)',
+                border: '1px solid rgba(var(--border-rgb),0.12)',
                 cursor: 'pointer',
                 background: e.id === selectedEventId ? 'var(--surface)' : 'var(--white)',
               }}
@@ -277,9 +277,9 @@ function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays
               </div>
               <div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--navy)' }}>{e.title}</div>
-                {e.description && <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>{e.description}</div>}
+                {e.description && <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>{e.description}</div>}
                 {e.projects?.name && (
-                  <div style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.2rem' }}>
                     {e.projects.name}
                     {e.visible_to_client ? ' · Visible to client' : ''}
                   </div>

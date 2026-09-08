@@ -35,7 +35,7 @@ export default function EmployeeTrainingBrowser({ stepsByCategory }) {
       <div>
         <h3 style={{ marginBottom: '1.25rem' }}>{active}</h3>
         {steps.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No training steps in this category yet.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No training steps in this category yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {steps.map((step, i) => (
@@ -55,7 +55,7 @@ export default function EmployeeTrainingBrowser({ stepsByCategory }) {
                 <div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--navy)' }}>{step.title}</div>
                   {step.description && (
-                    <div style={{ fontSize: '0.85rem', color: '#718096', marginTop: '0.35rem', lineHeight: 1.7 }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.7 }}>
                       {step.description}
                     </div>
                   )}

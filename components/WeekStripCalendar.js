@@ -67,7 +67,7 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
               style={{
                 textAlign: 'center',
                 padding: '0.6rem 0.3rem',
-                border: '1px solid rgba(62,84,104,0.12)',
+                border: '1px solid rgba(var(--border-rgb),0.12)',
                 background: isSelected ? 'var(--navy)' : isTodayCol ? 'var(--surface)' : 'var(--white)',
                 cursor: 'pointer',
               }}
@@ -75,7 +75,7 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
               <div
                 style={{
                   fontSize: '0.62rem',
-                  color: isSelected ? 'rgba(255,255,255,0.7)' : '#a0aec0',
+                  color: isSelected ? 'rgba(255,255,255,0.7)' : 'var(--text-tertiary)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                 }}
@@ -104,7 +104,7 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
               {(() => {
                 const weather = weatherForDate(weatherDays, day);
                 return weather ? (
-                  <div style={{ fontSize: '0.6rem', marginTop: '0.2rem', color: isSelected ? 'rgba(255,255,255,0.7)' : '#a0aec0' }}>
+                  <div style={{ fontSize: '0.6rem', marginTop: '0.2rem', color: isSelected ? 'rgba(255,255,255,0.7)' : 'var(--text-tertiary)' }}>
                     {weatherDisplay(weather.weatherCode).emoji} {weather.high}°
                   </div>
                 ) : null;
@@ -119,7 +119,7 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
       </div>
 
       {selectedEvents.length === 0 ? (
-        <p style={{ fontSize: '0.82rem', color: '#a0aec0', marginBottom: '1rem' }}>Nothing scheduled.</p>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', marginBottom: '1rem' }}>Nothing scheduled.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
           {selectedEvents.map((e) => (
@@ -129,7 +129,7 @@ export default function WeekStripCalendar({ events, viewAllHref }) {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>{e.title}</div>
-                {e.projects?.name && <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{e.projects.name}</div>}
+                {e.projects?.name && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{e.projects.name}</div>}
               </div>
               <AddToCalendarLink event={e} iconOnly />
             </div>

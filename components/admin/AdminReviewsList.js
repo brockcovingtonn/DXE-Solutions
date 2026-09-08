@@ -47,7 +47,7 @@ export default function AdminReviewsList({ initialReviews }) {
           key={r.id}
           style={{
             padding: '1rem',
-            border: '1px solid rgba(62,84,104,0.12)',
+            border: '1px solid rgba(var(--border-rgb),0.12)',
             background: r.featured ? 'var(--surface)' : 'var(--white)',
             opacity: busyId === r.id ? 0.6 : 1,
           }}
@@ -66,7 +66,7 @@ export default function AdminReviewsList({ initialReviews }) {
                   </>
                 )}
               </div>
-              {r.project_type && <div style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.1rem' }}>{r.project_type}</div>}
+              {r.project_type && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.1rem' }}>{r.project_type}</div>}
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
               <button
@@ -75,7 +75,7 @@ export default function AdminReviewsList({ initialReviews }) {
                 disabled={busyId === r.id}
                 className={adminStyles.iconBtn}
                 title={r.featured ? 'Featured on the website — click to unfeature' : 'Not featured — click to show on the website'}
-                style={{ color: r.featured ? 'var(--gold)' : '#cbd5e0' }}
+                style={{ color: r.featured ? 'var(--gold)' : 'var(--text-faint)' }}
               >
                 <i className={`ti ${r.featured ? 'ti-star-filled' : 'ti-star'}`} aria-hidden="true"></i>
               </button>
@@ -90,7 +90,7 @@ export default function AdminReviewsList({ initialReviews }) {
               </button>
             </div>
           </div>
-          {r.body && <p style={{ fontSize: '0.85rem', color: '#4a5568', lineHeight: 1.6 }}>{r.body}</p>}
+          {r.body && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{r.body}</p>}
         </div>
       ))}
     </div>

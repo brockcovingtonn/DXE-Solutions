@@ -46,7 +46,7 @@ export default function NewNoteForm({ projectId }) {
         onChange={(e) => setBody(e.target.value)}
         disabled={posting}
       />
-      {error && <p style={{ fontSize: '0.8rem', color: '#dc2626', marginBottom: '0.75rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginBottom: '0.75rem' }}>{error}</p>}
       <button type="submit" className="btn-navy" disabled={posting || !body.trim()}>
         {posting ? 'Posting...' : 'Post Note'}
       </button>

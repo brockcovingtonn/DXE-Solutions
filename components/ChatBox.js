@@ -207,13 +207,13 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
       {others.length > 0 && (
         <div style={{ display: 'flex', gap: '1.1rem', flexWrap: 'wrap', marginBottom: '0.75rem', flexShrink: 0 }}>
           {others.map((p) => (
-            <span key={p.id} style={{ fontSize: '0.72rem', color: '#718096', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span key={p.id} style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span
                 style={{
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  background: onlineIds.has(p.id) ? '#22c55e' : '#cbd5e0',
+                  background: onlineIds.has(p.id) ? '#22c55e' : 'var(--text-faint)',
                   display: 'inline-block',
                   flexShrink: 0,
                 }}
@@ -235,11 +235,11 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
           gap: '0.6rem',
           padding: '1rem',
           background: 'var(--cream)',
-          border: '1px solid rgba(62,84,104,0.1)',
+          border: '1px solid rgba(var(--border-rgb),0.1)',
         }}
       >
         {messages.length === 0 && (
-          <p style={{ fontSize: '0.85rem', color: '#a0aec0', margin: 'auto' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', margin: 'auto' }}>
             No messages yet. Say hello.
           </p>
         )}
@@ -252,7 +252,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                 <div
                   style={{
                     fontSize: '0.65rem',
-                    color: isTeam ? 'var(--gold)' : '#718096',
+                    color: isTeam ? 'var(--gold)' : 'var(--text-secondary)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.04em',
@@ -269,7 +269,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                         <img
                           src={attachmentUrls[m.id]}
                           alt={m.attachment_name || 'Attachment'}
-                          style={{ maxWidth: '220px', maxHeight: '220px', display: 'block', border: '1px solid rgba(62,84,104,0.1)' }}
+                          style={{ maxWidth: '220px', maxHeight: '220px', display: 'block', border: '1px solid rgba(var(--border-rgb),0.1)' }}
                         />
                       </a>
                     ) : (
@@ -285,7 +285,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                           fontSize: '0.8rem',
                           background: isMine ? 'rgba(255,255,255,0.12)' : 'var(--cream)',
                           color: isMine ? 'var(--white)' : 'var(--navy)',
-                          border: isMine ? 'none' : '1px solid rgba(62,84,104,0.1)',
+                          border: isMine ? 'none' : '1px solid rgba(var(--border-rgb),0.1)',
                           textDecoration: 'none',
                         }}
                       >
@@ -302,7 +302,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                       lineHeight: 1.5,
                       background: isMine ? 'var(--navy)' : 'var(--white)',
                       color: isMine ? 'var(--white)' : 'var(--navy)',
-                      border: isMine ? 'none' : '1px solid rgba(62,84,104,0.1)',
+                      border: isMine ? 'none' : '1px solid rgba(var(--border-rgb),0.1)',
                     }}
                   >
                     {m.body}
@@ -311,14 +311,14 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
                 <div
                   style={{
                     fontSize: '0.62rem',
-                    color: '#a0aec0',
+                    color: 'var(--text-tertiary)',
                     marginTop: '0.2rem',
                     textAlign: isMine ? 'right' : 'left',
                   }}
                 >
                   {formatTime(m.created_at)}
                   {isMine && m.id === lastMineId && (
-                    <span style={{ marginLeft: '0.4rem', color: readByOther ? 'var(--gold)' : '#a0aec0' }}>
+                    <span style={{ marginLeft: '0.4rem', color: readByOther ? 'var(--gold)' : 'var(--text-tertiary)' }}>
                       {readByOther ? '✓✓ Read' : '✓ Sent'}
                     </span>
                   )}
@@ -342,7 +342,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
           disabled={sending}
           title="Attach a file"
           style={{
-            border: '1px solid rgba(62,84,104,0.2)',
+            border: '1px solid rgba(var(--border-rgb),0.2)',
             background: 'var(--white)',
             color: 'var(--navy)',
             padding: '0 0.75rem',
@@ -360,7 +360,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
           disabled={sending}
           style={{
             flex: 1,
-            border: '1px solid rgba(62,84,104,0.2)',
+            border: '1px solid rgba(var(--border-rgb),0.2)',
             background: 'var(--white)',
             color: 'var(--navy)',
             padding: '0.65rem 0.85rem',
@@ -373,7 +373,7 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
           {sending ? 'Sending...' : 'Send'}
         </button>
       </form>
-      {error && <p style={{ fontSize: '0.78rem', color: '#dc2626', marginTop: '0.5rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.78rem', color: 'var(--text-error)', marginTop: '0.5rem' }}>{error}</p>}
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default async function UtilitiesPage({ params }) {
 
       <div className={styles.fullWidthCard}>
         {visibleUtilities.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             No utility information has been added for this project yet.
           </p>
         ) : (
@@ -60,7 +60,7 @@ export default async function UtilitiesPage({ params }) {
                   )}
 
                   {entries.length === 0 ? (
-                    <p style={{ fontSize: '0.82rem', color: '#a0aec0', marginTop: '0.75rem' }}>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', marginTop: '0.75rem' }}>
                       No updates yet.
                     </p>
                   ) : (

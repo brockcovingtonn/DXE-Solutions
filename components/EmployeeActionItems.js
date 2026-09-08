@@ -24,7 +24,7 @@ export default function EmployeeActionItems({ initialItems }) {
   }
 
   if (!initialItems || initialItems.length === 0) {
-    return <p style={{ fontSize: '0.85rem', color: '#718096' }}>You have no action items assigned right now.</p>;
+    return <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>You have no action items assigned right now.</p>;
   }
 
   return (
@@ -37,7 +37,7 @@ export default function EmployeeActionItems({ initialItems }) {
             alignItems: 'flex-start',
             gap: '0.75rem',
             padding: '0.65rem 0.75rem',
-            border: '1px solid rgba(62,84,104,0.12)',
+            border: '1px solid rgba(var(--border-rgb),0.12)',
             background: item.status === 'done' ? 'var(--surface)' : 'var(--white)',
             cursor: 'pointer',
             opacity: busyId === item.id ? 0.6 : 1,
@@ -63,10 +63,10 @@ export default function EmployeeActionItems({ initialItems }) {
               {item.title}
             </div>
             {item.description && (
-              <div style={{ fontSize: '0.78rem', color: '#718096', marginTop: '0.15rem' }}>{item.description}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>{item.description}</div>
             )}
             {item.projects?.name && (
-              <div style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.2rem' }}>
                 {item.projects.name}
                 {item.due_date ? ` · Due ${item.due_date}` : ''}
               </div>

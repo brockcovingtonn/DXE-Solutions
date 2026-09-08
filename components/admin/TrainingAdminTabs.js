@@ -19,7 +19,7 @@ export default function TrainingAdminTabs({ stepsByCategory }) {
               padding: '0.5rem 0.9rem',
               fontSize: '0.78rem',
               fontWeight: 500,
-              border: '1px solid rgba(62,84,104,0.15)',
+              border: '1px solid rgba(var(--border-rgb),0.15)',
               background: active === cat ? 'var(--navy)' : 'transparent',
               color: active === cat ? 'var(--white)' : 'var(--navy)',
               cursor: 'pointer',

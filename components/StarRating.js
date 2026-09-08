@@ -11,7 +11,7 @@ export default function StarRating({ value = 0, onChange, size = 20, readOnly = 
           aria-hidden="true"
           style={{
             fontSize: `${size}px`,
-            color: n <= value ? 'var(--gold)' : '#cbd5e0',
+            color: n <= value ? 'var(--gold)' : 'var(--text-faint)',
             cursor: readOnly ? 'default' : 'pointer',
             lineHeight: 1,
           }}

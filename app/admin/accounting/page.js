@@ -46,7 +46,7 @@ export default async function MasterAccountingPage({ searchParams }) {
       <div className={styles.statCards3}>
         <div className={styles.statCard}>
           <div className={styles.scLabel}>Total Outstanding</div>
-          <div className={styles.scValue} style={{ color: totalOutstanding > 0 ? '#b91c1c' : 'var(--navy)' }}>
+          <div className={styles.scValue} style={{ color: totalOutstanding > 0 ? 'var(--text-error)' : 'var(--navy)' }}>
             {formatCurrency(totalOutstanding)}
           </div>
         </div>

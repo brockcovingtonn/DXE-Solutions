@@ -54,7 +54,7 @@ export default async function ClientDetailPage({ params }) {
             ))}
           </div>
         ) : (
-          <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
             No projects yet.
           </p>
         )}

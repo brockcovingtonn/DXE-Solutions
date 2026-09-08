@@ -80,7 +80,7 @@ export default function OnboardingTour({ userId, initialSeen }) {
           <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.4rem', fontWeight: 500, color: 'var(--navy)', marginBottom: '0.75rem' }}>
             {current.title}
           </h3>
-          <p style={{ fontSize: '0.88rem', color: '#4a5568', lineHeight: 1.65 }}>{current.body}</p>
+          <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>{current.body}</p>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '0.4rem', paddingBottom: '1.5rem' }}>
@@ -91,7 +91,7 @@ export default function OnboardingTour({ userId, initialSeen }) {
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                background: i === step ? 'var(--gold)' : 'rgba(62,84,104,0.2)',
+                background: i === step ? 'var(--gold)' : 'rgba(var(--border-rgb),0.2)',
               }}
             />
           ))}
@@ -103,10 +103,10 @@ export default function OnboardingTour({ userId, initialSeen }) {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '1rem 1.5rem',
-            borderTop: '1px solid rgba(62,84,104,0.1)',
+            borderTop: '1px solid rgba(var(--border-rgb),0.1)',
           }}
         >
-          <button type="button" onClick={finish} style={{ background: 'none', border: 'none', color: '#a0aec0', fontSize: '0.8rem', cursor: 'pointer' }}>
+          <button type="button" onClick={finish} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', fontSize: '0.8rem', cursor: 'pointer' }}>
             Skip tour
           </button>
           <div style={{ display: 'flex', gap: '0.6rem' }}>
@@ -116,7 +116,7 @@ export default function OnboardingTour({ userId, initialSeen }) {
                 onClick={() => setStep((s) => s - 1)}
                 style={{
                   background: 'none',
-                  border: '1px solid rgba(62,84,104,0.25)',
+                  border: '1px solid rgba(var(--border-rgb),0.25)',
                   color: 'var(--navy)',
                   padding: '0.6rem 1.1rem',
                   fontSize: '0.8rem',

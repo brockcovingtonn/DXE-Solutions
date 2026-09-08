@@ -25,7 +25,7 @@ export default function ReviewForm({ projectId, initialReview }) {
     fontSize: '0.72rem',
     letterSpacing: '0.1em',
     textTransform: 'uppercase',
-    color: '#718096',
+    color: 'var(--text-secondary)',
     marginBottom: '0.6rem',
     fontWeight: 500,
   };
@@ -100,7 +100,7 @@ export default function ReviewForm({ projectId, initialReview }) {
           style={{
             width: '100%',
             minHeight: '130px',
-            border: '1px solid rgba(62,84,104,0.2)',
+            border: '1px solid rgba(var(--border-rgb),0.2)',
             background: 'var(--cream)',
             color: 'var(--navy)',
             padding: '0.75rem',
@@ -113,7 +113,7 @@ export default function ReviewForm({ projectId, initialReview }) {
       </div>
 
       {message && (
-        <p style={{ fontSize: '0.82rem', color: message.startsWith('Thank') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.82rem', color: message.startsWith('Thank') ? 'var(--text-success)' : 'var(--text-error)', marginBottom: '1rem' }}>
           {message}
         </p>
       )}
@@ -124,7 +124,7 @@ export default function ReviewForm({ projectId, initialReview }) {
             marginBottom: '1.5rem',
             padding: '1rem',
             background: 'var(--surface)',
-            border: '1px solid rgba(62,84,104,0.12)',
+            border: '1px solid rgba(var(--border-rgb),0.12)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
@@ -156,7 +156,7 @@ export default function ReviewForm({ projectId, initialReview }) {
             type="button"
             onClick={handleDelete}
             disabled={deleting}
-            style={{ background: 'none', border: 'none', color: '#dc2626', fontSize: '0.82rem', cursor: 'pointer', padding: 0 }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-error)', fontSize: '0.82rem', cursor: 'pointer', padding: 0 }}
           >
             {deleting ? 'Removing...' : 'Remove my review'}
           </button>

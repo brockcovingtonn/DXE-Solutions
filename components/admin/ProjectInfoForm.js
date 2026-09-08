@@ -138,7 +138,7 @@ export default function ProjectInfoForm({ project }) {
           margin: '1.5rem 0 1rem',
           color: 'var(--navy)',
           paddingTop: '1.5rem',
-          borderTop: '1px solid rgba(62,84,104,0.08)',
+          borderTop: '1px solid rgba(var(--border-rgb),0.08)',
         }}
       >
         Permitting details
@@ -201,7 +201,7 @@ export default function ProjectInfoForm({ project }) {
         />
       </div>
 
-      <p style={{ fontSize: '0.78rem', color: '#a0aec0', marginTop: '-0.5rem', marginBottom: '1.5rem' }}>
+      <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginTop: '-0.5rem', marginBottom: '1.5rem' }}>
         Permit numbers and status are tracked per-permit below, in the Permits section.
       </p>
 

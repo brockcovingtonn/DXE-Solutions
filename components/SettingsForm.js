@@ -74,7 +74,7 @@ export default function SettingsForm({ profile, email }) {
 
   const inputStyle = {
     width: '100%',
-    border: '1px solid rgba(62,84,104,0.2)',
+    border: '1px solid rgba(var(--border-rgb),0.2)',
     background: 'var(--cream)',
     color: 'var(--navy)',
     padding: '0.7rem',
@@ -87,7 +87,7 @@ export default function SettingsForm({ profile, email }) {
     fontSize: '0.7rem',
     letterSpacing: '0.1em',
     textTransform: 'uppercase',
-    color: '#718096',
+    color: 'var(--text-secondary)',
     marginBottom: '0.5rem',
     fontWeight: 500,
   };
@@ -148,12 +148,12 @@ export default function SettingsForm({ profile, email }) {
             Email me when there&apos;s an update on my project
           </span>
         </label>
-        <p style={{ fontSize: '0.72rem', color: '#a0aec0', marginTop: '0.35rem', marginLeft: '1.6rem' }}>
+        <p style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.35rem', marginLeft: '1.6rem' }}>
           New documents, photos, notes, and status changes
         </p>
       </div>
       {message && (
-        <p style={{ fontSize: '0.82rem', color: message.includes('saved') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.82rem', color: message.includes('saved') ? 'var(--text-success)' : 'var(--text-error)', marginBottom: '1rem' }}>
           {message}
         </p>
       )}
@@ -162,7 +162,7 @@ export default function SettingsForm({ profile, email }) {
       </button>
     </form>
 
-    <form onSubmit={handleChangePassword} style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(62,84,104,0.12)' }}>
+    <form onSubmit={handleChangePassword} style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(var(--border-rgb),0.12)' }}>
       <h3 style={{ marginBottom: '1rem' }}>Change Password</h3>
       <div style={{ marginBottom: '1rem' }}>
         <label style={labelStyle}>New Password</label>
@@ -185,7 +185,7 @@ export default function SettingsForm({ profile, email }) {
         />
       </div>
       {passwordMessage && (
-        <p style={{ fontSize: '0.82rem', color: passwordMessage.includes('updated') ? '#065f46' : '#dc2626', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.82rem', color: passwordMessage.includes('updated') ? 'var(--text-success)' : 'var(--text-error)', marginBottom: '1rem' }}>
           {passwordMessage}
         </p>
       )}
@@ -195,9 +195,9 @@ export default function SettingsForm({ profile, email }) {
     </form>
 
     {!profile?.is_admin && !profile?.is_employee && (
-      <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(62,84,104,0.12)' }}>
+      <div style={{ marginTop: '2.5rem', paddingTop: '2rem', borderTop: '1px solid rgba(var(--border-rgb),0.12)' }}>
         <h3 style={{ marginBottom: '0.5rem' }}>Portal Tour</h3>
-        <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           Walk through the portal&apos;s sections again.
         </p>
         <button
@@ -206,7 +206,7 @@ export default function SettingsForm({ profile, email }) {
           disabled={retakingTour}
           style={{
             background: 'none',
-            border: '1px solid rgba(62,84,104,0.25)',
+            border: '1px solid rgba(var(--border-rgb),0.25)',
             color: 'var(--navy)',
             padding: '0.6rem 1.1rem',
             fontSize: '0.8rem',

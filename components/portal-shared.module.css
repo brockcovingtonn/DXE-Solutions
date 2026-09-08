@@ -12,7 +12,7 @@
 
 .portalHeader p {
   font-size: 0.85rem;
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 /* Stat cards */
@@ -32,7 +32,7 @@
 
 .statCard {
   background: var(--white);
-  border: 1px solid rgba(62, 84, 104, 0.1);
+  border: 1px solid rgba(var(--border-rgb), 0.1);
   padding: 1.25rem;
   position: relative;
 }
@@ -41,7 +41,7 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #718096;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -62,13 +62,13 @@
 
 .scSub {
   font-size: 0.72rem;
-  color: #718096;
+  color: var(--text-secondary);
   margin-top: 0.2rem;
 }
 
 .scBar {
   height: 3px;
-  background: #e2e8f0;
+  background: var(--border);
   margin-top: 1rem;
 }
 
@@ -87,7 +87,7 @@
 
 .portalCard {
   background: var(--white);
-  border: 1px solid rgba(62, 84, 104, 0.1);
+  border: 1px solid rgba(var(--border-rgb), 0.1);
   padding: 1.5rem;
 }
 
@@ -98,7 +98,7 @@
   color: var(--navy);
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(62, 84, 104, 0.08);
+  border-bottom: 1px solid rgba(var(--border-rgb), 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -116,7 +116,7 @@
 
 .fullWidthCard {
   background: var(--white);
-  border: 1px solid rgba(62, 84, 104, 0.1);
+  border: 1px solid rgba(var(--border-rgb), 0.1);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -149,7 +149,7 @@
   top: 42px;
   width: 1px;
   height: calc(100% - 14px);
-  background: #e2e8f0;
+  background: var(--border);
 }
 
 .stepDot {
@@ -176,8 +176,8 @@
 }
 
 .stepDotPending {
-  background: #e2e8f0;
-  color: #718096;
+  background: var(--border);
+  color: var(--text-secondary);
 }
 
 .stepName {
@@ -189,7 +189,7 @@
 
 .stepDate {
   font-size: 0.72rem;
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 /* Documents */
@@ -203,7 +203,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0;
-  border-bottom: 1px solid rgba(62, 84, 104, 0.06);
+  border-bottom: 1px solid rgba(var(--border-rgb), 0.06);
 }
 
 .docItem:last-child {
@@ -230,7 +230,7 @@
 
 .docMeta {
   font-size: 0.7rem;
-  color: #718096;
+  color: var(--text-secondary);
   margin-top: 0.1rem;
 }
 
@@ -251,7 +251,7 @@
 
 .badgeSigned {
   background: rgba(16, 185, 129, 0.1);
-  color: #065f46;
+  color: var(--text-success);
 }
 
 .badgePending {
@@ -306,7 +306,7 @@
 
 .actIconStatus {
   background: rgba(16, 185, 129, 0.1);
-  color: #065f46;
+  color: var(--text-success);
 }
 
 .actIconPhoto {
@@ -322,7 +322,7 @@
 
 .actTime {
   font-size: 0.7rem;
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 /* Photos */
@@ -374,7 +374,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 3rem;
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 .emptyState i {
@@ -385,7 +385,7 @@
 
 /* Upload zone */
 .uploadZone {
-  border: 1px dashed rgba(62, 84, 104, 0.22);
+  border: 1px dashed rgba(var(--border-rgb), 0.22);
   padding: 2rem;
   text-align: center;
   cursor: pointer;
@@ -407,7 +407,7 @@
 
 .uploadZone p {
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 .uploadZone strong {
@@ -449,28 +449,28 @@
 
 .noteTime {
   font-size: 0.68rem;
-  color: #718096;
+  color: var(--text-secondary);
   margin-top: 0.3rem;
 }
 
 .clientNote {
-  border-left-color: #718096;
+  border-left-color: var(--text-secondary);
 }
 
 .clientNote .noteFrom {
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 /* New note form */
 .noteForm {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(62, 84, 104, 0.08);
+  border-top: 1px solid rgba(var(--border-rgb), 0.08);
 }
 
 .noteForm textarea {
   width: 100%;
-  border: 1px solid rgba(62, 84, 104, 0.18);
+  border: 1px solid rgba(var(--border-rgb), 0.18);
   background: var(--cream);
   color: var(--navy);
   padding: 0.8rem;
@@ -491,7 +491,7 @@
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 1px;
-  background: rgba(62, 84, 104, 0.1);
+  background: rgba(var(--border-rgb), 0.1);
   margin-top: 1rem;
 }
 
@@ -526,7 +526,7 @@
 }
 
 .phaseBlock .phName {
-  color: #718096;
+  color: var(--text-secondary);
 }
 
 .phPct {
@@ -544,7 +544,7 @@
 }
 
 .phaseBlock .phPct {
-  color: #cbd5e0;
+  color: var(--text-faint);
 }
 
 /* Highlight cards */
@@ -557,7 +557,7 @@
 
 .highlightCard {
   background: var(--white);
-  border: 1px solid rgba(62, 84, 104, 0.1);
+  border: 1px solid rgba(var(--border-rgb), 0.1);
   padding: 1.25rem;
   display: flex;
   gap: 0.85rem;
@@ -580,7 +580,7 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #718096;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 0.2rem;
 }
@@ -593,7 +593,7 @@
 
 .stepNotes {
   font-size: 0.78rem;
-  color: #4a5568;
+  color: var(--text-secondary);
   margin-top: 0.35rem;
   line-height: 1.5;
   background: var(--cream);
@@ -611,7 +611,7 @@
 
 .teamCard {
   background: var(--cream);
-  border: 1px solid rgba(62, 84, 104, 0.08);
+  border: 1px solid rgba(var(--border-rgb), 0.08);
   padding: 1rem;
 }
 
@@ -633,7 +633,7 @@
 
 .teamContact {
   font-size: 0.78rem;
-  color: #718096;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -669,7 +669,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 0.5rem 1.5rem;
   background: var(--cream);
-  border: 1px solid rgba(62, 84, 104, 0.08);
+  border: 1px solid rgba(var(--border-rgb), 0.08);
   padding: 1rem;
   margin-bottom: 0.75rem;
 }
@@ -678,7 +678,7 @@
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #718096;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 0.25rem;
 }
@@ -691,7 +691,7 @@
 
 .utilityContact {
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-secondary);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -721,4 +721,26 @@
   .utilityTable {
     grid-template-columns: 1fr;
   }
+}
+
+/* Fixed-appearance elements (branded navy accents) that intentionally
+   don't invert with the dark theme's --navy/--white redefinitions. */
+:global(.portal[data-theme='dark']) .stepDotDone,
+:global(.portal:not([data-theme='light'])) .stepDotDone {
+  background: #3E5468;
+}
+
+:global(.portal[data-theme='dark']) .phaseBlockDone,
+:global(.portal:not([data-theme='light'])) .phaseBlockDone {
+  background: #3E5468;
+}
+
+:global(.portal[data-theme='dark']) .phaseBlockDone .phPct,
+:global(.portal:not([data-theme='light'])) .phaseBlockDone .phPct {
+  color: #fff;
+}
+
+:global(.portal[data-theme='dark']) .hcIcon,
+:global(.portal:not([data-theme='light'])) .hcIcon {
+  background: #3E5468;
 }

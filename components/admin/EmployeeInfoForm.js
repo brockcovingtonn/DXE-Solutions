@@ -114,8 +114,8 @@ export default function EmployeeInfoForm({ employee }) {
           disabled={removing}
           style={{
             background: 'none',
-            border: '1px solid #dc2626',
-            color: '#dc2626',
+            border: '1px solid var(--text-error)',
+            color: 'var(--text-error)',
             padding: '0.7rem 1.4rem',
             fontSize: '0.8rem',
             fontWeight: 500,

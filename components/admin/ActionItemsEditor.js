@@ -87,7 +87,7 @@ export default function ActionItemsEditor({ projectId, initialItems, assignableP
               alignItems: 'flex-start',
               gap: '0.75rem',
               padding: '0.75rem',
-              border: '1px solid rgba(62,84,104,0.12)',
+              border: '1px solid rgba(var(--border-rgb),0.12)',
               background: item.status === 'done' ? 'var(--surface)' : 'var(--white)',
               opacity: busyId === item.id ? 0.6 : 1,
             }}
@@ -112,9 +112,9 @@ export default function ActionItemsEditor({ projectId, initialItems, assignableP
                 {item.title}
               </div>
               {item.description && (
-                <div style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.2rem' }}>{item.description}</div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>{item.description}</div>
               )}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.4rem', fontSize: '0.72rem', color: '#a0aec0' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>
                 {item.assigned_to && peopleById[item.assigned_to] && (
                   <span>
                     <i className="ti ti-user" aria-hidden="true"></i>{' '}
@@ -134,7 +134,7 @@ export default function ActionItemsEditor({ projectId, initialItems, assignableP
               disabled={busyId === item.id}
               title={item.visible_to_client ? 'Visible to client — click to hide' : 'Hidden from client — click to show'}
               className={adminStyles.iconBtn}
-              style={{ color: item.visible_to_client ? 'var(--gold)' : '#cbd5e0' }}
+              style={{ color: item.visible_to_client ? 'var(--gold)' : 'var(--text-faint)' }}
             >
               <i className={`ti ${item.visible_to_client ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true"></i>
             </button>
@@ -150,7 +150,7 @@ export default function ActionItemsEditor({ projectId, initialItems, assignableP
           </div>
         ))}
         {(!initialItems || initialItems.length === 0) && (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>No action items yet.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No action items yet.</p>
         )}
       </div>
 

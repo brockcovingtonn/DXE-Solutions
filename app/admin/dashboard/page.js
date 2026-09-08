@@ -119,7 +119,7 @@ export default async function AdminDashboardPage() {
               </Link>
             ))}
             {(!activity || activity.length === 0) && (
-              <p style={{ fontSize: '0.85rem', color: '#718096' }}>No recent activity.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No recent activity.</p>
             )}
           </div>
         </div>
@@ -148,7 +148,7 @@ export default async function AdminDashboardPage() {
               </Link>
             ))}
             {(!milestones || milestones.length === 0) && (
-              <p style={{ fontSize: '0.85rem', color: '#718096' }}>No upcoming milestones.</p>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No upcoming milestones.</p>
             )}
           </div>
         </div>
@@ -186,7 +186,7 @@ export default async function AdminDashboardPage() {
             })}
           </div>
         ) : (
-          <p style={{ fontSize: '0.85rem', color: '#718096' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             No utility entries currently pending or in progress.
           </p>
         )}

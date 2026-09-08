@@ -92,11 +92,11 @@ export default function AssistantChat({ projects, initialProjectId, compact }) {
           gap: '0.85rem',
           padding: compact ? '0.85rem' : '1.25rem',
           background: 'var(--cream)',
-          border: '1px solid rgba(62,84,104,0.1)',
+          border: '1px solid rgba(var(--border-rgb),0.1)',
         }}
       >
         {turns.length === 0 && (
-          <p style={{ fontSize: '0.85rem', color: '#a0aec0', margin: 'auto', textAlign: 'center', maxWidth: '320px' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', margin: 'auto', textAlign: 'center', maxWidth: '320px' }}>
             Ask about a project, have it create or update an action item or calendar event, or generate a document
             from a template.
           </p>
@@ -112,7 +112,7 @@ export default function AssistantChat({ projects, initialProjectId, compact }) {
                 whiteSpace: 'pre-wrap',
                 background: turn.role === 'user' ? 'var(--navy)' : 'var(--white)',
                 color: turn.role === 'user' ? 'var(--white)' : 'var(--navy)',
-                border: turn.role === 'user' ? 'none' : '1px solid rgba(62,84,104,0.1)',
+                border: turn.role === 'user' ? 'none' : '1px solid rgba(var(--border-rgb),0.1)',
               }}
             >
               {turn.text}
@@ -125,9 +125,9 @@ export default function AssistantChat({ projects, initialProjectId, compact }) {
               style={{
                 padding: '0.65rem 0.9rem',
                 fontSize: '0.85rem',
-                color: '#a0aec0',
+                color: 'var(--text-tertiary)',
                 background: 'var(--white)',
-                border: '1px solid rgba(62,84,104,0.1)',
+                border: '1px solid rgba(var(--border-rgb),0.1)',
               }}
             >
               Thinking...
@@ -145,7 +145,7 @@ export default function AssistantChat({ projects, initialProjectId, compact }) {
           disabled={sending}
           style={{
             flex: 1,
-            border: '1px solid rgba(62,84,104,0.2)',
+            border: '1px solid rgba(var(--border-rgb),0.2)',
             background: 'var(--white)',
             color: 'var(--navy)',
             padding: '0.65rem 0.85rem',

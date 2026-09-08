@@ -195,7 +195,7 @@ export default function AdminCalendar({ initialEvents, projects, people, googleC
         }}
       >
         <span style={{ fontSize: '0.85rem', color: 'var(--navy)' }}>
-          <i className={`ti ${googleConnected ? 'ti-brand-google' : 'ti-brand-google'}`} style={{ marginRight: '0.5rem', color: googleConnected ? '#065f46' : '#a0aec0' }} aria-hidden="true"></i>
+          <i className={`ti ${googleConnected ? 'ti-brand-google' : 'ti-brand-google'}`} style={{ marginRight: '0.5rem', color: googleConnected ? 'var(--text-success)' : 'var(--text-tertiary)' }} aria-hidden="true"></i>
           Google Calendar: <strong>{googleConnected ? 'Connected' : 'Not connected'}</strong>
         </span>
         {googleConnected ? (
@@ -264,7 +264,7 @@ export default function AdminCalendar({ initialEvents, projects, people, googleC
               type="button"
               onClick={handleDelete}
               disabled={saving}
-              style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.6rem 1.2rem', fontSize: '0.78rem', cursor: 'pointer' }}
+              style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.6rem 1.2rem', fontSize: '0.78rem', cursor: 'pointer' }}
             >
               Delete event
             </button>

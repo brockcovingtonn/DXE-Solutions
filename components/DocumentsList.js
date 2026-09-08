@@ -41,7 +41,7 @@ export default function DocumentsList({ docs, currentUserName }) {
                   {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : 'You'}
                 </div>
                 {signature && (
-                  <div style={{ fontSize: '0.72rem', color: '#22543d', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-success)', marginTop: '0.2rem' }}>
                     <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on{' '}
                     {formatDate(signature.created_at)}
                   </div>
@@ -50,7 +50,7 @@ export default function DocumentsList({ docs, currentUserName }) {
               <span className={`${styles.docBadge} ${BADGE_CLASS[d.badge] || ''}`}>{d.badge}</span>
               <a
                 href={`/api/documents/${d.id}/download`}
-                style={{ color: '#718096', fontSize: '1rem', marginLeft: '0.75rem', cursor: 'pointer' }}
+                style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginLeft: '0.75rem', cursor: 'pointer' }}
                 title="Download"
               >
                 <i className="ti ti-download" aria-hidden="true"></i>
@@ -65,7 +65,7 @@ export default function DocumentsList({ docs, currentUserName }) {
                     color: 'var(--navy)',
                     fontWeight: 500,
                     background: 'none',
-                    border: '1px solid rgba(62,84,104,0.2)',
+                    border: '1px solid rgba(var(--border-rgb),0.2)',
                     padding: '0.35rem 0.7rem',
                     cursor: 'pointer',
                   }}

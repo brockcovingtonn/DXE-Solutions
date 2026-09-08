@@ -137,7 +137,7 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
           ))}
         </div>
       ) : (
-        <p style={{ fontSize: '0.82rem', color: '#718096' }}>No projects yet.</p>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>No projects yet.</p>
       )}
 
       {message && (
@@ -156,7 +156,7 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
             className={adminStyles.cancelBtn}
             onClick={handleDelete}
             disabled={deleting}
-            style={{ color: '#b91c1c', borderColor: 'rgba(185,28,28,0.3)' }}
+            style={{ color: 'var(--text-error)', borderColor: 'rgba(185,28,28,0.3)' }}
           >
             {deleting ? 'Deleting...' : 'Delete contact'}
           </button>

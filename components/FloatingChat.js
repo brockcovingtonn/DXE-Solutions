@@ -110,7 +110,7 @@ export default function FloatingChat({ currentUserId, threads }) {
             height: '500px',
             maxHeight: 'calc(100vh - 8rem)',
             background: 'var(--white)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             boxShadow: '0 20px 50px rgba(44,62,80,0.25)',
             zIndex: 200,
             display: 'flex',
@@ -147,7 +147,7 @@ export default function FloatingChat({ currentUserId, threads }) {
             {!activeThread ? (
               <div style={{ overflowY: 'auto', flex: 1 }}>
                 {threads.length === 0 ? (
-                  <p style={{ fontSize: '0.82rem', color: '#a0aec0', padding: '1rem' }}>No conversations yet.</p>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', padding: '1rem' }}>No conversations yet.</p>
                 ) : (
                   threads.map((t) => (
                     <button
@@ -161,7 +161,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                         alignItems: 'center',
                         padding: '0.8rem 1rem',
                         border: 'none',
-                        borderBottom: '1px solid rgba(62,84,104,0.08)',
+                        borderBottom: '1px solid rgba(var(--border-rgb),0.08)',
                         background: 'var(--white)',
                         cursor: 'pointer',
                         textAlign: 'left',
@@ -169,7 +169,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                     >
                       <span>
                         <div style={{ fontSize: '0.85rem', color: 'var(--navy)', fontWeight: 500 }}>{t.label}</div>
-                        {t.sublabel && <div style={{ fontSize: '0.72rem', color: '#a0aec0' }}>{t.sublabel}</div>}
+                        {t.sublabel && <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)' }}>{t.sublabel}</div>}
                       </span>
                       {t.unread > 0 && (
                         <span
@@ -195,7 +195,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                 )}
               </div>
             ) : loading ? (
-              <p style={{ fontSize: '0.82rem', color: '#a0aec0' }}>Loading...</p>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>Loading...</p>
             ) : (
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                 <ChatBox

@@ -63,7 +63,7 @@ export default function DocumentUpload({ projectId }) {
   return (
     <div className={styles.fullWidthCard}>
       <h3>Upload a Document</h3>
-      <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '1rem' }}>
+      <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
         Share contracts, insurance certificates, authorizations, or any file relevant to your
         project.
       </p>
@@ -94,7 +94,7 @@ export default function DocumentUpload({ projectId }) {
         />
       </label>
       {error && (
-        <p style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.75rem' }}>{error}</p>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginTop: '0.75rem' }}>{error}</p>
       )}
     </div>
   );

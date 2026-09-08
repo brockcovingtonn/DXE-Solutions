@@ -113,7 +113,7 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
             gap: '1rem',
             padding: '0.6rem 0.85rem',
             background: 'var(--surface)',
-            border: '1px solid rgba(62,84,104,0.15)',
+            border: '1px solid rgba(var(--border-rgb),0.15)',
             marginBottom: '1rem',
             flexWrap: 'wrap',
           }}
@@ -125,14 +125,14 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
             type="button"
             onClick={handleBulkDelete}
             disabled={isBulkDeleting}
-            style={{ background: 'none', border: '1px solid #dc2626', color: '#dc2626', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.4rem 0.9rem', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             {isBulkDeleting ? 'Deleting...' : 'Delete Selected'}
           </button>
           <button
             type="button"
             onClick={clearSelection}
-            style={{ background: 'none', border: 'none', color: '#718096', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             Clear selection
           </button>
@@ -254,7 +254,7 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
           onChange={(e) => handleFiles(e.target.files)}
         />
       </label>
-      {error && <p style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.75rem' }}>{error}</p>}
+      {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginTop: '0.75rem' }}>{error}</p>}
     </div>
   );
 }

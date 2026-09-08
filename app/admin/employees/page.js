@@ -66,7 +66,7 @@ export default async function AdminEmployeesPage() {
                     </Link>
                   ))}
                   {(!projectsByEmployee[employee.id] || projectsByEmployee[employee.id].length === 0) && (
-                    <span style={{ fontSize: '0.78rem', color: '#a0aec0' }}>No projects assigned</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)' }}>No projects assigned</span>
                   )}
                 </div>
                 <Link href={`/admin/employees/${employee.id}`} className={adminStyles.addProjectLink}>

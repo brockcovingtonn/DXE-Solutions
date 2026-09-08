@@ -77,7 +77,7 @@ export default function TemplateList({ templates, allProjects }) {
                 {[t.category, t.file_name].filter(Boolean).join(' · ')}
               </div>
               {t.description && (
-                <p style={{ fontSize: '0.8rem', color: '#718096', marginTop: '0.4rem' }}>{t.description}</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>{t.description}</p>
               )}
             </div>
             <div className={adminStyles.utilityEntryActions}>

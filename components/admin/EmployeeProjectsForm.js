@@ -42,7 +42,7 @@ export default function EmployeeProjectsForm({ employeeId, allProjects, assigned
   }
 
   if (!allProjects || allProjects.length === 0) {
-    return <p style={{ fontSize: '0.85rem', color: '#718096' }}>No projects exist yet to assign.</p>;
+    return <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No projects exist yet to assign.</p>;
   }
 
   return (
@@ -57,7 +57,7 @@ export default function EmployeeProjectsForm({ employeeId, allProjects, assigned
               gap: '0.75rem',
               cursor: 'pointer',
               padding: '0.6rem 0.75rem',
-              border: '1px solid rgba(62,84,104,0.12)',
+              border: '1px solid rgba(var(--border-rgb),0.12)',
               background: selected.has(project.id) ? 'var(--surface)' : 'transparent',
             }}
           >
@@ -68,7 +68,7 @@ export default function EmployeeProjectsForm({ employeeId, allProjects, assigned
               style={{ width: '16px', height: '16px', accentColor: 'var(--gold)', cursor: 'pointer' }}
             />
             <span style={{ fontSize: '0.88rem', color: 'var(--navy)', flex: 1 }}>{project.name}</span>
-            <span style={{ fontSize: '0.72rem', color: '#a0aec0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               {project.status}
             </span>
           </label>

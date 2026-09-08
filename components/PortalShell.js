@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase-client';
 import FloatingChat from '@/components/FloatingChat';
 import FloatingAssistant from '@/components/FloatingAssistant';
 import OnboardingTour from '@/components/OnboardingTour';
+import { getStoredTheme } from '@/lib/theme';
 import styles from './PortalShell.module.css';
 
 export default function PortalShell({ profile, projects, isAdmin, unreadByProject, currentUserId, chatThreads, children }) {
@@ -15,6 +16,11 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
   const supabase = createClient();
   const [signingOut, setSigningOut] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [theme, setTheme] = useState('system');
+
+  useEffect(() => {
+    setTheme(getStoredTheme());
+  }, []);
 
   const initials = `${profile?.first_name?.[0] || ''}${profile?.last_name?.[0] || ''}`.toUpperCase();
   const firstName = profile?.first_name || 'there';
@@ -36,7 +42,7 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
   const subPath = pathname.split('/')[4] || 'overview';
 
   return (
-    <div className={styles.portal}>
+    <div className={styles.portal} data-theme={theme === 'system' ? undefined : theme}>
       <nav className={styles.navbar}>
         <div className={styles.navLogoArea}>
           <div className={styles.navLogoImg}>

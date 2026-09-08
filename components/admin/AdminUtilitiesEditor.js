@@ -247,7 +247,7 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
             <div className={adminStyles.utilityContactHeader}>Entries</div>
 
             {entries.length === 0 && addingFor !== type.value && (
-              <p style={{ fontSize: '0.82rem', color: '#718096', marginBottom: '0.75rem' }}>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
                 No entries yet.
               </p>
             )}
