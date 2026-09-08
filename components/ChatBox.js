@@ -97,13 +97,20 @@ export default function ChatBox({ projectId, dmUserId, initialMessages, currentU
     const now = new Date().toISOString();
     supabase
       .from('message_reads')
-      .upsert({
-        project_id: projectId || null,
-        dm_user_id: dmUserId || null,
-        user_id: currentUserId,
-        last_read_at: now,
-      })
-      .then(() => {
+      .upsert(
+        {
+          project_id: projectId || null,
+          dm_user_id: dmUserId || null,
+          user_id: currentUserId,
+          last_read_at: now,
+        },
+        { onConflict: 'project_key,dm_key,user_id' }
+      )
+      .then(({ error }) => {
+        if (error) {
+          console.error('Failed to mark thread read:', error);
+          return;
+        }
         setReads((prev) => ({ ...prev, [currentUserId]: now }));
         onRead?.();
         // Unread badges (sidebar, floating chat, tab counts) are computed

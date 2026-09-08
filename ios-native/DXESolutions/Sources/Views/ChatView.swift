@@ -252,8 +252,14 @@ struct ChatView: View {
             let last_read_at: String
         }
         let payload = ReadUpsert(dm_user_id: userId, user_id: userId, last_read_at: now)
-        _ = try? await SupabaseConfig.client.from("message_reads").upsert(payload).execute()
-        if let date = parseDate(now) { reads[userId] = date }
+        do {
+            try await SupabaseConfig.client.from("message_reads")
+                .upsert(payload, onConflict: "project_key,dm_key,user_id")
+                .execute()
+            if let date = parseDate(now) { reads[userId] = date }
+        } catch {
+            print("Failed to mark thread read: \(error)")
+        }
         // Update the tab badge (and app icon badge) right away — this
         // used to only refresh on .onDisappear, so it stayed stale the
         // whole time the thread was open.
