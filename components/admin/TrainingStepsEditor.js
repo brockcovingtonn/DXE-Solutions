@@ -149,7 +149,7 @@ export default function TrainingStepsEditor({ category, initialSteps }) {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: '0.9rem', color: 'var(--navy)', fontWeight: 500 }}>{step.title}</div>
                 {step.description && (
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.6 }}>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                     {step.description}
                   </div>
                 )}

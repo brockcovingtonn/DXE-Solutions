@@ -55,7 +55,7 @@ export default function EmployeeTrainingBrowser({ stepsByCategory }) {
                 <div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--navy)' }}>{step.title}</div>
                   {step.description && (
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.7 }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
                       {step.description}
                     </div>
                   )}
