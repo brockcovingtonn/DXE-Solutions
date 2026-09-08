@@ -77,7 +77,7 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             href="/employee/dashboard"
             icon="ti-layout-dashboard"
             label="My Projects"
-            active={pathname.startsWith('/employee/dashboard')}
+            active={pathname.startsWith('/employee/dashboard') || pathname.startsWith('/employee/projects')}
           />
           <SidebarLink
             href="/employee/calendar"

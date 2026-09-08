@@ -64,7 +64,12 @@ export default async function EmployeeDashboardPage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
           {projects.map((project) => (
-            <div key={project.id} className={styles.fullWidthCard} style={{ margin: 0 }}>
+            <Link
+              key={project.id}
+              href={`/employee/projects/${project.id}`}
+              className={styles.fullWidthCard}
+              style={{ margin: 0, display: 'block', color: 'inherit', textDecoration: 'none' }}
+            >
               <h3 style={{ marginBottom: '0.5rem' }}>{project.name}</h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
                 {project.address || 'No address on file'}
@@ -72,7 +77,7 @@ export default async function EmployeeDashboardPage() {
               <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginBottom: '0.75rem' }}>
                 {project.project_type || 'Project type not set'}
               </p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
                 <span style={{ textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--gold)', fontWeight: 600 }}>
                   {project.status}
                 </span>
@@ -80,16 +85,7 @@ export default async function EmployeeDashboardPage() {
                   {project.profiles ? `${project.profiles.first_name} ${project.profiles.last_name}` : 'Client'}
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <Link
-                  href={`/projects/${project.id}/cover-sheet`}
-                  target="_blank"
-                  style={{ fontSize: '0.75rem', color: 'var(--navy)', fontWeight: 500 }}
-                >
-                  <i className="ti ti-file-description" aria-hidden="true"></i> Cover sheet
-                </Link>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
