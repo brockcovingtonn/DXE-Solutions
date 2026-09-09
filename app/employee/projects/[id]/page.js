@@ -43,6 +43,7 @@ export default async function EmployeeProjectPage({ params }) {
     { data: phases },
     { data: milestones },
     { data: team },
+    { data: interestedParties },
     { data: actionItems },
     { data: permits },
     { data: utilities },
@@ -55,6 +56,7 @@ export default async function EmployeeProjectPage({ params }) {
     supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
     supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
     supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+    supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
     supabase.from('action_items').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
     supabase.rpc('get_project_permits', { p_project_id: projectId }),
     supabase.rpc('get_project_utilities', { p_project_id: projectId }),
@@ -194,6 +196,30 @@ export default async function EmployeeProjectPage({ params }) {
                 {member.email && (
                   <div className={styles.teamContact}>
                     <i className="ti ti-mail" aria-hidden="true"></i> {member.email}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {interestedParties && interestedParties.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Interested Parties</h3>
+          <div className={styles.teamGrid}>
+            {interestedParties.map((party) => (
+              <div className={styles.teamCard} key={party.id}>
+                {party.relationship && <div className={styles.teamTrade}>{party.relationship}</div>}
+                <div className={styles.teamName}>{party.name}</div>
+                {party.phone && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-phone" aria-hidden="true"></i> {party.phone}
+                  </div>
+                )}
+                {party.email && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-mail" aria-hidden="true"></i> {party.email}
                   </div>
                 )}
               </div>

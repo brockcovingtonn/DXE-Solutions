@@ -8,6 +8,7 @@ import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
 import PermitsEditor from '@/components/admin/PermitsEditor';
 import AccountingEditor from '@/components/admin/AccountingEditor';
 import ProjectTeamEditor from '@/components/admin/ProjectTeamEditor';
+import InterestedPartiesEditor from '@/components/admin/InterestedPartiesEditor';
 import PhasesEditor from '@/components/admin/PhasesEditor';
 import ActionItemsEditor from '@/components/admin/ActionItemsEditor';
 import MilestonesEditor from '@/components/admin/MilestonesEditor';
@@ -29,7 +30,7 @@ export default async function AdminProjectPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -37,6 +38,7 @@ export default async function AdminProjectPage({ params }) {
       supabase.from('photos').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+      supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.rpc('get_project_utilities_admin', { p_project_id: projectId }),
       supabase.from('action_items').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('profiles').select('id, first_name, last_name').or('is_admin.eq.true,is_employee.eq.true').order('first_name'),
@@ -127,6 +129,11 @@ export default async function AdminProjectPage({ params }) {
       <div className={styles.fullWidthCard}>
         <h3>Project team</h3>
         <ProjectTeamEditor projectId={projectId} initialTeam={team || []} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Interested parties</h3>
+        <InterestedPartiesEditor projectId={projectId} initialParties={interestedParties || []} />
       </div>
 
       <div className={styles.fullWidthCard}>

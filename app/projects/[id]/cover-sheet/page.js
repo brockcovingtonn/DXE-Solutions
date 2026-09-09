@@ -28,8 +28,9 @@ export default async function CoverSheetPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: team }, { data: phases }, { data: permits }] = await Promise.all([
+  const [{ data: team }, { data: interestedParties }, { data: phases }, { data: permits }] = await Promise.all([
     supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+    supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
     supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
     supabase.from('permits').select('*').eq('project_id', projectId).order('sort_order'),
   ]);
@@ -149,6 +150,34 @@ export default async function CoverSheetPage({ params }) {
             </table>
           ) : (
             <p className={styles.empty}>No team members on file.</p>
+          )}
+        </div>
+
+        <div className={styles.section}>
+          <h2>Interested Parties</h2>
+          {interestedParties && interestedParties.length > 0 ? (
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Relationship</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {interestedParties.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.relationship || '—'}</td>
+                    <td>{p.name}</td>
+                    <td>{p.phone || '—'}</td>
+                    <td>{p.email || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className={styles.empty}>No interested parties on file.</p>
           )}
         </div>
 

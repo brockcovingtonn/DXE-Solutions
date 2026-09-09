@@ -14,7 +14,7 @@ export default async function ProjectOverviewPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: utilities }, { data: actionItems }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -22,6 +22,7 @@ export default async function ProjectOverviewPage({ params }) {
       supabase.from('activity').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(4),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(1),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
+      supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.rpc('get_project_utilities', { p_project_id: projectId }),
       supabase
         .from('action_items')
@@ -160,6 +161,30 @@ export default async function ProjectOverviewPage({ params }) {
                 {member.email && (
                   <div className={styles.teamContact}>
                     <i className="ti ti-mail" aria-hidden="true"></i> {member.email}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {interestedParties && interestedParties.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Interested Parties</h3>
+          <div className={styles.teamGrid}>
+            {interestedParties.map((party) => (
+              <div className={styles.teamCard} key={party.id}>
+                {party.relationship && <div className={styles.teamTrade}>{party.relationship}</div>}
+                <div className={styles.teamName}>{party.name}</div>
+                {party.phone && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-phone" aria-hidden="true"></i> {party.phone}
+                  </div>
+                )}
+                {party.email && (
+                  <div className={styles.teamContact}>
+                    <i className="ti ti-mail" aria-hidden="true"></i> {party.email}
                   </div>
                 )}
               </div>
