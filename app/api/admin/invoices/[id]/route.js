@@ -15,7 +15,7 @@ async function requireAdmin(supabase, user) {
   return { user };
 }
 
-const ALLOWED_FIELDS = ['description', 'amount', 'status', 'due_date'];
+const ALLOWED_FIELDS = ['description', 'amount', 'status', 'due_date', 'approval_status', 'visible_to_client'];
 
 export async function PATCH(request, { params }) {
   const { supabase, user } = await getRequestClient(request);

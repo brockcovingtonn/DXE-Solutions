@@ -50,6 +50,20 @@ export default function TemplateList({ templates, allProjects }) {
     }
   }
 
+  async function toggleShared(template) {
+    setBusyId(template.id);
+    try {
+      await fetch(`/api/admin/templates/${template.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shared_with_employees: !template.shared_with_employees }),
+      });
+      router.refresh();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function handleDelete(templateId) {
     if (!confirm('Delete this template? This cannot be undone.')) return;
 
@@ -75,12 +89,24 @@ export default function TemplateList({ templates, allProjects }) {
               <div className={adminStyles.clientName}>{t.name}</div>
               <div className={adminStyles.clientEmail}>
                 {[t.category, t.file_name].filter(Boolean).join(' · ')}
+                {t.shared_with_employees && ' · Shared with employees'}
               </div>
               {t.description && (
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>{t.description}</p>
               )}
             </div>
             <div className={adminStyles.utilityEntryActions}>
+              <button
+                type="button"
+                className={adminStyles.iconBtn}
+                onClick={() => toggleShared(t)}
+                disabled={busyId === t.id}
+                aria-label={t.shared_with_employees ? 'Shared with employees — click to unshare' : 'Not shared — click to share with employees'}
+                title={t.shared_with_employees ? 'Shared with employees — click to unshare' : 'Share with employees'}
+                style={{ color: t.shared_with_employees ? 'var(--text-success)' : undefined }}
+              >
+                <i className={`ti ${t.shared_with_employees ? 'ti-users' : 'ti-user-off'}`} aria-hidden="true"></i>
+              </button>
               <button
                 type="button"
                 className={adminStyles.iconBtn}

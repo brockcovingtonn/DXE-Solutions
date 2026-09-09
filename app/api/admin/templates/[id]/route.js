@@ -15,6 +15,33 @@ async function requireAdmin(supabase, user) {
   return { user };
 }
 
+export async function PATCH(request, { params }) {
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
+  if (authError) return authError;
+
+  try {
+    const body = await request.json();
+    if (!('shared_with_employees' in body)) {
+      return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
+    }
+
+    const { error } = await supabase
+      .from('document_templates')
+      .update({ shared_with_employees: !!body.shared_with_employees })
+      .eq('id', params.id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Update template error:', err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request, { params }) {
   const { supabase, user } = await getRequestClient(request);
   const { error: authError } = await requireAdmin(supabase, user);

@@ -93,6 +93,34 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
     }
   }
 
+  async function setApproval(item, approval_status) {
+    setBusyId(item.id);
+    try {
+      await fetch(`/api/admin/invoices/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approval_status }),
+      });
+      router.refresh();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function toggleShared(item) {
+    setBusyId(item.id);
+    try {
+      await fetch(`/api/admin/invoices/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visible_to_client: !item.visible_to_client }),
+      });
+      router.refresh();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function handleDelete(id) {
     if (!confirm('Delete this entry? This cannot be undone.')) return;
     setBusyId(id);
@@ -144,8 +172,8 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
                 letterSpacing: '0.06em',
                 textTransform: 'uppercase',
                 padding: '0.2rem 0.5rem',
-                background: item.kind === 'receipt' ? 'rgba(59,130,246,0.12)' : 'rgba(201,168,87,0.18)',
-                color: item.kind === 'receipt' ? '#1e40af' : '#7a5c0a',
+                background: item.kind === 'receipt' ? 'rgba(59,130,246,0.12)' : item.kind === 'reimbursement' ? 'rgba(147,51,234,0.12)' : 'rgba(201,168,87,0.18)',
+                color: item.kind === 'receipt' ? '#1e40af' : item.kind === 'reimbursement' ? '#7e22ce' : '#7a5c0a',
                 flexShrink: 0,
               }}
             >
@@ -163,11 +191,47 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
                     </a>
                   </>
                 )}
+                {item.approval_status === 'pending' && <> · <span style={{ color: 'var(--text-error)' }}>Pending approval</span></>}
+                {item.approval_status === 'rejected' && <> · <span style={{ color: 'var(--text-error)' }}>Rejected</span></>}
+                {item.visible_to_client && <> · <span style={{ color: 'var(--text-success)' }}>Shared with client</span></>}
               </div>
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>
               {formatCurrency(item.amount)}
             </div>
+            {item.approval_status === 'pending' ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setApproval(item, 'approved')}
+                  disabled={busyId === item.id}
+                  className="btn-navy"
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.72rem' }}
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setApproval(item, 'rejected')}
+                  disabled={busyId === item.id}
+                  className={adminStyles.cancelBtn}
+                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.72rem' }}
+                >
+                  Reject
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => toggleShared(item)}
+                disabled={busyId === item.id}
+                className={adminStyles.iconBtn}
+                title={item.visible_to_client ? 'Shared with client — click to unshare' : 'Share with client'}
+                style={{ color: item.visible_to_client ? 'var(--text-success)' : undefined }}
+              >
+                <i className={`ti ${item.visible_to_client ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true"></i>
+              </button>
+            )}
             {item.kind === 'invoice' && (
               <button
                 type="button"

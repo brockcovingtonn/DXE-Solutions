@@ -92,6 +92,24 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             active={pathname.startsWith('/employee/training')}
           />
           <SidebarLink
+            href="/employee/contacts"
+            icon="ti-address-book"
+            label="Contacts"
+            active={pathname.startsWith('/employee/contacts')}
+          />
+          <SidebarLink
+            href="/employee/templates"
+            icon="ti-file-stack"
+            label="Templates"
+            active={pathname.startsWith('/employee/templates')}
+          />
+          <SidebarLink
+            href="/employee/accounting"
+            icon="ti-receipt"
+            label="Accounting"
+            active={pathname.startsWith('/employee/accounting')}
+          />
+          <SidebarLink
             href="/employee/assistant"
             icon="ti-sparkles"
             label="Assistant"
