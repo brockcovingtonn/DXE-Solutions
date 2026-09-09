@@ -12,6 +12,7 @@ export default async function MasterAccountingPage({ searchParams }) {
   const supabase = createClient();
   const kindFilter = searchParams?.kind;
   const statusFilter = searchParams?.status;
+  const approvalFilter = searchParams?.approval;
 
   const { data: allInvoices } = await supabase
     .from('invoices')
@@ -30,9 +31,12 @@ export default async function MasterAccountingPage({ searchParams }) {
     .filter((i) => i.kind === 'receipt')
     .reduce((sum, i) => sum + Number(i.amount), 0);
 
+  const pendingCount = (allInvoices || []).filter((i) => i.approval_status === 'pending').length;
+
   const filtered = (allInvoices || []).filter((i) => {
     if (kindFilter && i.kind !== kindFilter) return false;
     if (statusFilter && i.status !== statusFilter) return false;
+    if (approvalFilter && i.approval_status !== approvalFilter) return false;
     return true;
   });
 
@@ -43,7 +47,7 @@ export default async function MasterAccountingPage({ searchParams }) {
         <p>Invoices and receipts across every project, in one place</p>
       </div>
 
-      <div className={styles.statCards3}>
+      <div className={styles.statCards4}>
         <div className={styles.statCard}>
           <div className={styles.scLabel}>Total Outstanding</div>
           <div className={styles.scValue} style={{ color: totalOutstanding > 0 ? 'var(--text-error)' : 'var(--navy)' }}>
@@ -58,10 +62,16 @@ export default async function MasterAccountingPage({ searchParams }) {
           <div className={styles.scLabel}>Total Receipts</div>
           <div className={styles.scValue}>{formatCurrency(totalReceipts)}</div>
         </div>
+        <div className={styles.statCard}>
+          <div className={styles.scLabel}>Pending Approval</div>
+          <div className={styles.scValue} style={{ color: pendingCount > 0 ? 'var(--text-error)' : 'var(--navy)' }}>
+            {pendingCount}
+          </div>
+        </div>
       </div>
 
       <div className={adminStyles.actionsRow} style={{ justifyContent: 'flex-start' }}>
-        <MasterAccountingFilters kind={kindFilter} status={statusFilter} />
+        <MasterAccountingFilters kind={kindFilter} status={statusFilter} approval={approvalFilter} />
       </div>
 
       <div className={styles.fullWidthCard}>

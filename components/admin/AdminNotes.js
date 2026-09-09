@@ -90,7 +90,21 @@ export default function AdminNotes({ projectId, initialNotes }) {
 
   return (
     <div>
-      <div className={styles.notesArea}>
+      <form className={styles.noteForm} onSubmit={handleSubmit}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Post an update</h3>
+        <textarea
+          placeholder="Write an update for the client..."
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          disabled={posting}
+        />
+        {error && <p className={adminStyles.formMsgError}>{error}</p>}
+        <button type="submit" className="btn-navy" disabled={posting || !body.trim()}>
+          {posting ? 'Posting...' : 'Post update'}
+        </button>
+      </form>
+
+      <div className={styles.notesArea} style={{ marginTop: '1.5rem' }}>
         {initialNotes.map((n) => (
           <div
             className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`}
@@ -153,23 +167,9 @@ export default function AdminNotes({ projectId, initialNotes }) {
           </div>
         ))}
         {initialNotes.length === 0 && (
-          <EmptyState icon="ti-note" title="No notes yet" subtitle="Post an update below to keep the client in the loop." />
+          <EmptyState icon="ti-note" title="No notes yet" subtitle="Post an update above to keep the client in the loop." />
         )}
       </div>
-
-      <form className={styles.noteForm} onSubmit={handleSubmit}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Post an update</h3>
-        <textarea
-          placeholder="Write an update for the client..."
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          disabled={posting}
-        />
-        {error && <p className={adminStyles.formMsgError}>{error}</p>}
-        <button type="submit" className="btn-navy" disabled={posting || !body.trim()}>
-          {posting ? 'Posting...' : 'Post update'}
-        </button>
-      </form>
     </div>
   );
 }

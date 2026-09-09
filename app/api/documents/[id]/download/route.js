@@ -5,6 +5,7 @@ import { getViewableProject } from '@/lib/project-access';
 export async function GET(request, { params }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const forceDownload = new URL(request.url).searchParams.get('download') === '1';
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -33,13 +34,19 @@ export async function GET(request, { params }) {
     .eq('document_id', params.id)
     .maybeSingle();
 
+  // Without ?download=1, the signed URL carries no Content-Disposition
+  // override, so the browser previews it inline (PDFs/images) instead
+  // of forcing a save dialog — the viewer's own toolbar still offers a
+  // download option for anyone who wants one.
+  const downloadOption = forceDownload ? { download: doc.file_name || true } : {};
+
   const { data, error } = signature
     ? await supabase.storage
         .from('document-signatures')
-        .createSignedUrl(signature.signed_pdf_path, 60, { download: doc.file_name || true })
+        .createSignedUrl(signature.signed_pdf_path, 60, downloadOption)
     : await supabase.storage
         .from('project-documents')
-        .createSignedUrl(doc.file_path, 60, { download: doc.file_name || true });
+        .createSignedUrl(doc.file_path, 60, downloadOption);
 
   if (error || !data) {
     return NextResponse.json({ error: 'Could not generate download link' }, { status: 500 });

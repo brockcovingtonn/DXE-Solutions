@@ -36,7 +36,15 @@ export default function DocumentsList({ docs, currentUserName }) {
                 <i className="ti ti-file-text" aria-hidden="true"></i>
               </div>
               <div style={{ flex: 1 }}>
-                <div className={styles.docName}>{d.file_name}</div>
+                <a
+                  href={`/api/documents/${d.id}/download`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.docName}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {d.file_name}
+                </a>
                 <div className={styles.docMeta}>
                   {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : 'You'}
                 </div>
@@ -49,7 +57,7 @@ export default function DocumentsList({ docs, currentUserName }) {
               </div>
               <span className={`${styles.docBadge} ${BADGE_CLASS[d.badge] || ''}`}>{d.badge}</span>
               <a
-                href={`/api/documents/${d.id}/download`}
+                href={`/api/documents/${d.id}/download?download=1`}
                 style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginLeft: '0.75rem', cursor: 'pointer' }}
                 title="Download"
               >

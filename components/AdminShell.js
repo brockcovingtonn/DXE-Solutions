@@ -11,7 +11,7 @@ import GlobalSearch from '@/components/GlobalSearch';
 import { getStoredTheme } from '@/lib/theme';
 import styles from './PortalShell.module.css';
 
-export default function AdminShell({ profile, currentUserId, chatThreads, assistantProjects, children }) {
+export default function AdminShell({ profile, currentUserId, chatThreads, assistantProjects, pendingAccountingCount, children }) {
   const pathname = usePathname();
   const supabase = createClient();
   const [signingOut, setSigningOut] = useState(false);
@@ -107,6 +107,7 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             icon="ti-receipt"
             label="Accounting"
             active={pathname.startsWith('/admin/accounting')}
+            badge={pendingAccountingCount > 0}
           />
           <SidebarLink
             href="/admin/employees"
@@ -155,10 +156,23 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
   );
 }
 
-function SidebarLink({ href, icon, label, active }) {
+function SidebarLink({ href, icon, label, active, badge }) {
   return (
-    <Link href={href} className={`${styles.sidebarLink} ${active ? styles.sidebarLinkActive : ''}`}>
+    <Link href={href} className={`${styles.sidebarLink} ${active ? styles.sidebarLinkActive : ''}`} style={{ position: 'relative' }}>
       <i className={`ti ${icon}`} aria-hidden="true"></i> {label}
+      {badge && (
+        <span
+          aria-label="New pending items"
+          style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: 'var(--gold)',
+            marginLeft: 'auto',
+            flexShrink: 0,
+          }}
+        />
+      )}
     </Link>
   );
 }

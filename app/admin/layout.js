@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }) {
 
   if (!profile?.is_admin) redirect('/portal');
 
-  const [{ data: projects }, { data: people }, { data: unread }] = await Promise.all([
+  const [{ data: projects }, { data: people }, { data: unread }, { count: pendingAccountingCount }] = await Promise.all([
     supabase
       .from('projects')
       .select('id, name, profiles!projects_owner_id_fkey(first_name, last_name)')
@@ -27,6 +27,7 @@ export default async function AdminLayout({ children }) {
       .eq('is_admin', false)
       .order('first_name'),
     supabase.rpc('get_unread_message_counts'),
+    supabase.from('invoices').select('id', { count: 'exact', head: true }).eq('approval_status', 'pending'),
   ]);
 
   const dmUnread = {};
@@ -43,7 +44,7 @@ export default async function AdminLayout({ children }) {
   }));
 
   return (
-    <AdminShell profile={profile} currentUserId={user.id} chatThreads={chatThreads} assistantProjects={projects || []}>
+    <AdminShell profile={profile} currentUserId={user.id} chatThreads={chatThreads} assistantProjects={projects || []} pendingAccountingCount={pendingAccountingCount || 0}>
       {children}
     </AdminShell>
   );

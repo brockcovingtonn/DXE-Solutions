@@ -123,6 +123,11 @@ export default async function AdminProjectPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
+        <h3>Notes &amp; updates</h3>
+        <AdminNotes projectId={projectId} initialNotes={notes || []} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
         <h3>Permits</h3>
         <PermitsEditor projectId={projectId} initialPermits={permits || []} />
       </div>
@@ -184,11 +189,6 @@ export default async function AdminProjectPage({ params }) {
       <div className={styles.fullWidthCard}>
         <h3>Photos</h3>
         <AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Notes &amp; updates</h3>
-        <AdminNotes projectId={projectId} initialNotes={notes || []} />
       </div>
     </div>
   );
