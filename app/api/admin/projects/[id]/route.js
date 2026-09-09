@@ -48,6 +48,11 @@ export async function PATCH(request, { params }) {
     for (const key of allowedFields) {
       if (key in body) update[key] = body[key];
     }
+    // Empty string isn't valid for a date column — the form sends ''
+    // for a blank date input, not null.
+    for (const dateField of ['started_on', 'estimated_completion']) {
+      if (update[dateField] === '') update[dateField] = null;
+    }
 
     // Fetch current state to detect a status change
     let previousStatus = null;

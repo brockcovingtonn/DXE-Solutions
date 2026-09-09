@@ -213,7 +213,9 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               <i className="ti ti-file-text" aria-hidden="true"></i>
             </div>
             <div style={{ flex: 1 }}>
-              <div className={styles.docName}>{d.file_name}</div>
+              <a href={`/api/documents/${d.id}/download`} className={styles.docName} style={{ textDecoration: 'none' }}>
+                {d.file_name}
+              </a>
               <div className={styles.docMeta}>
                 {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : d.uploaded_by_role === 'employee' ? 'Employee' : 'Client'}
               </div>

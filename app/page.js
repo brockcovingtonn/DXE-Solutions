@@ -53,9 +53,8 @@ export default async function HomePage() {
                 Your permit is not stuck. <em>It&apos;s unmanaged.</em>
               </h1>
               <p className={styles.heroSub}>
-                DXE Solutions takes the plans, the city, the inspections and the schedule off your
-                desk — and stays on it until you hand over the keys. Greater Los Angeles and
-                Ventura County.
+                DXE Solutions takes the plans, the city, the inspections, and the schedule off
+                your desk — and stays on it until you hand over the keys.
               </p>
               <div className={styles.heroFeatures}>
                 <div className={styles.heroFeature}>
@@ -69,6 +68,10 @@ export default async function HomePage() {
                 <div className={styles.heroFeature}>
                   <div className={styles.heroFeatureLabel}>Same week</div>
                   <div className={styles.heroFeatureDesc}>Review turnaround on new files</div>
+                </div>
+                <div className={styles.heroFeature}>
+                  <div className={styles.heroFeatureLabel}>Free to start</div>
+                  <div className={styles.heroFeatureDesc}>No cost for the first call</div>
                 </div>
               </div>
             </div>
@@ -98,8 +101,9 @@ export default async function HomePage() {
                   </div>
                 </div>
                 <p className={styles.aboutLead}>
-                  DXE Solutions brings over 15 years of permitting and construction
-                  management expertise to every project we take on.
+                  That experience shows up as one thing: a process that doesn&apos;t skip steps
+                  — permits filed right the first time, inspections sequenced before
+                  they&apos;re needed, one person accountable for the outcome.
                 </p>
                 <p>
                   DXE Solutions was founded on a simple premise: great construction projects
@@ -116,7 +120,7 @@ export default async function HomePage() {
                 <p>
                   Whether you&apos;re developing a luxury residential estate or a commercial
                   complex, DXE Solutions brings the rigor, the relationships, and the relentless
-                  follow-through to deliver your project finished.
+                  follow-through to see it through to the finish.
                 </p>
               </div>
             </div>
@@ -216,7 +220,7 @@ export default async function HomePage() {
                 </div>
                 <p className={styles.portalLead}>
                   Every DXE Solutions client gets a private portal — not just status updates, but
-                  the whole picture: organized, live, and available anytime you check it.
+                  the whole picture: organized, live, and always current.
                 </p>
                 <ul className={styles.portalFeatures}>
                   {PORTAL_FEATURES.map((f) => (
