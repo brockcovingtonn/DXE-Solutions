@@ -14,6 +14,7 @@ struct CalendarView: View {
     @State private var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     @State private var showAddEvent = false
     @State private var weatherDays: [WeatherDay] = []
+    @State private var eventToEdit: CalendarEvent?
 
     private let calendar = Calendar.current
     private let weekdaySymbols = ["S", "M", "T", "W", "T", "F", "S"]
@@ -61,6 +62,11 @@ struct CalendarView: View {
         .task { weatherDays = await WeatherService.days() }
         .sheet(isPresented: $showAddEvent) {
             AddCalendarEventView(lockedProject: project, isAdmin: auth.profile?.isAdmin == true) {
+                Task { await loadEvents() }
+            }
+        }
+        .sheet(item: $eventToEdit) { event in
+            AddCalendarEventView(lockedProject: project, isAdmin: auth.profile?.isAdmin == true, existingEvent: event) {
                 Task { await loadEvents() }
             }
         }
@@ -195,19 +201,30 @@ struct CalendarView: View {
 
     private func eventRow(_ event: CalendarEvent) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Text(event.allDay ? "All day" : timeString(event.startTime))
-                .font(.caption.weight(.semibold))
-                .foregroundColor(Theme.gold)
-                .frame(width: 70, alignment: .leading)
-            Image(systemName: typeIcon(event.eventType))
-                .font(.caption)
-                .foregroundColor(.secondary)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(event.title).font(.subheadline.weight(.medium))
-                if let description = event.description, !description.isEmpty {
-                    Text(description).font(.caption).foregroundColor(.secondary)
+            Button {
+                if canAddEvents {
+                    eventToEdit = event
+                }
+            } label: {
+                HStack(alignment: .top, spacing: 12) {
+                    Text(event.allDay ? "All day" : timeString(event.startTime))
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.gold)
+                        .frame(width: 70, alignment: .leading)
+                    Image(systemName: typeIcon(event.eventType))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(event.title).font(.subheadline.weight(.medium))
+                        if let description = event.description, !description.isEmpty {
+                            Text(description).font(.caption).foregroundColor(.secondary)
+                        }
+                    }
                 }
             }
+            .buttonStyle(.plain)
+            .disabled(!canAddEvents)
+
             Spacer()
             AddToCalendarButton(event: event)
         }

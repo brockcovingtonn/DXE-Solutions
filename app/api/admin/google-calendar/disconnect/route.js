@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { stopWatchingCalendar } from '@/lib/google-calendar';
 
 export async function POST() {
   const supabase = createClient();
@@ -16,6 +17,7 @@ export async function POST() {
   if (!profile?.is_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const admin = createAdminClient();
+  await stopWatchingCalendar(admin, user.id);
   const { error } = await admin.from('google_calendar_connections').delete().eq('user_id', user.id);
 
   if (error) {

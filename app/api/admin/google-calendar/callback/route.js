@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { exchangeCodeForTokens } from '@/lib/google-calendar';
+import { exchangeCodeForTokens, watchCalendar } from '@/lib/google-calendar';
 
 export async function GET(request) {
   const supabase = createClient();
@@ -38,6 +38,12 @@ export async function GET(request) {
       token_expires_at: expiresAt,
       calendar_id: 'primary',
     });
+
+    try {
+      await watchCalendar(admin, user.id);
+    } catch (watchErr) {
+      console.error('Google Calendar watch registration error:', watchErr);
+    }
 
     return NextResponse.redirect(`${siteUrl}/admin/calendar?google=connected`);
   } catch (err) {

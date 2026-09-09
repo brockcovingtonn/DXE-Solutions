@@ -78,6 +78,7 @@ struct AdminProjectDetailView: View {
                         sectionCard("Assigned Employees") { AdminEmployeesEditor(projectId: projectId) }
                         sectionCard("Permits") { AdminPermitsEditor(projectId: projectId) }
                         sectionCard("Project Team") { AdminTeamEditor(projectId: projectId) }
+                        calendarSection
                         phasesSection
                         sectionCard("Action Items") { AdminActionItemsEditor(projectId: projectId) }
                         milestonesSection
@@ -189,6 +190,45 @@ struct AdminProjectDetailView: View {
         } catch {
             infoMessage = (error as? APIError)?.errorDescription ?? "Could not save changes."
             infoMessageIsError = true
+        }
+    }
+
+    // MARK: - Calendar
+
+    private var asProject: Project? {
+        guard let project else { return nil }
+        return Project(
+            id: project.id,
+            name: project.name,
+            address: project.address,
+            projectType: project.projectType,
+            status: project.status,
+            progressPct: project.progressPct,
+            startedOn: project.startedOn,
+            estimatedCompletion: project.estimatedCompletion,
+            apn: project.apn,
+            jurisdiction: project.jurisdiction,
+            zoning: project.zoning,
+            lotSize: project.lotSize,
+            buildingSize: project.buildingSize
+        )
+    }
+
+    private var calendarSection: some View {
+        sectionCard("Calendar") {
+            NavigationLink {
+                CalendarView(project: asProject)
+            } label: {
+                HStack {
+                    Image(systemName: "calendar")
+                    Text("View Project Calendar")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .foregroundColor(Theme.navy)
+            }
         }
     }
 
