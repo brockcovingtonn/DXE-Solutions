@@ -27,12 +27,20 @@ export default async function EmployeeLayout({ children }) {
   ]);
 
   const dmUnread = (unread || []).find((r) => !r.project_id)?.unread_count || 0;
+  const unreadByProject = Object.fromEntries((unread || []).filter((r) => r.project_id).map((r) => [r.project_id, r.unread_count]));
+
+  const assistantProjects = (assignments || []).map((a) => a.projects).filter(Boolean);
 
   const chatThreads = [
     { key: 'admin-dm', label: 'Dixie', sublabel: 'Direct message', dmUserId: user.id, unread: dmUnread },
+    ...assistantProjects.map((p) => ({
+      key: `project-${p.id}`,
+      label: p.name,
+      sublabel: 'Project chat',
+      projectId: p.id,
+      unread: unreadByProject[p.id] || 0,
+    })),
   ];
-
-  const assistantProjects = (assignments || []).map((a) => a.projects).filter(Boolean);
 
   return (
     <EmployeeShell profile={profile} currentUserId={user.id} chatThreads={chatThreads} assistantProjects={assistantProjects}>

@@ -22,7 +22,7 @@ struct EmployeeTabView: View {
             .tabItem { Label("Calendar", systemImage: "calendar") }
 
             NavigationStack {
-                ChatView()
+                EmployeeChatView()
             }
             .tabItem { Label("Chat", systemImage: "message.fill") }
             .badge(auth.unreadMessageCount)
