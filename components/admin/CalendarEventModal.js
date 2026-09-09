@@ -323,7 +323,8 @@ function TaggedContact({ contact, onRemove }) {
           {contact.company && <div>{contact.company}</div>}
           {contact.phone && <div><i className="ti ti-phone" aria-hidden="true"></i> {contact.phone}</div>}
           {contact.email && <div><i className="ti ti-mail" aria-hidden="true"></i> {contact.email}</div>}
-          {!contact.phone && !contact.email && <div>No contact details on file.</div>}
+          {contact.website && <div><i className="ti ti-world" aria-hidden="true"></i> {contact.website}</div>}
+          {!contact.phone && !contact.email && !contact.website && <div>No contact details on file.</div>}
         </div>
       )}
     </div>

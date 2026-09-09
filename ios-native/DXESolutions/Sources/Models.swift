@@ -487,11 +487,12 @@ struct Contact: Codable, Identifiable, Hashable {
     let trade: String?
     let phone: String?
     let email: String?
+    let website: String?
     let notes: String?
     let projectContacts: [ProjectContactLink]?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, company, trade, phone, email, notes
+        case id, name, company, trade, phone, email, website, notes
         case projectContacts = "project_contacts"
     }
 }

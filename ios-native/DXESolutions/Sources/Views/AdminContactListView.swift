@@ -19,7 +19,8 @@ struct AdminContactListView: View {
         "HVAC / Mechanical Contractor", "Landscaping Contractor", "Pool Contractor",
         "Solar Contractor", "Utility Company", "Building Department / Plan Checker",
         "Building Inspector", "Fire Department / Fire Marshal", "Title / Escrow Company",
-        "Lender / Bank", "Real Estate Agent", "Attorney", "Other",
+        "Lender / Bank", "Real Estate Agent", "Attorney", "City / County Services",
+        "Bonding / Surety", "Equipment Rental / Vendor", "Other",
     ]
 
     private var filteredContacts: [Contact] {

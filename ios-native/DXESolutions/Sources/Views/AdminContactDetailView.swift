@@ -15,6 +15,7 @@ struct AdminContactDetailView: View {
     @State private var trade = ""
     @State private var phone = ""
     @State private var email = ""
+    @State private var website = ""
     @State private var notes = ""
 
     @State private var allProjects: [SimpleProjectRef] = []
@@ -37,7 +38,8 @@ struct AdminContactDetailView: View {
         "HVAC / Mechanical Contractor", "Landscaping Contractor", "Pool Contractor",
         "Solar Contractor", "Utility Company", "Building Department / Plan Checker",
         "Building Inspector", "Fire Department / Fire Marshal", "Title / Escrow Company",
-        "Lender / Bank", "Real Estate Agent", "Attorney", "Other",
+        "Lender / Bank", "Real Estate Agent", "Attorney", "City / County Services",
+        "Bonding / Surety", "Equipment Rental / Vendor", "Other",
     ]
 
     var body: some View {
@@ -64,6 +66,7 @@ struct AdminContactDetailView: View {
                             labeledField("Phone", text: $phone, keyboard: .phonePad)
                             labeledField("Email", text: $email, keyboard: .emailAddress)
                         }
+                        labeledField("Website", text: $website, keyboard: .URL)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("NOTES").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
                             TextField("Notes", text: $notes, axis: .vertical)
@@ -171,6 +174,7 @@ struct AdminContactDetailView: View {
                 trade = contact.trade ?? ""
                 phone = contact.phone ?? ""
                 email = contact.email ?? ""
+                website = contact.website ?? ""
                 notes = contact.notes ?? ""
                 selectedProjectIds = Set((contact.projectContacts ?? []).map { $0.projectId })
             }
@@ -189,6 +193,7 @@ struct AdminContactDetailView: View {
             let trade: String?
             let phone: String?
             let email: String?
+            let website: String?
             let notes: String?
             let projectIds: [String]
         }
@@ -198,6 +203,7 @@ struct AdminContactDetailView: View {
             trade: trade.isEmpty ? nil : trade,
             phone: phone.isEmpty ? nil : phone,
             email: email.isEmpty ? nil : email,
+            website: website.isEmpty ? nil : website,
             notes: notes.isEmpty ? nil : notes,
             projectIds: Array(selectedProjectIds)
         )

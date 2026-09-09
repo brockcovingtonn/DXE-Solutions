@@ -5,16 +5,20 @@ struct EmployeeTrainingView: View {
     @State private var isLoading = true
     @State private var selectedCategory = EmployeeTrainingView.categories.first!
 
+    // Keep in sync with TRAINING_CATEGORIES in lib/constants.js.
     private static let categories = [
-        "General",
+        "Process Overview",
+        "Client Onboarding & Workflow",
+        "Construction Phase Guide",
+        "Permitting",
+        "Utilities",
+        "City & Agency Portals",
         "Residential — New Construction",
         "Residential — ADU",
         "Residential — Renovation / Addition",
         "Commercial — New Construction",
         "Commercial — Tenant Improvement",
         "Mixed-Use Development",
-        "Permitting",
-        "Utilities",
         "Other",
     ]
 

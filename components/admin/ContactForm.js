@@ -14,6 +14,7 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
     trade: contact?.trade || '',
     phone: contact?.phone || '',
     email: contact?.email || '',
+    website: contact?.website || '',
     notes: contact?.notes || '',
   });
   const [selectedProjects, setSelectedProjects] = useState(new Set(linkedProjectIds || []));
@@ -113,7 +114,10 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
           <label className={adminStyles.fieldLabel}>Email</label>
           <input className={adminStyles.fieldInput} name="email" type="email" value={form.email} onChange={handleChange} />
         </div>
-        <div></div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Website</label>
+          <input className={adminStyles.fieldInput} name="website" type="url" placeholder="https://..." value={form.website} onChange={handleChange} />
+        </div>
       </div>
       <div className={adminStyles.fieldGroup}>
         <label className={adminStyles.fieldLabel}>Notes</label>

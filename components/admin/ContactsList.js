@@ -113,6 +113,7 @@ export default function ContactsList({ contacts }) {
               <div className={adminStyles.contactMeta}>
                 {contact.phone && <div>{contact.phone}</div>}
                 {contact.email && <div>{contact.email}</div>}
+                {contact.website && <div>{contact.website}</div>}
               </div>
             </Link>
           </div>
