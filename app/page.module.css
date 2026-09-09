@@ -365,7 +365,14 @@
 
 /* ABOUT */
 .aboutSection {
+  position: relative;
+  overflow: hidden;
   background: var(--white);
+}
+
+.aboutSection :global(.section-inner) {
+  position: relative;
+  z-index: 1;
 }
 
 .aboutGrid {

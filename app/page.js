@@ -79,6 +79,9 @@ export default async function HomePage() {
 
         {/* ABOUT */}
         <section id="about" className={`section ${styles.aboutSection}`}>
+          <div className={styles.textureLayer} aria-hidden="true">
+            <Image src="/images/blueprint-texture.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'bottom right' }} />
+          </div>
           <div className="section-inner">
             <div className={styles.aboutGrid}>
               <div className={styles.aboutText}>
