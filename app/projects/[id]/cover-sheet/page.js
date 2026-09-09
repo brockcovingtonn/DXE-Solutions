@@ -45,10 +45,19 @@ export default async function CoverSheetPage({ params }) {
       </div>
 
       <div className={styles.sheet}>
+        <div className={styles.watermark} aria-hidden="true">
+          <Image
+            src="/images/logo-black.png"
+            alt=""
+            fill
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
+
         <div className={styles.header}>
           <div className={styles.logo}>
             <Image
-              src="/images/logo-slate.png"
+              src="/images/logo-cream.png"
               alt="DXE Solutions"
               fill
               style={{ objectFit: 'contain', objectPosition: 'left center' }}
@@ -59,7 +68,9 @@ export default async function CoverSheetPage({ params }) {
             <div className={styles.docDate}>Generated {generatedOn}</div>
           </div>
         </div>
+        <div className={styles.headerAccent} />
 
+        <div className={styles.body}>
         <h1 className={styles.projectName}>{project.name}</h1>
         <p className={styles.projectAddress}>{project.address || 'Address not on file'}</p>
 
@@ -209,6 +220,7 @@ export default async function CoverSheetPage({ params }) {
 
         <div className={styles.footer}>
           DXE Solutions · Permitting &amp; Project Management · dixie@dxesolutions.com
+        </div>
         </div>
       </div>
     </div>

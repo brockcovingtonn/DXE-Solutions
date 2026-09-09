@@ -1,0 +1,294 @@
+.page {
+  min-height: 100vh;
+  background: var(--surface);
+  padding: 2rem 1.5rem 4rem;
+}
+
+.toolbar {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sheet {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+}
+
+/* COVER */
+.cover {
+  background: var(--navy-dark);
+  padding: 4rem 3rem;
+  text-align: center;
+}
+
+.coverLogo {
+  position: relative;
+  height: 64px;
+  width: 220px;
+  margin: 0 auto 2rem;
+}
+
+.coverEyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.coverTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.75rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.coverSub {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.04em;
+}
+
+/* SECTIONS */
+.section {
+  padding: 2.5rem 3rem;
+  border-top: 1px solid var(--border);
+}
+
+.sectionTitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin-bottom: 0.75rem;
+}
+
+.sectionIntro {
+  font-size: 0.9rem;
+  color: #5a6b7a;
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+  max-width: 560px;
+}
+
+.rule {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.ruleLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.rule p {
+  font-size: 0.85rem;
+  color: #5a6b7a;
+  line-height: 1.6;
+}
+
+/* LOGO GRID */
+.logoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.logoSwatch {
+  border: 1px solid var(--border);
+}
+
+.logoSwatchBox {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.logoSwatchImg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.logoSwatchLabel {
+  padding: 0.75rem 1rem 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.logoSwatchNote {
+  padding: 0 1rem 0.85rem;
+  font-size: 0.75rem;
+  color: #8296a6;
+  line-height: 1.5;
+}
+
+/* COLOR */
+.colorGroup {
+  margin-bottom: 1.75rem;
+}
+
+.colorGroupLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8296a6;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.swatchRow {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 130px;
+}
+
+.swatchBox {
+  height: 80px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0.5rem;
+}
+
+.swatchPrimaryTag {
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--navy);
+  padding: 0.15rem 0.4rem;
+  font-weight: 700;
+}
+
+.swatchName {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.swatchHex {
+  font-size: 0.72rem;
+  color: #8296a6;
+  letter-spacing: 0.02em;
+}
+
+/* TYPOGRAPHY */
+.typeSpecimen {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.typeSpecimen:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.typeSpecimenLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.typeSample {
+  font-size: 1.6rem;
+  color: var(--navy);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.typeWeights {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.typeWeights span {
+  font-size: 1rem;
+  color: var(--navy);
+}
+
+/* APPLICATIONS */
+.appList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.appList li {
+  font-size: 0.88rem;
+  color: #5a6b7a;
+  line-height: 1.6;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.appList li:last-child {
+  border-bottom: none;
+}
+
+.appList strong {
+  color: var(--navy);
+}
+
+.footer {
+  padding: 1.5rem 3rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.72rem;
+  color: #a0aec0;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  .logoGrid {
+    grid-template-columns: 1fr;
+  }
+  .cover,
+  .section {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media print {
+  .page {
+    background: var(--white);
+    padding: 0;
+  }
+  .toolbar {
+    display: none;
+  }
+  .sheet {
+    border: none;
+    max-width: 100%;
+  }
+  .section {
+    break-inside: avoid;
+  }
+}

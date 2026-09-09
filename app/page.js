@@ -95,35 +95,18 @@ export default async function HomePage() {
         <section id="about" className={`section ${styles.aboutSection}`}>
           <div className="section-inner">
             <div className={styles.aboutGrid}>
-              <div className={styles.aboutGraphic}>
-                <div className={styles.aboutGraphicInner}>
-                  <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="20" y="180" width="160" height="8" fill="rgba(201,168,87,0.6)" />
-                    <rect x="40" y="120" width="30" height="60" fill="rgba(62,84,104,0.18)" />
-                    <rect x="80" y="80" width="40" height="100" fill="rgba(62,84,104,0.25)" />
-                    <rect x="130" y="100" width="30" height="80" fill="rgba(62,84,104,0.15)" />
-                    <rect x="45" y="135" width="8" height="8" fill="rgba(201,168,87,0.4)" />
-                    <rect x="57" y="135" width="8" height="8" fill="rgba(201,168,87,0.4)" />
-                    <rect x="85" y="95" width="8" height="8" fill="rgba(201,168,87,0.4)" />
-                    <rect x="97" y="95" width="8" height="8" fill="rgba(201,168,87,0.4)" />
-                    <rect x="135" y="115" width="8" height="8" fill="rgba(201,168,87,0.4)" />
-                    <line x1="0" y1="188" x2="200" y2="188" stroke="rgba(201,168,87,0.3)" strokeWidth="1" />
-                    <circle cx="50" cy="65" r="20" fill="none" stroke="rgba(201,168,87,0.3)" strokeWidth="1" />
-                    <line x1="50" y1="45" x2="50" y2="85" stroke="rgba(201,168,87,0.2)" strokeWidth="0.5" />
-                    <line x1="30" y1="65" x2="70" y2="65" stroke="rgba(201,168,87,0.2)" strokeWidth="0.5" />
-                  </svg>
-                </div>
-                <div className={styles.aboutBadge}>
-                  <span className={styles.aboutBadgeBig}>15+</span>
-                  <span className={styles.aboutBadgeSmall}>Years Experience</span>
-                </div>
-              </div>
               <div className={styles.aboutText}>
                 <div className="section-header">
                   <div className="section-eyebrow">About DXE Solutions</div>
-                  <h2 className="display" style={{ color: 'var(--navy)' }}>
-                    The firm between the plans and the keys.
-                  </h2>
+                  <div className={styles.aboutHeadingRow}>
+                    <h2 className="display" style={{ color: 'var(--navy)' }}>
+                      The firm between the plans and the keys.
+                    </h2>
+                    <div className={styles.aboutBadgeInline}>
+                      <span className={styles.aboutBadgeBig}>15+</span>
+                      <span className={styles.aboutBadgeSmall}>Years Experience</span>
+                    </div>
+                  </div>
                 </div>
                 <p className={styles.aboutLead}>
                   DXE Solutions brings over 15 years of permitting and construction

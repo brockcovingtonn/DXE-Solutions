@@ -133,6 +133,12 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             active={pathname.startsWith('/admin/assistant')}
           />
           <SidebarLink
+            href="/admin/brand-kit"
+            icon="ti-palette"
+            label="Brand Kit"
+            active={pathname.startsWith('/admin/brand-kit')}
+          />
+          <SidebarLink
             href="/portal/settings"
             icon="ti-settings"
             label="Account Settings"

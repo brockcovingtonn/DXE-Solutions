@@ -12,21 +12,49 @@
 }
 
 .sheet {
+  position: relative;
   max-width: 800px;
   margin: 0 auto;
   background: var(--white);
-  padding: 3rem;
+  padding: 0 0 3rem;
   border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 640px;
+  height: 640px;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  opacity: 0.04;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--navy);
-  margin-bottom: 2rem;
+  background: var(--navy);
+  padding: 1.5rem 3rem;
+}
+
+.headerAccent {
+  position: relative;
+  z-index: 1;
+  height: 4px;
+  background: var(--gold);
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 3rem 0;
 }
 
 .logo {
@@ -43,14 +71,14 @@
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--navy);
+  color: var(--white);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .docDate {
   font-size: 0.75rem;
-  color: #718096;
+  color: rgba(255, 255, 255, 0.65);
   margin-top: 0.15rem;
 }
 
