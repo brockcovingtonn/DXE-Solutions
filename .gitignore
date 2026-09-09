@@ -44,3 +44,4 @@ ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
 
 # Xcode user-specific state (native app)
 ios-native/**/xcuserdata/
+.env*

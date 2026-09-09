@@ -228,46 +228,50 @@ export default function AdminCalendar({ initialEvents, projects, people, googleC
       />
 
       {adding && (
-        <div className={adminStyles.utilityEntryForm} style={{ marginTop: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>New Event</h3>
-          <EventFields form={form} onChange={handleFormChange(setForm)} projects={projects} people={people} />
-          {error && <p className={adminStyles.formMsgError}>{error}</p>}
-          <div className={adminStyles.entryFormActions}>
-            <button type="button" className="btn-navy" onClick={handleAdd} disabled={saving || !form.title.trim() || !form.date}>
-              {saving ? 'Saving...' : 'Add event'}
-            </button>
-            <button type="button" className={adminStyles.cancelBtn} onClick={() => { setAdding(false); setForm(emptyForm); }}>
-              Cancel
-            </button>
+        <div className={adminStyles.modalOverlay} onClick={() => { setAdding(false); setForm(emptyForm); }}>
+          <div className={adminStyles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '1rem' }}>New Event</h3>
+            <EventFields form={form} onChange={handleFormChange(setForm)} projects={projects} people={people} />
+            {error && <p className={adminStyles.formMsgError}>{error}</p>}
+            <div className={adminStyles.entryFormActions}>
+              <button type="button" className="btn-navy" onClick={handleAdd} disabled={saving || !form.title.trim() || !form.date}>
+                {saving ? 'Saving...' : 'Add event'}
+              </button>
+              <button type="button" className={adminStyles.cancelBtn} onClick={() => { setAdding(false); setForm(emptyForm); }}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {selected && editForm && (
-        <div className={adminStyles.utilityEntryForm} style={{ marginTop: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ margin: 0 }}>Edit Event</h3>
-            <AddToCalendarLink event={selected} />
-          </div>
-          <EventFields form={editForm} onChange={handleFormChange(setEditForm)} projects={projects} people={people} />
-          {error && <p className={adminStyles.formMsgError}>{error}</p>}
-          <div className={adminStyles.entryFormActions} style={{ justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button type="button" className="btn-navy" onClick={saveEdit} disabled={saving}>
-                {saving ? 'Saving...' : 'Save changes'}
-              </button>
-              <button type="button" className={adminStyles.cancelBtn} onClick={() => { setSelected(null); setEditForm(null); }}>
-                Cancel
+        <div className={adminStyles.modalOverlay} onClick={() => { setSelected(null); setEditForm(null); }}>
+          <div className={adminStyles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0 }}>Edit Event</h3>
+              <AddToCalendarLink event={selected} />
+            </div>
+            <EventFields form={editForm} onChange={handleFormChange(setEditForm)} projects={projects} people={people} />
+            {error && <p className={adminStyles.formMsgError}>{error}</p>}
+            <div className={adminStyles.entryFormActions} style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button type="button" className="btn-navy" onClick={saveEdit} disabled={saving}>
+                  {saving ? 'Saving...' : 'Save changes'}
+                </button>
+                <button type="button" className={adminStyles.cancelBtn} onClick={() => { setSelected(null); setEditForm(null); }}>
+                  Cancel
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={saving}
+                style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.6rem 1.2rem', fontSize: '0.78rem', cursor: 'pointer' }}
+              >
+                Delete event
               </button>
             </div>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={saving}
-              style={{ background: 'none', border: '1px solid var(--text-error)', color: 'var(--text-error)', padding: '0.6rem 1.2rem', fontSize: '0.78rem', cursor: 'pointer' }}
-            >
-              Delete event
-            </button>
           </div>
         </div>
       )}
