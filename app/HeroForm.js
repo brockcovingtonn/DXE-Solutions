@@ -5,10 +5,12 @@ import { PROJECT_TYPES } from '@/lib/constants';
 import styles from './page.module.css';
 
 const initialForm = { name: '', contact: '', projectType: '', details: '' };
+const BOOKING_URL = process.env.NEXT_PUBLIC_GOOGLE_BOOKING_URL;
 
 export default function HeroForm() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [showBooking, setShowBooking] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -41,6 +43,7 @@ export default function HeroForm() {
 
       setStatus('success');
       setForm(initialForm);
+      if (BOOKING_URL) setShowBooking(true);
     } catch (err) {
       setStatus('error');
     }
@@ -56,6 +59,11 @@ export default function HeroForm() {
             Dixie reviews every submission personally and will follow up with your next
             three steps, usually within 1–2 business days.
           </p>
+          {BOOKING_URL && (
+            <button type="button" className="btn-gold" onClick={() => setShowBooking(true)}>
+              Book your call now
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -133,6 +141,31 @@ export default function HeroForm() {
             directly.
           </p>
         </>
+      )}
+
+      {showBooking && BOOKING_URL && (
+        <div className={styles.bookingOverlay} onClick={() => setShowBooking(false)}>
+          <div className={styles.bookingCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.bookingHeader}>
+              <h3 className="display">Book your 15-minute call</h3>
+              <button
+                type="button"
+                className={styles.bookingClose}
+                onClick={() => setShowBooking(false)}
+                aria-label="Close"
+              >
+                <i className="ti ti-x" aria-hidden="true"></i>
+              </button>
+            </div>
+            <iframe
+              src={BOOKING_URL}
+              style={{ border: 0 }}
+              width="100%"
+              height="600"
+              title="Book a call with DXE Solutions"
+            />
+          </div>
+        </div>
       )}
     </div>
   );
