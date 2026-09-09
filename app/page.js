@@ -80,7 +80,7 @@ export default async function HomePage() {
         {/* ABOUT */}
         <section id="about" className={`section ${styles.aboutSection}`}>
           <div className={styles.textureLayer} aria-hidden="true">
-            <Image src="/images/blue-plans.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center' }} />
+            <Image src="/images/workspace.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center' }} />
           </div>
           <div className="section-inner">
             <div className={styles.aboutGrid}>
@@ -254,6 +254,9 @@ export default async function HomePage() {
 
         {/* HOW IT WORKS */}
         <section id="how-it-works" className={`section ${styles.stepsSection}`}>
+          <div className={styles.textureLayer} aria-hidden="true">
+            <Image src="/images/point-at-plans.jpg" alt="" fill style={{ objectFit: 'cover', objectPosition: 'center' }} />
+          </div>
           <div className="section-inner">
             <div className="section-header">
               <div className="section-eyebrow">How It Works</div>

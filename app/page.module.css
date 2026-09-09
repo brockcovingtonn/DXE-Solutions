@@ -682,7 +682,14 @@
 
 /* HOW IT WORKS */
 .stepsSection {
+  position: relative;
+  overflow: hidden;
   background: var(--gold-pale);
+}
+
+.stepsSection :global(.section-inner) {
+  position: relative;
+  z-index: 1;
 }
 
 .stepsGrid {
