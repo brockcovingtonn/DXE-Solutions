@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import StarRating from '@/components/StarRating';
@@ -58,19 +57,6 @@ export default async function HomePage() {
                 desk — and stays on it until you hand over the keys. Greater Los Angeles and
                 Ventura County.
               </p>
-              <div className={styles.heroActions}>
-                <a href="#call" className="btn-primary">
-                  Book a 15-min permit review
-                </a>
-                <Link href="#how-it-works" className="btn-outline">
-                  See how we work
-                </Link>
-              </div>
-              <p className={styles.heroNote}>
-                No charge for the call. Bring your address, your scope, and whatever the city has
-                told you.
-              </p>
-
               <div className={styles.heroFeatures}>
                 <div className={styles.heroFeature}>
                   <div className={styles.heroFeatureLabel}>Plans → keys</div>

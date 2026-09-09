@@ -217,30 +217,6 @@
   font-weight: 300;
 }
 
-.heroActions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.heroActions :global(.btn-outline) {
-  color: var(--white);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.heroActions :global(.btn-outline):hover {
-  border-color: var(--white);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.heroNote {
-  font-size: 0.78rem;
-  color: var(--text-light);
-  opacity: 0.65;
-  margin-bottom: 3rem;
-}
-
 .heroFeatures {
   display: flex;
   gap: 2.5rem;
@@ -654,7 +630,7 @@
 
 /* HOW IT WORKS */
 .stepsSection {
-  background: var(--white);
+  background: var(--gold-pale);
 }
 
 .stepsGrid {
@@ -669,12 +645,12 @@
 }
 
 .stepNum {
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 0.75rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.25rem;
   font-weight: 600;
+  line-height: 1;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
 }
 
 .stepCard h3 {
