@@ -172,6 +172,8 @@ Once connected, sync is two-way:
 
 Note: this targets the connected admin's **primary/personal** Google Calendar, not a separate dedicated one — any new personal event added there after connecting will also appear in the DXE Solutions app (visible to other admins/employees per normal calendar visibility rules). If that becomes a problem, the fix is to connect a separate "DXE Solutions" calendar in Google instead of the primary one.
 
+Employees don't get their own Google Calendar connection — an employee-created event syncs to whichever admin has one connected (in practice, the one shared business calendar), the same way an admin-created event would.
+
 ### Push notifications setup
 
 Only needed once, to enable native iOS push alerts (new chat message, new document/photo/note, project status change, action item assigned). `lib/push-notifications.js` talks to Apple's APNs directly over HTTP/2 — no third-party push service. Until the env vars below are set, `sendPushToUser()` silently no-ops so nothing else breaks.
