@@ -19,7 +19,7 @@ async function requireAdmin(supabase) {
   return { user };
 }
 
-const ALLOWED_FIELDS = ['title', 'description', 'start_time', 'end_time', 'all_day', 'visible_to_client', 'project_id', 'event_type', 'assigned_to'];
+const ALLOWED_FIELDS = ['title', 'description', 'start_time', 'end_time', 'all_day', 'visible_to_client', 'project_id', 'event_type', 'assigned_to', 'reminder_minutes'];
 
 export async function PATCH(request, { params }) {
   const supabase = createClient();
@@ -31,6 +31,11 @@ export async function PATCH(request, { params }) {
     const update = {};
     for (const key of ALLOWED_FIELDS) {
       if (key in body) update[key] = body[key];
+    }
+    // A changed time or reminder setting deserves a fresh reminder, not
+    // "already sent" carried over from before the edit.
+    if ('start_time' in update || 'reminder_minutes' in update) {
+      update.reminder_sent_at = null;
     }
 
     const { data: event, error } = await supabase

@@ -156,6 +156,7 @@ struct CalendarEvent: Codable, Identifiable, Hashable {
     let visibleToClient: Bool
     let eventType: String?
     let assignedTo: String?
+    let reminderMinutes: Int?
     let projects: AdminProjectRef?
 
     enum CodingKeys: String, CodingKey {
@@ -167,6 +168,7 @@ struct CalendarEvent: Codable, Identifiable, Hashable {
         case visibleToClient = "visible_to_client"
         case eventType = "event_type"
         case assignedTo = "assigned_to"
+        case reminderMinutes = "reminder_minutes"
     }
 }
 

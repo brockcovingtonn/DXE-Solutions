@@ -62,6 +62,7 @@ struct AddCalendarEventView: View {
     @State private var endTime = Date()
     @State private var allDay = false
     @State private var visibleToClient = false
+    @State private var reminderMinutes: Int? = nil
 
     @State private var projects: [ProjectPickerRef] = []
     @State private var people: [AssignablePerson] = []
@@ -89,6 +90,17 @@ struct AddCalendarEventView: View {
         ("deadline", "Deadline"),
         ("action_item", "Action Item"),
         ("other", "Other"),
+    ]
+
+    // nil = "no reminder" tag, used as the Picker selection sentinel
+    // since Optional<Int> can't be a Picker's selection type directly.
+    private let reminderOptions: [(Int?, String)] = [
+        (nil, "No reminder"),
+        (0, "At time of event"),
+        (15, "15 minutes before"),
+        (30, "30 minutes before"),
+        (60, "1 hour before"),
+        (1440, "1 day before"),
     ]
 
     private var effectiveProjectId: String {
@@ -169,6 +181,15 @@ struct AddCalendarEventView: View {
                             DatePicker("End time", selection: $endTime, displayedComponents: .hourAndMinute)
                         }
                     }
+                }
+
+                Section("Reminder") {
+                    Picker("Reminder", selection: $reminderMinutes) {
+                        ForEach(reminderOptions, id: \.0) { value, label in
+                            Text(label).tag(value)
+                        }
+                    }
+                    .pickerStyle(.menu)
                 }
 
                 if !effectiveProjectId.isEmpty {
@@ -362,6 +383,7 @@ struct AddCalendarEventView: View {
         assignedTo = event.assignedTo ?? ""
         allDay = event.allDay
         visibleToClient = event.visibleToClient
+        reminderMinutes = event.reminderMinutes
 
         let start = Self.parseISODate(event.startTime) ?? Date()
         date = Calendar.current.startOfDay(for: start)
@@ -467,6 +489,13 @@ struct AddCalendarEventView: View {
         let name: String?
     }
 
+    // Swift's synthesized Encodable OMITS a key entirely when an
+    // Optional property is nil (rather than encoding `null`), so
+    // clearing a field (e.g. removing an end time) would silently fail
+    // to clear it server-side — the PATCH routes only update a field
+    // when its key is present in the JSON body at all. These three
+    // payloads encode manually so every optional field round-trips
+    // correctly, including going from a value back to nil/null.
     private struct CreatePayload: Encodable {
         let projectId: String?
         let title: String
@@ -477,8 +506,29 @@ struct AddCalendarEventView: View {
         let endTime: String?
         let allDay: Bool
         let visibleToClient: Bool
+        let reminderMinutes: Int?
         let contactIds: [String]
         let guests: [GuestPayload]
+
+        enum CodingKeys: CodingKey {
+            case projectId, title, description, eventType, assignedTo, startTime, endTime, allDay, visibleToClient, reminderMinutes, contactIds, guests
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(projectId, forKey: .projectId)
+            try c.encode(title, forKey: .title)
+            try c.encode(description, forKey: .description)
+            try c.encode(eventType, forKey: .eventType)
+            try c.encode(assignedTo, forKey: .assignedTo)
+            try c.encode(startTime, forKey: .startTime)
+            try c.encode(endTime, forKey: .endTime)
+            try c.encode(allDay, forKey: .allDay)
+            try c.encode(visibleToClient, forKey: .visibleToClient)
+            try c.encode(reminderMinutes, forKey: .reminderMinutes)
+            try c.encode(contactIds, forKey: .contactIds)
+            try c.encode(guests, forKey: .guests)
+        }
     }
 
     // Base update payload for the employee PATCH route, which doesn't
@@ -493,8 +543,28 @@ struct AddCalendarEventView: View {
         let visible_to_client: Bool
         let event_type: String
         let assigned_to: String?
+        let reminder_minutes: Int?
         let contactIds: [String]
         let guests: [GuestPayload]
+
+        enum CodingKeys: CodingKey {
+            case title, description, start_time, end_time, all_day, visible_to_client, event_type, assigned_to, reminder_minutes, contactIds, guests
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(title, forKey: .title)
+            try c.encode(description, forKey: .description)
+            try c.encode(start_time, forKey: .start_time)
+            try c.encode(end_time, forKey: .end_time)
+            try c.encode(all_day, forKey: .all_day)
+            try c.encode(visible_to_client, forKey: .visible_to_client)
+            try c.encode(event_type, forKey: .event_type)
+            try c.encode(assigned_to, forKey: .assigned_to)
+            try c.encode(reminder_minutes, forKey: .reminder_minutes)
+            try c.encode(contactIds, forKey: .contactIds)
+            try c.encode(guests, forKey: .guests)
+        }
     }
 
     private struct AdminUpdatePayload: Encodable {
@@ -507,8 +577,29 @@ struct AddCalendarEventView: View {
         let project_id: String?
         let event_type: String
         let assigned_to: String?
+        let reminder_minutes: Int?
         let contactIds: [String]
         let guests: [GuestPayload]
+
+        enum CodingKeys: CodingKey {
+            case title, description, start_time, end_time, all_day, visible_to_client, project_id, event_type, assigned_to, reminder_minutes, contactIds, guests
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var c = encoder.container(keyedBy: CodingKeys.self)
+            try c.encode(title, forKey: .title)
+            try c.encode(description, forKey: .description)
+            try c.encode(start_time, forKey: .start_time)
+            try c.encode(end_time, forKey: .end_time)
+            try c.encode(all_day, forKey: .all_day)
+            try c.encode(visible_to_client, forKey: .visible_to_client)
+            try c.encode(project_id, forKey: .project_id)
+            try c.encode(event_type, forKey: .event_type)
+            try c.encode(assigned_to, forKey: .assigned_to)
+            try c.encode(reminder_minutes, forKey: .reminder_minutes)
+            try c.encode(contactIds, forKey: .contactIds)
+            try c.encode(guests, forKey: .guests)
+        }
     }
 
     private func save() async {
@@ -539,6 +630,7 @@ struct AddCalendarEventView: View {
                         project_id: effectiveProjectId.isEmpty ? nil : effectiveProjectId,
                         event_type: eventType,
                         assigned_to: assignedTo.isEmpty ? nil : assignedTo,
+                        reminder_minutes: reminderMinutes,
                         contactIds: contactIdsArray,
                         guests: guestPayloads
                     )
@@ -553,6 +645,7 @@ struct AddCalendarEventView: View {
                         visible_to_client: visibleToClient,
                         event_type: eventType,
                         assigned_to: assignedTo.isEmpty ? nil : assignedTo,
+                        reminder_minutes: reminderMinutes,
                         contactIds: contactIdsArray,
                         guests: guestPayloads
                     )
@@ -569,6 +662,7 @@ struct AddCalendarEventView: View {
                     endTime: endDateString,
                     allDay: allDay,
                     visibleToClient: visibleToClient,
+                    reminderMinutes: reminderMinutes,
                     contactIds: contactIdsArray,
                     guests: guestPayloads
                 )

@@ -12,6 +12,15 @@ export const EVENT_TYPES = [
   { value: 'other', label: 'Other' },
 ];
 
+export const REMINDER_OPTIONS = [
+  { value: '', label: 'No reminder' },
+  { value: '0', label: 'At time of event' },
+  { value: '15', label: '15 minutes before' },
+  { value: '30', label: '30 minutes before' },
+  { value: '60', label: '1 hour before' },
+  { value: '1440', label: '1 day before' },
+];
+
 export function emptyEventForm() {
   return {
     title: '',
@@ -24,6 +33,7 @@ export function emptyEventForm() {
     endTime: '',
     allDay: false,
     visibleToClient: false,
+    reminderMinutes: '',
     contactIds: [],
     guests: [],
   };
@@ -46,6 +56,7 @@ export function eventToForm(event) {
     endTime,
     allDay: event.all_day,
     visibleToClient: event.visible_to_client,
+    reminderMinutes: event.reminder_minutes == null ? '' : String(event.reminder_minutes),
     contactIds: (event.calendar_event_contacts || []).map((c) => c.contact_id),
     guests: (event.calendar_event_guests || []).map((g) => ({ email: g.email, name: g.name || '' })),
   };
@@ -74,6 +85,8 @@ export function formToPayload(form) {
     allDay: form.allDay,
     visible_to_client: form.visibleToClient,
     visibleToClient: form.visibleToClient,
+    reminder_minutes: form.reminderMinutes === '' ? null : Number(form.reminderMinutes),
+    reminderMinutes: form.reminderMinutes === '' ? null : Number(form.reminderMinutes),
     contactIds: form.contactIds,
     guests: form.guests,
   };
@@ -212,6 +225,15 @@ export default function CalendarEventModal({
               Visible to client
             </label>
           )}
+        </div>
+
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Reminder</label>
+          <select className={adminStyles.fieldInput} name="reminderMinutes" value={form.reminderMinutes} onChange={handleField}>
+            {REMINDER_OPTIONS.map((r) => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
         </div>
 
         <div className={adminStyles.fieldGroup}>

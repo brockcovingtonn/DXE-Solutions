@@ -373,8 +373,8 @@ const WITH_POINTS = [
 const SERVICES = [
   {
     num: '01',
-    title: 'Permitting & Entitlements',
-    desc: 'Full management of permit applications, agency submissions, and approval tracking across all local, state, and municipal jurisdictions. We know the process, the players, and how to keep things moving.',
+    title: 'Permitting, Entitlements & Engineering Coordination',
+    desc: 'Full management of permit applications, agency submissions, and approval tracking across all local, state, and municipal jurisdictions — plus coordination with structural, electrical, civil, and MEP engineers on submittals, RFIs, and revisions. We know the process, the players, and how to keep things moving.',
   },
   {
     num: '02',
