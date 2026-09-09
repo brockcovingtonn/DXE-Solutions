@@ -175,7 +175,7 @@ Once connected, sync is two-way:
 
 Note: this targets the connected admin's **primary/personal** Google Calendar, not a separate dedicated one — any new personal event added there after connecting will also appear in the DXE Solutions app (visible to other admins/employees per normal calendar visibility rules). If that becomes a problem, the fix is to connect a separate "DXE Solutions" calendar in Google instead of the primary one.
 
-Employees don't get their own Google Calendar connection — an employee-created event syncs to whichever admin has one connected (in practice, the one shared business calendar), the same way an admin-created event would.
+Employees can connect their own Google Calendar too, from **Employee → Calendar** — same "Connect Google Calendar" flow as admin. An event they create/edit syncs to their own connected calendar; if they haven't connected one, it falls back to whichever admin has one connected instead, so it still lands somewhere.
 
 ### Push notifications setup
 

@@ -10,11 +10,11 @@ export async function POST() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_admin')
+    .select('is_admin, is_employee')
     .eq('id', user.id)
     .single();
 
-  if (!profile?.is_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!profile?.is_admin && !profile?.is_employee) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const admin = createAdminClient();
   await stopWatchingCalendar(admin, user.id);

@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { syncEventToGoogle, deleteEventFromGoogle, getPrimaryConnectedAdminId } from '@/lib/google-calendar';
+import { syncEventToGoogle, deleteEventFromGoogle, getSyncTargetUserId } from '@/lib/google-calendar';
 import { syncEventGuestsAndContacts } from '@/lib/calendar-events';
 
 // Employee-authored calendar events — edit/delete for events on projects
 // they're assigned to (RLS enforces this). Mirrors
 // /api/admin/calendar-events/[id] — including Google sync, which goes
-// to whichever admin has a Google Calendar connected, since employees
-// don't get their own.
+// to the employee's own Google Calendar if they've connected one,
+// otherwise falls back to whichever admin has one connected.
 async function requireEmployee(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -28,7 +28,7 @@ const ALLOWED_FIELDS = ['title', 'description', 'start_time', 'end_time', 'all_d
 
 export async function PATCH(request, { params }) {
   const supabase = createClient();
-  const { error: authError } = await requireEmployee(supabase);
+  const { user, error: authError } = await requireEmployee(supabase);
   if (authError) return authError;
 
   try {
@@ -59,9 +59,9 @@ export async function PATCH(request, { params }) {
 
     try {
       const admin = createAdminClient();
-      const connectedAdminId = await getPrimaryConnectedAdminId(admin);
-      if (connectedAdminId) {
-        const googleEventId = await syncEventToGoogle(admin, connectedAdminId, event);
+      const syncTargetId = await getSyncTargetUserId(admin, user.id);
+      if (syncTargetId) {
+        const googleEventId = await syncEventToGoogle(admin, syncTargetId, event);
         if (googleEventId && googleEventId !== event.google_event_id) {
           await supabase.from('calendar_events').update({ google_event_id: googleEventId }).eq('id', event.id);
         }
@@ -79,7 +79,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   const supabase = createClient();
-  const { error: authError } = await requireEmployee(supabase);
+  const { user, error: authError } = await requireEmployee(supabase);
   if (authError) return authError;
 
   try {
@@ -98,9 +98,9 @@ export async function DELETE(request, { params }) {
     if (event?.google_event_id) {
       try {
         const admin = createAdminClient();
-        const connectedAdminId = await getPrimaryConnectedAdminId(admin);
-        if (connectedAdminId) {
-          await deleteEventFromGoogle(admin, connectedAdminId, event.google_event_id);
+        const syncTargetId = await getSyncTargetUserId(admin, user.id);
+        if (syncTargetId) {
+          await deleteEventFromGoogle(admin, syncTargetId, event.google_event_id);
         }
       } catch (syncErr) {
         console.error('Google Calendar delete error:', syncErr);

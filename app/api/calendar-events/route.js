@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { syncEventToGoogle, getPrimaryConnectedAdminId } from '@/lib/google-calendar';
+import { syncEventToGoogle, getSyncTargetUserId } from '@/lib/google-calendar';
 import { createCalendarEvent } from '@/lib/calendar-events';
 
 // Employee-authored calendar events — always tied to a project they're
 // assigned to (RLS enforces this on insert; general/no-project events
-// stay admin-only). Employees don't get their own Google Calendar
-// connection, so these sync to whichever admin has one connected —
-// same shared business calendar an admin-created event would land on.
+// stay admin-only). Syncs to the employee's own Google Calendar if
+// they've connected one, otherwise falls back to whichever admin has
+// one connected.
 export async function POST(request) {
   const { supabase, user } = await getRequestClient(request);
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,9 +37,9 @@ export async function POST(request) {
 
     try {
       const admin = createAdminClient();
-      const connectedAdminId = await getPrimaryConnectedAdminId(admin);
-      if (connectedAdminId) {
-        const googleEventId = await syncEventToGoogle(admin, connectedAdminId, event);
+      const syncTargetId = await getSyncTargetUserId(admin, user.id);
+      if (syncTargetId) {
+        const googleEventId = await syncEventToGoogle(admin, syncTargetId, event);
         if (googleEventId && googleEventId !== event.google_event_id) {
           await supabase.from('calendar_events').update({ google_event_id: googleEventId }).eq('id', event.id);
           event.google_event_id = googleEventId;
