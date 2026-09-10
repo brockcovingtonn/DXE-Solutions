@@ -4,8 +4,17 @@ import { useState } from 'react';
 import { PROJECT_TYPES } from '@/lib/constants';
 import styles from './page.module.css';
 
-const initialForm = { name: '', contact: '', projectType: '', details: '' };
+const initialForm = { name: '', contact: '', projectType: '', details: '', hearAbout: '', referralName: '' };
 const BOOKING_URL = process.env.NEXT_PUBLIC_GOOGLE_BOOKING_URL;
+
+const HEAR_ABOUT_OPTIONS = [
+  'Google or web search',
+  'Referral',
+  'Social media',
+  'Saw one of our project signs',
+  'Worked with DXE before',
+  'Other',
+];
 
 export default function HeroForm() {
   const [form, setForm] = useState(initialForm);
@@ -36,6 +45,8 @@ export default function HeroForm() {
           phone: isEmail ? '' : contact,
           projectType: form.projectType,
           details: form.details,
+          hearAbout: form.hearAbout,
+          referralName: form.hearAbout === 'Referral' ? form.referralName.trim() : '',
         }),
       });
 
@@ -122,6 +133,33 @@ export default function HeroForm() {
                 onChange={handleChange}
               />
             </div>
+            <div className="form-group">
+              <label htmlFor="hearAbout">How did you hear about us?</label>
+              <select
+                id="hearAbout"
+                name="hearAbout"
+                value={form.hearAbout}
+                onChange={handleChange}
+              >
+                <option value="">Select one...</option>
+                {HEAR_ABOUT_OPTIONS.map((o) => (
+                  <option key={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+            {form.hearAbout === 'Referral' && (
+              <div className="form-group">
+                <label htmlFor="referralName">Who referred you?</label>
+                <input
+                  id="referralName"
+                  name="referralName"
+                  type="text"
+                  placeholder="Their name"
+                  value={form.referralName}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
             {status === 'error' && (
               <p className={styles.formError}>

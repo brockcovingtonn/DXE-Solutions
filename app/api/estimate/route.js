@@ -15,6 +15,8 @@ export async function POST(request) {
       location,
       serviceNeeded,
       details,
+      hearAbout,
+      referralName,
     } = data;
 
     // Basic validation — a caller needs a name, a project type, and some way
@@ -37,6 +39,8 @@ export async function POST(request) {
       location,
       serviceNeeded,
       details,
+      hearAbout,
+      referralName,
     });
 
     if (error) {
