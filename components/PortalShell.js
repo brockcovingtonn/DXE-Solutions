@@ -83,6 +83,7 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
 
       <div className={styles.body}>
         <aside className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ''}`} onClick={() => setNavOpen(false)}>
+          <div className={styles.sidebarSectionLabel}>Menu</div>
           <SidebarLink href="/portal" icon="ti-home" label="Dashboard" active={pathname === '/portal'} />
           <SidebarLink
             href="/portal/calendar"

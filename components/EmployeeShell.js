@@ -72,7 +72,7 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
 
       <div className={styles.body}>
         <aside className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ''}`} onClick={() => setNavOpen(false)}>
-          <div className={styles.sidebarSectionLabel}>Team</div>
+          <div className={styles.sidebarSectionLabel}>Menu</div>
           <SidebarLink
             href="/employee/dashboard"
             icon="ti-layout-dashboard"
@@ -85,12 +85,8 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             label="Calendar"
             active={pathname.startsWith('/employee/calendar')}
           />
-          <SidebarLink
-            href="/employee/training"
-            icon="ti-school"
-            label="Training"
-            active={pathname.startsWith('/employee/training')}
-          />
+
+          <div className={styles.sidebarSectionLabel}>Resources</div>
           <SidebarLink
             href="/employee/contacts"
             icon="ti-address-book"
@@ -110,11 +106,19 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             active={pathname.startsWith('/employee/accounting')}
           />
           <SidebarLink
+            href="/employee/training"
+            icon="ti-school"
+            label="Training"
+            active={pathname.startsWith('/employee/training')}
+          />
+          <SidebarLink
             href="/employee/assistant"
             icon="ti-sparkles"
             label="Assistant"
             active={pathname.startsWith('/employee/assistant')}
           />
+
+          <div className={styles.sidebarSectionLabel}>Account</div>
           <SidebarLink
             href="/portal/settings"
             icon="ti-settings"

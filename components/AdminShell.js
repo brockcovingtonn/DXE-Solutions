@@ -72,6 +72,7 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
 
       <div className={styles.body}>
         <aside className={`${styles.sidebar} ${navOpen ? styles.sidebarOpen : ''}`} onClick={() => setNavOpen(false)}>
+          <div className={styles.sidebarSectionLabel}>Menu</div>
           <SidebarLink
             href="/admin/dashboard"
             icon="ti-layout-dashboard"
@@ -90,6 +91,8 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             label="Calendar"
             active={pathname.startsWith('/admin/calendar')}
           />
+
+          <div className={styles.sidebarSectionLabel}>Manage</div>
           <SidebarLink
             href="/admin/contacts"
             icon="ti-address-book"
@@ -115,6 +118,8 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             label="Employees"
             active={pathname.startsWith('/admin/employees')}
           />
+
+          <div className={styles.sidebarSectionLabel}>Resources</div>
           <SidebarLink
             href="/admin/training"
             icon="ti-school"
@@ -128,17 +133,19 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             active={pathname.startsWith('/admin/reviews')}
           />
           <SidebarLink
-            href="/admin/assistant"
-            icon="ti-sparkles"
-            label="Assistant"
-            active={pathname.startsWith('/admin/assistant')}
-          />
-          <SidebarLink
             href="/admin/brand-kit"
             icon="ti-palette"
             label="Brand Kit"
             active={pathname.startsWith('/admin/brand-kit')}
           />
+          <SidebarLink
+            href="/admin/assistant"
+            icon="ti-sparkles"
+            label="Assistant"
+            active={pathname.startsWith('/admin/assistant')}
+          />
+
+          <div className={styles.sidebarSectionLabel}>Account</div>
           <SidebarLink
             href="/portal/settings"
             icon="ti-settings"
