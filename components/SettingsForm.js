@@ -12,7 +12,7 @@ export default function SettingsForm({ profile, email }) {
   const [firstName, setFirstName] = useState(profile?.first_name || '');
   const [lastName, setLastName] = useState(profile?.last_name || '');
   const [phone, setPhone] = useState(profile?.phone || '');
-  const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? true);
+  const [emailNotifications, setEmailNotifications] = useState(profile?.email_notifications ?? false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 

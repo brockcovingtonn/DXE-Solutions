@@ -24,21 +24,23 @@ export async function PUT(request, { params }) {
 
   try {
     const body = await request.json();
-    const { firstName, lastName, email, phone } = body;
+    const { firstName, lastName, email, phone, emailNotifications } = body;
 
     if (!firstName || !lastName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        first_name: firstName,
-        last_name: lastName,
-        email: email || null,
-        phone: phone || null,
-      })
-      .eq('id', params.clientId);
+    const update = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email || null,
+      phone: phone || null,
+    };
+    if (typeof emailNotifications === 'boolean') {
+      update.email_notifications = emailNotifications;
+    }
+
+    const { error } = await supabase.from('profiles').update(update).eq('id', params.clientId);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });

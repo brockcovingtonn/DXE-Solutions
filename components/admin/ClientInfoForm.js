@@ -12,6 +12,7 @@ export default function ClientInfoForm({ client }) {
     lastName: client.last_name || '',
     email: client.email || '',
     phone: client.phone || '',
+    emailNotifications: client.email_notifications ?? false,
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -87,6 +88,23 @@ export default function ClientInfoForm({ client }) {
             onChange={handleChange}
           />
         </div>
+      </div>
+
+      <div className={adminStyles.fieldGroup} style={{ marginTop: '0.5rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={form.emailNotifications}
+            onChange={(e) => setForm((prev) => ({ ...prev, emailNotifications: e.target.checked }))}
+            style={{ width: '16px', height: '16px', accentColor: 'var(--gold)', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 500 }}>
+            Send update emails to this client
+          </span>
+        </label>
+        <p className={adminStyles.fieldHint} style={{ marginLeft: '1.6rem' }}>
+          When on, the client is emailed about new photos, documents, notes, and status changes. Off by default.
+        </p>
       </div>
 
       {message && (
