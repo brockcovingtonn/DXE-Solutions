@@ -124,16 +124,6 @@ export default function HeroForm() {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="details">Where it stands</label>
-              <textarea
-                id="details"
-                name="details"
-                placeholder="City, current stage, what's holding it up"
-                value={form.details}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
               <label htmlFor="hearAbout">How did you hear about us?</label>
               <select
                 id="hearAbout"
@@ -160,6 +150,16 @@ export default function HeroForm() {
                 />
               </div>
             )}
+            <div className="form-group">
+              <label htmlFor="details">Where it stands</label>
+              <textarea
+                id="details"
+                name="details"
+                placeholder="City, current stage, what's holding it up"
+                value={form.details}
+                onChange={handleChange}
+              />
+            </div>
 
             {status === 'error' && (
               <p className={styles.formError}>
