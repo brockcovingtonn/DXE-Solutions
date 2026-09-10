@@ -114,3 +114,33 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
+
+// Permanently deletes a project. All child rows (documents, permits,
+// notes, photos, invoices, phases, team, etc.) cascade automatically;
+// this also clears the project's stored files from each bucket.
+export async function DELETE(request, { params }) {
+  const { supabase, user } = await getRequestClient(request);
+  const { error: authError } = await requireAdmin(supabase, user);
+  if (authError) return authError;
+
+  const projectId = params.id;
+
+  try {
+    for (const bucket of ['project-documents', 'project-photos', 'project-invoices']) {
+      const { data: files } = await supabase.storage.from(bucket).list(projectId, { limit: 1000 });
+      if (files && files.length > 0) {
+        await supabase.storage.from(bucket).remove(files.map((f) => `${projectId}/${f.name}`));
+      }
+    }
+
+    const { error } = await supabase.from('projects').delete().eq('id', projectId);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Delete project error:', err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
+}

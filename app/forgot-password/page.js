@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase-client';
@@ -13,6 +13,11 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const prefill = new URLSearchParams(window.location.search).get('email');
+    if (prefill) setEmail(prefill);
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();

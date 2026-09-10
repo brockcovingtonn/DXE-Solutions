@@ -5,6 +5,8 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import NewProjectForm from '@/components/NewProjectForm';
 import ClientInfoForm from '@/components/admin/ClientInfoForm';
+import SendWelcomeEmail from '@/components/admin/SendWelcomeEmail';
+import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 
 export default async function ClientDetailPage({ params }) {
   const supabase = createClient();
@@ -39,6 +41,11 @@ export default async function ClientDetailPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
+        <h3>Client portal</h3>
+        <SendWelcomeEmail clientId={client.id} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
         <h3>Projects</h3>
         {projects && projects.length > 0 ? (
           <div className={adminStyles.clientProjects} style={{ marginBottom: '1rem' }}>
@@ -64,6 +71,14 @@ export default async function ClientDetailPage({ params }) {
         <h3>Add a new project</h3>
         <NewProjectForm clientId={client.id} />
       </div>
+
+      <DangerDeleteButton
+        heading="Delete this client"
+        description="Removes the client's account and portal access. Their projects are kept, but left with no client attached — you can reassign them later."
+        buttonText="Delete client"
+        endpoint={`/api/admin/clients/${client.id}`}
+        redirectTo="/admin/clients"
+      />
     </div>
   );
 }

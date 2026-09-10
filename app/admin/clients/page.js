@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
+import ClientsProjectsTabs from '@/components/admin/ClientsProjectsTabs';
 
 export default async function AdminClientsPage() {
   const supabase = createClient();
@@ -37,6 +38,8 @@ export default async function AdminClientsPage() {
         <h1>Clients &amp; Projects</h1>
         <p>Manage client accounts and their projects</p>
       </div>
+
+      <ClientsProjectsTabs />
 
       <div className={adminStyles.actionsRow}>
         <Link href="/admin/clients/new" className="btn-navy">

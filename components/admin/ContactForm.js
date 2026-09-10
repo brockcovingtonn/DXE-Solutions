@@ -19,7 +19,6 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
   });
   const [selectedProjects, setSelectedProjects] = useState(new Set(linkedProjectIds || []));
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState('');
 
   function handleChange(e) {
@@ -63,20 +62,6 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
       setMessage('Could not save contact.');
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function handleDelete() {
-    if (!confirm('Delete this contact? This cannot be undone.')) return;
-
-    setDeleting(true);
-    try {
-      const res = await fetch(`/api/admin/contacts/${contactId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      router.push('/admin/contacts');
-    } catch {
-      setMessage('Could not delete contact.');
-      setDeleting(false);
     }
   }
 
@@ -154,17 +139,6 @@ export default function ContactForm({ contact, allProjects, linkedProjectIds, co
         <button type="button" className="btn-navy" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving...' : contactId ? 'Save contact' : 'Create contact'}
         </button>
-        {contactId && (
-          <button
-            type="button"
-            className={adminStyles.cancelBtn}
-            onClick={handleDelete}
-            disabled={deleting}
-            style={{ color: 'var(--text-error)', borderColor: 'rgba(185,28,28,0.3)' }}
-          >
-            {deleting ? 'Deleting...' : 'Delete contact'}
-          </button>
-        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ContactForm from '@/components/admin/ContactForm';
+import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 
 export default async function EditContactPage({ params }) {
   const supabase = createClient();
@@ -41,6 +42,14 @@ export default async function EditContactPage({ params }) {
           linkedProjectIds={linkedProjectIds}
         />
       </div>
+
+      <DangerDeleteButton
+        heading="Delete this contact"
+        description="Removes this contact from the directory and unlinks it from any projects. This cannot be undone."
+        buttonText="Delete contact"
+        endpoint={`/api/admin/contacts/${contact.id}`}
+        redirectTo="/admin/contacts"
+      />
     </div>
   );
 }

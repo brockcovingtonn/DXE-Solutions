@@ -653,3 +653,86 @@
   background: #3E5468;
   color: #fff;
 }
+
+/* Clients / Projects sub-navigation tabs */
+.subTabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgba(var(--border-rgb), 0.12);
+  margin-bottom: 1.5rem;
+}
+
+.subTab {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.subTab:hover {
+  color: var(--text-primary);
+}
+
+.subTabActive {
+  color: var(--navy);
+  border-bottom-color: var(--gold);
+}
+
+/* Danger zone — destructive actions at the bottom of a detail page */
+.dangerZone {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.03);
+}
+
+.dangerZone h3 {
+  color: var(--text-error);
+  margin: 0 0 0.35rem;
+}
+
+.dangerZone p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--text-error);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.dangerBtn:hover {
+  opacity: 0.88;
+}
+
+.dangerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.confirmTypedInput {
+  width: 100%;
+  max-width: 260px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  border: 1px solid rgba(var(--border-rgb), 0.25);
+  border-radius: 6px;
+  margin: 0.5rem 0 0.85rem;
+  background: var(--surface, #fff);
+  color: var(--text-primary);
+}

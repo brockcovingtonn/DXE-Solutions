@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
+import ClientsProjectsTabs from '@/components/admin/ClientsProjectsTabs';
 
 export default async function AdminProjectsPage({ searchParams }) {
   const supabase = createClient();
@@ -27,9 +28,9 @@ export default async function AdminProjectsPage({ searchParams }) {
   return (
     <div>
       <div className={styles.portalHeader}>
-        <h1>Projects</h1>
+        <h1>Clients &amp; Projects</h1>
         <p>
-          {statusFilter ? `Showing ${statusFilter} projects` : 'All projects across every client'}
+          {statusFilter ? `Showing ${statusFilter} projects` : 'Every project across all clients'}
           {statusFilter && (
             <>
               {' · '}
@@ -40,6 +41,8 @@ export default async function AdminProjectsPage({ searchParams }) {
           )}
         </p>
       </div>
+
+      <ClientsProjectsTabs />
 
       <div className={styles.fullWidthCard}>
         {!projects || projects.length === 0 ? (

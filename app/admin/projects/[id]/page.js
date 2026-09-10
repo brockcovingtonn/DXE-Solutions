@@ -17,6 +17,7 @@ import AdminDocuments from '@/components/admin/AdminDocuments';
 import AdminPhotos from '@/components/admin/AdminPhotos';
 import AdminNotes from '@/components/admin/AdminNotes';
 import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
+import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -190,6 +191,14 @@ export default async function AdminProjectPage({ params }) {
         <h3>Photos</h3>
         <AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} />
       </div>
+
+      <DangerDeleteButton
+        heading="Delete this project"
+        description="Permanently removes this project and everything attached to it — documents, permits, notes, photos, invoices, and calendar events. This cannot be undone."
+        buttonText="Delete project"
+        endpoint={`/api/admin/projects/${projectId}`}
+        redirectTo="/admin/projects"
+      />
     </div>
   );
 }
