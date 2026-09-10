@@ -650,7 +650,7 @@
 
 .portalGraphicInner {
   background: linear-gradient(160deg, var(--surface) 0%, var(--border) 100%);
-  padding: 2.5rem;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -659,6 +659,14 @@
 .portalGraphicInner svg {
   width: 100%;
   height: auto;
+}
+
+.portalScreenshot {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 18px 44px rgba(44, 62, 80, 0.16);
 }
 
 .portalBadge {

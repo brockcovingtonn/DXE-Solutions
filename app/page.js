@@ -233,19 +233,12 @@ export default async function HomePage() {
               </div>
               <div className={styles.portalGraphic}>
                 <div className={styles.portalGraphicInner}>
-                  <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="180" height="140" rx="2" fill="none" stroke="rgba(201,168,87,0.4)" strokeWidth="1" />
-                    <line x1="10" y1="34" x2="190" y2="34" stroke="rgba(201,168,87,0.4)" strokeWidth="1" />
-                    <circle cx="24" cy="22" r="4" fill="rgba(201,168,87,0.5)" />
-                    <circle cx="40" cy="22" r="4" fill="rgba(62,84,104,0.25)" />
-                    <circle cx="56" cy="22" r="4" fill="rgba(62,84,104,0.25)" />
-                    <rect x="24" y="48" width="70" height="8" fill="rgba(62,84,104,0.2)" />
-                    <rect x="24" y="64" width="152" height="1" stroke="rgba(62,84,104,0.15)" />
-                    <rect x="24" y="76" width="60" height="34" fill="rgba(62,84,104,0.12)" />
-                    <rect x="92" y="76" width="60" height="34" fill="rgba(201,168,87,0.14)" />
-                    <rect x="24" y="120" width="128" height="6" fill="rgba(62,84,104,0.15)" />
-                    <rect x="24" y="132" width="90" height="6" fill="rgba(62,84,104,0.1)" />
-                  </svg>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/portal-preview.svg"
+                    alt="A preview of the DXE Solutions client portal showing a project's status, phase progress, and team"
+                    className={styles.portalScreenshot}
+                  />
                 </div>
                 <div className={styles.portalBadge}>
                   <i className="ti ti-lock" aria-hidden="true"></i>

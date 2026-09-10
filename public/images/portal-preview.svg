@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 980" font-family="'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <clipPath id="round"><rect x="0" y="0" width="1440" height="980" rx="10"/></clipPath>
+    <linearGradient id="shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#round)">
+    <rect width="1440" height="980" fill="#FFFFFF"/>
+
+    <!-- Browser chrome -->
+    <rect width="1440" height="38" fill="#E8ECEF"/>
+    <circle cx="26" cy="19" r="5" fill="#D0555A"/>
+    <circle cx="46" cy="19" r="5" fill="#E0B94E"/>
+    <circle cx="66" cy="19" r="5" fill="#5BAE6B"/>
+    <rect x="470" y="9" width="500" height="20" rx="10" fill="#FFFFFF"/>
+    <text x="720" y="23" text-anchor="middle" font-size="11" fill="#8A97A3">app.dxesolutions.com/portal</text>
+
+    <!-- Top nav -->
+    <rect x="0" y="38" width="1440" height="60" fill="#2C3E50"/>
+    <!-- logo mark -->
+    <path d="M24 74 L44 58 L64 74 M32 74 L44 65 L56 74" fill="none" stroke="#EEE6D2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="76" y="72" font-family="Georgia, serif" font-size="15" letter-spacing="3" fill="#EEE6D2">DXE SOLUTIONS</text>
+    <text x="1230" y="72" text-anchor="end" font-size="12" fill="#93A6B7">Welcome back, <tspan fill="#FFFFFF" font-weight="600">Jordan</tspan></text>
+    <circle cx="1258" cy="68" r="16" fill="#C9A857"/>
+    <text x="1258" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">JE</text>
+    <rect x="1290" y="55" width="90" height="27" fill="none" stroke="#5A7188" stroke-width="1"/>
+    <text x="1335" y="72" text-anchor="middle" font-size="10" letter-spacing="1.5" fill="#B9C6D2">SIGN OUT</text>
+
+    <!-- Sidebar -->
+    <rect x="0" y="98" width="264" height="882" fill="#2C3E50"/>
+    <line x1="264" y1="98" x2="264" y2="980" stroke="#FFFFFF" stroke-opacity="0.06"/>
+
+    <text x="24" y="138" font-size="10" letter-spacing="3" fill="#C9A857" fill-opacity="0.7">MENU</text>
+    <!-- Dashboard -->
+    <path d="M26 158 h8 v8 h-8 z M40 158 h8 v8 h-8 z M26 172 h8 v8 h-8 z M40 172 h8 v8 h-8 z" fill="none" stroke="#8DA0B2" stroke-width="1.3"/>
+    <text x="60" y="173" font-size="13" fill="#C4D0DB">Dashboard</text>
+    <!-- Calendar -->
+    <rect x="26" y="198" width="22" height="20" rx="2" fill="none" stroke="#8DA0B2" stroke-width="1.3"/>
+    <line x1="26" y1="205" x2="48" y2="205" stroke="#8DA0B2" stroke-width="1.3"/>
+    <text x="60" y="213" font-size="13" fill="#C4D0DB">Calendar</text>
+
+    <text x="24" y="252" font-size="10" letter-spacing="3" fill="#C9A857" fill-opacity="0.7">MY PROJECTS</text>
+    <rect x="18" y="264" width="228" height="52" rx="3" fill="#FFFFFF" fill-opacity="0.06" stroke="#C9A857" stroke-width="1.4"/>
+    <text x="34" y="288" font-size="13" font-weight="700" fill="#FFFFFF">1420 Maple Grove Ave</text>
+    <circle cx="37" cy="300" r="3" fill="#C9A857"/>
+    <text x="46" y="304" font-size="10" letter-spacing="1.5" fill="#C9A857">ACTIVE</text>
+
+    <text x="24" y="352" font-size="10" letter-spacing="3" fill="#C9A857" fill-opacity="0.7">PROJECT</text>
+    <!-- active item: Overview -->
+    <rect x="0" y="362" width="264" height="34" fill="#C9A857" fill-opacity="0.12"/>
+    <rect x="0" y="362" width="3" height="34" fill="#C9A857"/>
+    <g font-size="13">
+      <text x="60" y="383" fill="#DBC07E" font-weight="600">Overview</text>
+      <text x="60" y="417" fill="#9FB0BF">Calendar</text>
+      <text x="60" y="451" fill="#9FB0BF">Permits</text>
+      <text x="60" y="485" fill="#9FB0BF">Utilities</text>
+      <text x="60" y="519" fill="#9FB0BF">Accounting</text>
+      <text x="60" y="553" fill="#9FB0BF">Documents</text>
+      <text x="60" y="587" fill="#9FB0BF">Photos</text>
+      <text x="60" y="621" fill="#9FB0BF">Notes &amp; Updates</text>
+      <text x="60" y="655" fill="#9FB0BF">Leave a Review</text>
+    </g>
+    <!-- tiny icons for project nav -->
+    <g stroke="#7C8FA3" stroke-width="1.2" fill="none">
+      <rect x="28" y="371" width="16" height="16" rx="1" stroke="#DBC07E"/>
+      <circle cx="36" cy="411" r="8"/>
+      <path d="M30 439 h12 v14 h-12 z M30 443 h12"/>
+      <path d="M36 470 l6 4 v8 l-6 4 -6-4 v-8 z"/>
+      <rect x="29" y="505" width="14" height="16" rx="1"/><path d="M33 512 h6 M33 516 h6"/>
+      <path d="M31 539 h10 v16 h-10 z M41 539 l4 4 v12 h-4"/>
+      <rect x="29" y="573" width="16" height="12" rx="1"/><circle cx="34" cy="581" r="1.6" fill="#7C8FA3"/>
+      <rect x="29" y="607" width="16" height="16" rx="1"/><path d="M33 613 h8 M33 617 h8"/>
+      <path d="M36 640 l2.2 4.6 5 .7 -3.6 3.6 .9 5 -4.5-2.4 -4.5 2.4 .9-5 -3.6-3.6 5-.7 z"/>
+    </g>
+
+    <text x="24" y="700" font-size="10" letter-spacing="3" fill="#C9A857" fill-opacity="0.7">ACCOUNT</text>
+    <text x="60" y="729" font-size="13" fill="#9FB0BF">Account Settings</text>
+    <circle cx="36" cy="723" r="8" stroke="#7C8FA3" stroke-width="1.2" fill="none"/>
+
+    <!-- Main content -->
+    <rect x="264" y="98" width="1176" height="882" fill="#F6F8FA"/>
+
+    <!-- Page header -->
+    <text x="312" y="156" font-family="Georgia, serif" font-size="30" fill="#3E5468">1420 Maple Grove Ave</text>
+    <text x="312" y="184" font-size="13" fill="#718096">Residential — New Construction  ·  Los Angeles, CA</text>
+
+    <!-- Highlight cards -->
+    <g>
+      <rect x="312" y="210" width="352" height="92" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+      <rect x="688" y="210" width="352" height="92" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+      <rect x="1064" y="210" width="328" height="92" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+      <!-- card 1 -->
+      <circle cx="352" cy="256" r="18" fill="#3E5468" fill-opacity="0.1"/>
+      <path d="M346 256 l4 4 8 -9" stroke="#3E5468" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <text x="384" y="248" font-size="9" letter-spacing="1.5" fill="#C9A857">PROJECT STATUS</text>
+      <text x="384" y="272" font-family="Georgia, serif" font-size="19" fill="#3E5468">Active</text>
+      <!-- card 2 -->
+      <circle cx="728" cy="256" r="18" fill="#3E5468" fill-opacity="0.1"/>
+      <rect x="720" y="248" width="16" height="14" rx="1.5" fill="none" stroke="#3E5468" stroke-width="1.4"/>
+      <line x1="720" y1="253" x2="736" y2="253" stroke="#3E5468" stroke-width="1.4"/>
+      <text x="760" y="248" font-size="9" letter-spacing="1.5" fill="#C9A857">EST. COMPLETION</text>
+      <text x="760" y="272" font-family="Georgia, serif" font-size="19" fill="#3E5468">March 2027</text>
+      <!-- card 3 -->
+      <circle cx="1104" cy="256" r="18" fill="#3E5468" fill-opacity="0.1"/>
+      <path d="M1104 249 a6 6 0 0 1 6 6 c0 4 -6 10 -6 10 c0 0 -6 -6 -6 -10 a6 6 0 0 1 6 -6 z" fill="none" stroke="#3E5468" stroke-width="1.4"/>
+      <circle cx="1104" cy="255" r="2" fill="#3E5468"/>
+      <text x="1136" y="248" font-size="9" letter-spacing="1.5" fill="#C9A857">PROJECT ADDRESS</text>
+      <text x="1136" y="272" font-family="Georgia, serif" font-size="16" fill="#3E5468">1420 Maple Grove Ave</text>
+    </g>
+
+    <!-- Project Phases card -->
+    <rect x="312" y="330" width="1080" height="186" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+    <text x="336" y="366" font-family="Georgia, serif" font-size="18" fill="#3E5468">Project Phases</text>
+    <g>
+      <!-- 6 segments, width 172 each, x from 336, y 386, h 104 -->
+      <!-- Pre-Design: done -->
+      <rect x="336" y="386" width="172" height="104" fill="#3E5468"/>
+      <rect x="336" y="487" width="172" height="3" fill="#C9A857"/>
+      <text x="422" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#DBC07E">PRE-DESIGN</text>
+      <text x="422" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#FFFFFF">100%</text>
+      <!-- Permits: done -->
+      <rect x="509" y="386" width="172" height="104" fill="#3E5468"/>
+      <rect x="509" y="487" width="172" height="3" fill="#C9A857"/>
+      <text x="595" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#DBC07E">PERMITS</text>
+      <text x="595" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#FFFFFF">100%</text>
+      <!-- Site Work: active -->
+      <rect x="682" y="386" width="172" height="104" fill="#C9A857"/>
+      <rect x="682" y="487" width="172" height="3" fill="#3E5468"/>
+      <text x="768" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#3E5468">SITE WORK</text>
+      <text x="768" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#3E5468">55%</text>
+      <!-- Framing: pct1 -->
+      <rect x="855" y="386" width="172" height="104" fill="#EBEFF2"/>
+      <rect x="855" y="487" width="172" height="3" fill="#3E5468" fill-opacity="0.3"/>
+      <text x="941" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#718096">FRAMING</text>
+      <text x="941" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#718096">15%</text>
+      <!-- MEP -->
+      <rect x="1028" y="386" width="172" height="104" fill="#FFFFFF"/>
+      <text x="1114" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#A0AEC0">MEP</text>
+      <text x="1114" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#CBD5E0">0%</text>
+      <!-- Finish -->
+      <rect x="1201" y="386" width="167" height="104" fill="#FFFFFF"/>
+      <text x="1284" y="416" text-anchor="middle" font-size="9" letter-spacing="1.5" fill="#A0AEC0">FINISH</text>
+      <text x="1284" y="452" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#CBD5E0">0%</text>
+      <!-- grid gaps -->
+      <g stroke="#F6F8FA" stroke-width="1">
+        <line x1="508.5" y1="386" x2="508.5" y2="490"/>
+        <line x1="681.5" y1="386" x2="681.5" y2="490"/>
+        <line x1="854.5" y1="386" x2="854.5" y2="490"/>
+        <line x1="1027.5" y1="386" x2="1027.5" y2="490"/>
+        <line x1="1200.5" y1="386" x2="1200.5" y2="490"/>
+      </g>
+      <rect x="336" y="386" width="1032" height="104" fill="none" stroke="#DCE5EC"/>
+    </g>
+
+    <!-- Project Team card -->
+    <rect x="312" y="544" width="1080" height="200" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+    <text x="336" y="580" font-family="Georgia, serif" font-size="18" fill="#3E5468">Project Team</text>
+    <g>
+      <rect x="336" y="598" width="336" height="122" rx="3" fill="#F6F8FA" stroke="#DCE5EC"/>
+      <rect x="688" y="598" width="336" height="122" rx="3" fill="#F6F8FA" stroke="#DCE5EC"/>
+      <rect x="1040" y="598" width="328" height="122" rx="3" fill="#F6F8FA" stroke="#DCE5EC"/>
+      <text x="360" y="628" font-size="9" letter-spacing="1.5" fill="#C9A857">ARCHITECT</text>
+      <text x="360" y="652" font-size="15" font-weight="600" fill="#3E5468">Maya Chen</text>
+      <text x="360" y="678" font-size="12" fill="#718096">(213) 555-0148</text>
+      <text x="360" y="698" font-size="12" fill="#718096">maya@studioarc.com</text>
+      <text x="712" y="628" font-size="9" letter-spacing="1.5" fill="#C9A857">STRUCTURAL ENGINEER</text>
+      <text x="712" y="652" font-size="15" font-weight="600" fill="#3E5468">David Ruiz</text>
+      <text x="712" y="678" font-size="12" fill="#718096">(818) 555-0132</text>
+      <text x="712" y="698" font-size="12" fill="#718096">david@ruizse.com</text>
+      <text x="1064" y="628" font-size="9" letter-spacing="1.5" fill="#C9A857">GENERAL CONTRACTOR</text>
+      <text x="1064" y="652" font-size="15" font-weight="600" fill="#3E5468">Sterling Build Co.</text>
+      <text x="1064" y="678" font-size="12" fill="#718096">(310) 555-0175</text>
+      <text x="1064" y="698" font-size="12" fill="#718096">build@sterlingco.com</text>
+    </g>
+
+    <!-- next card peeking -->
+    <rect x="312" y="772" width="1080" height="160" rx="4" fill="#FFFFFF" stroke="#DCE5EC"/>
+    <text x="336" y="808" font-family="Georgia, serif" font-size="18" fill="#3E5468">Recent Notes</text>
+    <text x="336" y="838" font-size="12" fill="#718096">Dixie Escalante · 3 days ago</text>
+    <text x="336" y="860" font-size="13" fill="#3E5468">Grading permit issued today — site work starts Monday. Photos to follow.</text>
+
+    <rect width="1440" height="980" fill="url(#shadow)"/>
+  </g>
+  <rect x="0.5" y="0.5" width="1439" height="979" rx="10" fill="none" stroke="#DCE5EC"/>
+</svg>
