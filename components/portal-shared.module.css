@@ -335,7 +335,7 @@
 /* Photos */
 .photosGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 0.5rem;
 }
 
@@ -346,6 +346,95 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  border-radius: 6px;
+  background: var(--navy-dark, #2c3e50);
+}
+
+/* Thumbnail scaled to fit the tile (no crop/zoom). */
+.photoThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.photoTile {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  cursor: zoom-in;
+  display: block;
+}
+
+.photoTile:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+/* Lightbox */
+.lightboxBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 28, 36, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 3rem 1.5rem;
+}
+
+.lightboxImg {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+.lightboxCaption {
+  color: #fff;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  text-align: center;
+  max-width: 40rem;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxNavPrev {
+  left: 1rem;
+}
+
+.lightboxNavNext {
+  right: 1rem;
 }
 
 .photoPlaceholder {
@@ -506,14 +595,41 @@
   background: var(--white);
   padding: 1rem;
   text-align: center;
+  border-bottom: 3px solid transparent;
+  transition: background 0.2s ease;
+}
+
+/* Completion-% threshold shades — a navy tint scale so progress across
+   the whole bar reads at a glance. */
+.phasePct0 {
+  background: var(--white);
+}
+.phasePct1 {
+  background: rgba(62, 84, 104, 0.1);
+  border-bottom-color: rgba(62, 84, 104, 0.3);
+}
+.phasePct2 {
+  background: rgba(62, 84, 104, 0.22);
+  border-bottom-color: rgba(62, 84, 104, 0.55);
+}
+.phasePct3 {
+  background: rgba(62, 84, 104, 0.38);
+  border-bottom-color: var(--navy);
+}
+.phasePctNa {
+  background: rgba(var(--border-rgb), 0.06);
 }
 
 .phaseBlockDone {
   background: var(--navy);
+  border-bottom-color: var(--gold);
 }
 
-.phaseBlockActive {
+/* Active phase always pops in gold regardless of its % shade. */
+.phaseBlockActive,
+.phaseBlock.phaseBlockActive {
   background: var(--gold);
+  border-bottom-color: var(--navy);
 }
 
 .phName {
@@ -522,6 +638,12 @@
   letter-spacing: 0.08em;
   font-weight: 600;
   margin-bottom: 0.3rem;
+  color: var(--text-secondary);
+}
+
+.phasePct2 .phName,
+.phasePct3 .phName {
+  color: var(--navy);
 }
 
 .phaseBlockDone .phName {
@@ -532,14 +654,21 @@
   color: var(--navy);
 }
 
-.phaseBlock .phName {
-  color: var(--text-secondary);
-}
-
 .phPct {
   font-size: 1.2rem;
   font-weight: 600;
   font-family: 'Cormorant Garamond', serif;
+  color: var(--text-faint);
+}
+
+.phasePct1 .phPct {
+  color: var(--text-secondary);
+}
+
+.phasePct2 .phPct,
+.phasePct3 .phPct {
+  color: var(--navy);
+  font-weight: 700;
 }
 
 .phaseBlockDone .phPct {
@@ -548,10 +677,6 @@
 
 .phaseBlockActive .phPct {
   color: var(--navy);
-}
-
-.phaseBlock .phPct {
-  color: var(--text-faint);
 }
 
 /* Highlight cards */

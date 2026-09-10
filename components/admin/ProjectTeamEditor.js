@@ -1,138 +1,165 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
 import { TRADE_OPTIONS } from '@/lib/constants';
+import RosterForm from '@/components/admin/RosterForm';
 
-const CUSTOM_VALUE = '__custom__';
+const TRADE_LIST_ID = 'project-team-trades';
+const emptyMember = { trade: '', name: '', phone: '', email: '' };
+
+function fromInitial(initialTeam) {
+  return (initialTeam || []).map((m) => ({
+    trade: m.trade || '',
+    name: m.name || '',
+    phone: m.phone || '',
+    email: m.email || '',
+  }));
+}
 
 export default function ProjectTeamEditor({ projectId, initialTeam }) {
   const router = useRouter();
 
-  const [team, setTeam] = useState(
-    initialTeam.map((m) => ({ trade: m.trade, name: m.name || '', phone: m.phone || '', email: m.email || '' }))
-  );
-  // Tracks which rows are in "custom trade" entry mode
-  const [customRows, setCustomRows] = useState(() =>
-    new Set(initialTeam.map((m, i) => (TRADE_OPTIONS.includes(m.trade) ? null : i)).filter((i) => i !== null))
-  );
-  const [saving, setSaving] = useState(false);
+  const [team, setTeam] = useState(() => fromInitial(initialTeam));
+  const [editingIndex, setEditingIndex] = useState(null); // number | 'new' | null
+  const [draft, setDraft] = useState(emptyMember);
+  const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
 
-  function update(index, field, value) {
-    setTeam((prev) => prev.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
-  }
+  useEffect(() => {
+    if (Array.isArray(initialTeam)) setTeam(fromInitial(initialTeam));
+  }, [initialTeam]);
 
-  function handleTradeSelect(index, value) {
-    if (value === CUSTOM_VALUE) {
-      setCustomRows((prev) => new Set(prev).add(index));
-      update(index, 'trade', '');
-    } else {
-      setCustomRows((prev) => {
-        const next = new Set(prev);
-        next.delete(index);
-        return next;
-      });
-      update(index, 'trade', value);
-    }
-  }
-
-  function remove(index) {
-    setTeam((prev) => prev.filter((_, i) => i !== index));
-    setCustomRows((prev) => {
-      const next = new Set();
-      prev.forEach((i) => {
-        if (i < index) next.add(i);
-        else if (i > index) next.add(i - 1);
-      });
-      return next;
-    });
-  }
-
-  function add() {
-    setTeam((prev) => [...prev, { trade: TRADE_OPTIONS[0], name: '', phone: '', email: '' }]);
-  }
-
-  async function handleSave() {
-    setSaving(true);
+  async function persist(nextTeam, successMsg) {
+    setBusy(true);
     setMessage('');
-
     try {
       const res = await fetch('/api/admin/team', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId, team }),
+        body: JSON.stringify({ projectId, team: nextTeam }),
       });
-
       if (!res.ok) throw new Error();
-
-      setMessage('Saved.');
+      setTeam(nextTeam);
+      setEditingIndex(null);
+      setDraft(emptyMember);
+      setMessage(successMsg);
       router.refresh();
     } catch {
       setMessage('Could not save changes.');
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
+  }
+
+  function startAdd() {
+    setDraft(emptyMember);
+    setEditingIndex('new');
+    setMessage('');
+  }
+
+  function startEdit(i) {
+    setDraft({ ...team[i] });
+    setEditingIndex(i);
+    setMessage('');
+  }
+
+  function cancel() {
+    setEditingIndex(null);
+    setDraft(emptyMember);
+  }
+
+  function saveDraft() {
+    if (!draft.name.trim()) return;
+    const next =
+      editingIndex === 'new'
+        ? [...team, draft]
+        : team.map((m, i) => (i === editingIndex ? draft : m));
+    persist(next, 'Saved.');
+  }
+
+  function remove(i) {
+    if (!confirm('Remove this team member?')) return;
+    persist(
+      team.filter((_, idx) => idx !== i),
+      'Removed.'
+    );
   }
 
   return (
     <div>
-      {team.map((member, i) => (
-        <div className={adminStyles.teamRow} key={i}>
-          {customRows.has(i) ? (
-            <input
-              placeholder="Trade / Title"
-              value={member.trade}
-              onChange={(e) => update(i, 'trade', e.target.value)}
-            />
-          ) : (
-            <select value={member.trade} onChange={(e) => handleTradeSelect(i, e.target.value)}>
-              {TRADE_OPTIONS.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-              <option value={CUSTOM_VALUE}>+ Add new trade...</option>
-            </select>
-          )}
-          <input
-            placeholder="Name"
-            value={member.name}
-            onChange={(e) => update(i, 'name', e.target.value)}
-          />
-          <input
-            placeholder="Phone"
-            value={member.phone}
-            onChange={(e) => update(i, 'phone', e.target.value)}
-          />
-          <input
-            placeholder="Email"
-            type="email"
-            value={member.email}
-            onChange={(e) => update(i, 'email', e.target.value)}
-          />
-          <button type="button" className={adminStyles.iconBtn} onClick={() => remove(i)} aria-label="Remove team member">
-            <i className="ti ti-trash" aria-hidden="true"></i>
-          </button>
-        </div>
-      ))}
+      <datalist id={TRADE_LIST_ID}>
+        {TRADE_OPTIONS.map((t) => (
+          <option key={t} value={t} />
+        ))}
+      </datalist>
 
-      <button type="button" className={adminStyles.addRowBtn} onClick={add}>
-        <i className="ti ti-plus" aria-hidden="true"></i> Add team member
-      </button>
+      {team.map((member, i) =>
+        editingIndex === i ? (
+          <RosterForm
+            key={i}
+            draft={draft}
+            setDraft={setDraft}
+            tradeLabel="Trade / Title"
+            tradeListId={TRADE_LIST_ID}
+            tradePlaceholder="Contractor, Architect…"
+            busy={busy}
+            onSave={saveDraft}
+            onCancel={cancel}
+          />
+        ) : (
+          <div className={adminStyles.rosterRow} key={i}>
+            <div className={adminStyles.rosterInfo}>
+              <div className={adminStyles.rosterName}>
+                {member.name || '—'}
+                {member.trade && <span className={adminStyles.rosterTrade}>{member.trade}</span>}
+              </div>
+              <div className={adminStyles.rosterMeta}>
+                {[member.phone, member.email].filter(Boolean).join('  ·  ') || 'No contact info'}
+              </div>
+            </div>
+            <div className={adminStyles.rosterActions}>
+              <button type="button" className={adminStyles.iconBtn} onClick={() => startEdit(i)} aria-label="Edit team member">
+                <i className="ti ti-pencil" aria-hidden="true"></i>
+              </button>
+              <button type="button" className={adminStyles.iconBtn} onClick={() => remove(i)} aria-label="Remove team member">
+                <i className="ti ti-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        )
+      )}
+
+      {editingIndex === 'new' ? (
+        <RosterForm
+          draft={draft}
+          setDraft={setDraft}
+          tradeLabel="Trade / Title"
+          tradeListId={TRADE_LIST_ID}
+          tradePlaceholder="Contractor, Architect…"
+          busy={busy}
+          onSave={saveDraft}
+          onCancel={cancel}
+        />
+      ) : (
+        editingIndex === null && (
+          <button type="button" className={adminStyles.addRowBtn} onClick={startAdd}>
+            <i className="ti ti-plus" aria-hidden="true"></i> Add team member
+          </button>
+        )
+      )}
 
       {message && (
-        <p className={message === 'Saved.' ? adminStyles.formMsgSuccess : adminStyles.formMsgError} style={{ marginTop: '0.75rem' }}>
+        <p
+          className={
+            message === 'Saved.' || message === 'Removed.' ? adminStyles.formMsgSuccess : adminStyles.formMsgError
+          }
+          style={{ marginTop: '0.75rem' }}
+        >
           {message}
         </p>
       )}
-
-      <div className={adminStyles.saveBar}>
-        <button type="button" className="btn-navy" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save team'}
-        </button>
-      </div>
     </div>
   );
 }

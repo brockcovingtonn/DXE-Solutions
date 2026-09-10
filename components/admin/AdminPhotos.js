@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
+import PhotoGrid from '@/components/PhotoGrid';
 
 export default function AdminPhotos({ projectId, initialPhotos }) {
   const supabase = createClient();
@@ -138,89 +139,75 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
           </button>
         </div>
       )}
-      <div className={styles.photosGrid}>
-        {initialPhotos.map((p) => (
-          <div
-            className={styles.photoItem}
-            key={p.id}
-            style={{
-              backgroundImage: p.url ? `url(${p.url})` : undefined,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              background: p.url ? undefined : 'var(--navy-mid)',
-            }}
-          >
-            {!p.url && (
-              <div className={styles.photoPlaceholder}>
-                <i className="ti ti-photo" aria-hidden="true"></i>
-                <span>Photo</span>
-              </div>
-            )}
-            {p.caption && <div className={styles.photoTag}>{p.caption}</div>}
-            {p.url && (
-              <a
-                href={`/api/photos/${p.id}/download`}
-                title="Download"
-                style={{
-                  position: 'absolute',
-                  top: '0.4rem',
-                  left: '0.4rem',
-                  background: 'rgba(62,84,104,0.85)',
-                  color: 'var(--gold-light)',
-                  width: '24px',
-                  height: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={() => handleDelete(p.id)}
-              disabled={deletingId === p.id}
-              aria-label="Delete photo"
-              style={{
-                position: 'absolute',
-                top: '0.4rem',
-                right: '0.4rem',
-                background: 'rgba(62,84,104,0.85)',
-                border: 'none',
-                color: '#fca5a5',
-                width: '24px',
-                height: '24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <i className="ti ti-trash" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
-            </button>
-            <input
-              type="checkbox"
-              checked={selectedIds.has(p.id)}
-              onChange={() => toggleSelected(p.id)}
-              aria-label="Select photo"
-              style={{
-                position: 'absolute',
-                bottom: '0.4rem',
-                right: '0.4rem',
-                width: '18px',
-                height: '18px',
-                accentColor: 'var(--gold)',
-              }}
-            />
-          </div>
-        ))}
-        {initialPhotos.length === 0 && (
-          <div style={{ gridColumn: '1 / -1' }}>
-            <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Upload progress photos below to share them with the client." />
-          </div>
-        )}
-      </div>
+      {initialPhotos.length === 0 ? (
+        <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Upload progress photos below to share them with the client." />
+      ) : (
+        <PhotoGrid
+          photos={initialPhotos}
+          renderOverlay={(p) =>
+            p.url ? (
+              <>
+                <a
+                  href={`/api/photos/${p.id}/download`}
+                  title="Download"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'absolute',
+                    top: '0.4rem',
+                    left: '0.4rem',
+                    background: 'rgba(62,84,104,0.85)',
+                    color: 'var(--gold-light)',
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(p.id)}
+                  disabled={deletingId === p.id}
+                  aria-label="Delete photo"
+                  style={{
+                    position: 'absolute',
+                    top: '0.4rem',
+                    right: '0.4rem',
+                    background: 'rgba(62,84,104,0.85)',
+                    border: 'none',
+                    color: '#fca5a5',
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <i className="ti ti-trash" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
+                </button>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.has(p.id)}
+                  onChange={() => toggleSelected(p.id)}
+                  aria-label="Select photo"
+                  style={{
+                    position: 'absolute',
+                    bottom: '0.4rem',
+                    right: '0.4rem',
+                    width: '18px',
+                    height: '18px',
+                    accentColor: 'var(--gold)',
+                    zIndex: 2,
+                  }}
+                />
+              </>
+            ) : null
+          }
+        />
+      )}
 
       <div style={{ marginTop: '1rem' }}>
         <label className={adminStyles.fieldLabel}>Caption (applies to this upload)</label>

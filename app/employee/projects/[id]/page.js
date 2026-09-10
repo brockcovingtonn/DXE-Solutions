@@ -8,6 +8,7 @@ import EmployeeActionItems from '@/components/EmployeeActionItems';
 import DocumentUpload from '@/components/DocumentUpload';
 import NewNoteForm from '@/components/NewNoteForm';
 import ClientCalendar from '@/components/ClientCalendar';
+import PhaseBar from '@/components/PhaseBar';
 import { PERMIT_STATUSES } from '@/lib/constants';
 import { UTILITY_TYPES, UTILITY_STATUSES } from '@/lib/constants';
 
@@ -164,19 +165,7 @@ export default async function EmployeeProjectPage({ params }) {
       {phases && phases.length > 0 && (
         <div className={styles.fullWidthCard}>
           <h3>Project Phases</h3>
-          <div className={styles.progressPhases}>
-            {phases.map((ph) => (
-              <div
-                key={ph.id}
-                className={`${styles.phaseBlock} ${
-                  ph.state === 'done' ? styles.phaseBlockDone : ph.state === 'active' ? styles.phaseBlockActive : ''
-                }`}
-              >
-                <div className={styles.phName}>{ph.name}</div>
-                {ph.state !== 'na' && <div className={styles.phPct}>{ph.pct}%</div>}
-              </div>
-            ))}
-          </div>
+          <PhaseBar phases={phases} />
         </div>
       )}
 

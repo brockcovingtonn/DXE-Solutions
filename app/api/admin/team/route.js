@@ -42,7 +42,7 @@ export async function PUT(request) {
       const { error: insError } = await supabase.from('project_team').insert(
         team.map((m, i) => ({
           project_id: projectId,
-          trade: m.trade,
+          trade: m.trade || 'Team Member',
           name: m.name || null,
           phone: m.phone || null,
           email: m.email || null,

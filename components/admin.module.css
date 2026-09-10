@@ -736,3 +736,100 @@
   background: var(--surface, #fff);
   color: var(--text-primary);
 }
+
+/* Roster rows — saved team members / interested parties shown as a
+   compact list with edit + remove, instead of an always-open form. */
+.rosterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(var(--border-rgb), 0.12);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background: var(--surface, #fff);
+}
+
+.rosterInfo {
+  min-width: 0;
+}
+
+.rosterName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rosterTrade {
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--navy);
+  background: rgba(62, 84, 104, 0.1);
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+}
+
+.rosterMeta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rosterActions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.rosterForm {
+  padding: 1rem;
+  border: 1px solid rgba(var(--border-rgb), 0.15);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  background: rgba(var(--border-rgb), 0.02);
+}
+
+/* Quick-add preset chips (milestones, etc.) */
+.presetChips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+}
+
+.presetChipsLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-right: 0.15rem;
+}
+
+.presetChip {
+  font-size: 0.76rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(var(--border-rgb), 0.25);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.presetChip:hover {
+  border-color: var(--gold);
+  color: var(--navy);
+  background: rgba(201, 168, 87, 0.08);
+}

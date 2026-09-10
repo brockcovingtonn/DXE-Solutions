@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import { PERMIT_TYPES, PERMIT_STATUSES } from '@/lib/constants';
+import { PERMIT_TYPES, PERMIT_STATUSES, PERMIT_AGENCIES } from '@/lib/constants';
 
 const emptyForm = {
   permit_type: '',
@@ -16,8 +16,110 @@ const emptyForm = {
   notes: '',
 };
 
+const AGENCY_LIST_ID = 'permit-agency-options';
+
 function statusLabel(value) {
   return PERMIT_STATUSES.find((s) => s.value === value)?.label || value;
+}
+
+// Defined at module scope — NOT inside PermitsEditor. When this lived
+// inside the component it was a brand-new function on every render, so
+// React remounted the whole subtree on each keystroke and the focused
+// input lost focus after one character.
+function PermitFields({ value, onChange }) {
+  return (
+    <>
+      <div className={adminStyles.formGrid3}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Permit Type</label>
+          <select
+            className={adminStyles.fieldInput}
+            value={value.permit_type}
+            onChange={(e) => onChange({ ...value, permit_type: e.target.value })}
+          >
+            <option value="">Select...</option>
+            {PERMIT_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Permit Number</label>
+          <input
+            className={adminStyles.fieldInput}
+            value={value.permit_number}
+            onChange={(e) => onChange({ ...value, permit_number: e.target.value })}
+            placeholder="e.g. B24-01234"
+          />
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Agency</label>
+          <input
+            className={adminStyles.fieldInput}
+            list={AGENCY_LIST_ID}
+            value={value.agency}
+            onChange={(e) => onChange({ ...value, agency: e.target.value })}
+            placeholder="Start typing or pick from the list…"
+          />
+        </div>
+      </div>
+      <div className={adminStyles.formGrid2}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Status</label>
+          <select
+            className={adminStyles.fieldInput}
+            value={value.status}
+            onChange={(e) => onChange({ ...value, status: e.target.value })}
+          >
+            {PERMIT_STATUSES.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className={adminStyles.formGrid3}>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Submitted</label>
+          <input
+            type="date"
+            className={adminStyles.fieldInput}
+            value={value.submitted_date}
+            onChange={(e) => onChange({ ...value, submitted_date: e.target.value })}
+          />
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Issued</label>
+          <input
+            type="date"
+            className={adminStyles.fieldInput}
+            value={value.issued_date}
+            onChange={(e) => onChange({ ...value, issued_date: e.target.value })}
+          />
+        </div>
+        <div className={adminStyles.fieldGroup}>
+          <label className={adminStyles.fieldLabel}>Expires</label>
+          <input
+            type="date"
+            className={adminStyles.fieldInput}
+            value={value.expiration_date}
+            onChange={(e) => onChange({ ...value, expiration_date: e.target.value })}
+          />
+        </div>
+      </div>
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Notes (internal only — never shown to client)</label>
+        <textarea
+          className={adminStyles.fieldTextarea}
+          value={value.notes}
+          onChange={(e) => onChange({ ...value, notes: e.target.value })}
+        />
+      </div>
+    </>
+  );
 }
 
 export default function PermitsEditor({ projectId, initialPermits }) {
@@ -109,103 +211,14 @@ export default function PermitsEditor({ projectId, initialPermits }) {
     }
   }
 
-  function PermitFields({ value, onChange }) {
-    return (
-      <>
-        <div className={adminStyles.formGrid3}>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Permit Type</label>
-            <select
-              className={adminStyles.fieldInput}
-              value={value.permit_type}
-              onChange={(e) => onChange({ ...value, permit_type: e.target.value })}
-            >
-              <option value="">Select...</option>
-              {PERMIT_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Permit Number</label>
-            <input
-              className={adminStyles.fieldInput}
-              value={value.permit_number}
-              onChange={(e) => onChange({ ...value, permit_number: e.target.value })}
-              placeholder="e.g. B24-01234"
-            />
-          </div>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Agency</label>
-            <input
-              className={adminStyles.fieldInput}
-              value={value.agency}
-              onChange={(e) => onChange({ ...value, agency: e.target.value })}
-              placeholder="e.g. LADBS"
-            />
-          </div>
-        </div>
-        <div className={adminStyles.formGrid2}>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Status</label>
-            <select
-              className={adminStyles.fieldInput}
-              value={value.status}
-              onChange={(e) => onChange({ ...value, status: e.target.value })}
-            >
-              {PERMIT_STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className={adminStyles.formGrid3}>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Submitted</label>
-            <input
-              type="date"
-              className={adminStyles.fieldInput}
-              value={value.submitted_date}
-              onChange={(e) => onChange({ ...value, submitted_date: e.target.value })}
-            />
-          </div>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Issued</label>
-            <input
-              type="date"
-              className={adminStyles.fieldInput}
-              value={value.issued_date}
-              onChange={(e) => onChange({ ...value, issued_date: e.target.value })}
-            />
-          </div>
-          <div className={adminStyles.fieldGroup}>
-            <label className={adminStyles.fieldLabel}>Expires</label>
-            <input
-              type="date"
-              className={adminStyles.fieldInput}
-              value={value.expiration_date}
-              onChange={(e) => onChange({ ...value, expiration_date: e.target.value })}
-            />
-          </div>
-        </div>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Notes (internal only — never shown to client)</label>
-          <textarea
-            className={adminStyles.fieldTextarea}
-            value={value.notes}
-            onChange={(e) => onChange({ ...value, notes: e.target.value })}
-          />
-        </div>
-      </>
-    );
-  }
-
   return (
     <div>
+      <datalist id={AGENCY_LIST_ID}>
+        {PERMIT_AGENCIES.map((a) => (
+          <option key={a} value={a} />
+        ))}
+      </datalist>
+
       {(initialPermits || []).map((permit) =>
         editingId === permit.id ? (
           <div className={adminStyles.utilityEntryForm} key={permit.id}>

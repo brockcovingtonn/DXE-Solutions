@@ -35,10 +35,15 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
 
   const [utilities, setUtilities] = useState(() => buildUtilities(initialUtilities));
 
-  // Re-sync local state whenever the server-provided data changes
-  // (e.g. after router.refresh() following an entry add/edit/delete)
+  // Re-sync local state when the server sends a fresh, populated payload
+  // (e.g. after an entry add/edit/delete triggers router.refresh()).
+  // Guard against an empty payload — a transient auth/RLS hiccup during
+  // refresh can briefly return [], which would otherwise wipe contact
+  // fields the admin just typed and saved.
   useEffect(() => {
-    setUtilities(buildUtilities(initialUtilities));
+    if (Array.isArray(initialUtilities) && initialUtilities.length > 0) {
+      setUtilities(buildUtilities(initialUtilities));
+    }
   }, [initialUtilities]);
 
   const [addingFor, setAddingFor] = useState(null);
@@ -69,8 +74,11 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
 
       if (!res.ok) throw new Error();
 
+      // Local state already holds exactly what was saved — no router.refresh()
+      // here, so a stale/empty refetch can't blank the fields the admin
+      // just entered. Entry add/edit/delete still refresh (they need
+      // server-generated ids).
       setMessage('Saved.');
-      router.refresh();
     } catch {
       setMessage('Could not save changes.');
     } finally {

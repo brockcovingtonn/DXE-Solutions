@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
 import { PHASE_STATES } from '@/lib/constants';
+import PhaseBar from '@/components/PhaseBar';
 
 export default function PhasesEditor({ projectId, initialPhases }) {
   const router = useRouter();
@@ -54,6 +55,12 @@ export default function PhasesEditor({ projectId, initialPhases }) {
 
   return (
     <div>
+      {phases.some((p) => p.name) && (
+        <div style={{ marginBottom: '1.25rem' }}>
+          <PhaseBar phases={phases.filter((p) => p.name).map((p, i) => ({ ...p, id: `preview-${i}` }))} />
+        </div>
+      )}
+
       {phases.map((phase, i) => (
         <div className={adminStyles.editableRow} key={i}>
           <input

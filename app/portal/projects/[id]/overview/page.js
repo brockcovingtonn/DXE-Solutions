@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
+import PhaseBar from '@/components/PhaseBar';
 
 export default async function ProjectOverviewPage({ params }) {
   const supabase = createClient();
@@ -125,23 +126,7 @@ export default async function ProjectOverviewPage({ params }) {
       {phases && phases.length > 0 && (
         <div className={styles.fullWidthCard}>
           <h3>Project Phases</h3>
-          <div className={styles.progressPhases}>
-            {phases.map((ph) => (
-              <div
-                key={ph.id}
-                className={`${styles.phaseBlock} ${
-                  ph.state === 'done'
-                    ? styles.phaseBlockDone
-                    : ph.state === 'active'
-                    ? styles.phaseBlockActive
-                    : ''
-                }`}
-              >
-                <div className={styles.phName}>{ph.name}</div>
-                {ph.state !== 'na' && <div className={styles.phPct}>{ph.pct}%</div>}
-              </div>
-            ))}
-          </div>
+          <PhaseBar phases={phases} />
         </div>
       )}
 

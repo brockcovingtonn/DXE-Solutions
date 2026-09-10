@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
+import { MILESTONE_PRESETS } from '@/lib/constants';
 
 export default function MilestonesEditor({ projectId, initialMilestones }) {
   const router = useRouter();
@@ -26,9 +27,12 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
     setMilestones((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function add() {
-    setMilestones((prev) => [...prev, { name: '', display_date: '', state: 'pending', notes: '' }]);
+  function add(name = '') {
+    setMilestones((prev) => [...prev, { name, display_date: '', state: 'pending', notes: '' }]);
   }
+
+  const usedNames = new Set(milestones.map((m) => m.name.trim().toLowerCase()));
+  const availablePresets = MILESTONE_PRESETS.filter((p) => !usedNames.has(p.toLowerCase()));
 
   async function handleSave() {
     setSaving(true);
@@ -86,9 +90,20 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
         </div>
       ))}
 
-      <button type="button" className={adminStyles.addRowBtn} onClick={add}>
+      <button type="button" className={adminStyles.addRowBtn} onClick={() => add()}>
         <i className="ti ti-plus" aria-hidden="true"></i> Add milestone
       </button>
+
+      {availablePresets.length > 0 && (
+        <div className={adminStyles.presetChips}>
+          <span className={adminStyles.presetChipsLabel}>Quick add:</span>
+          {availablePresets.map((p) => (
+            <button key={p} type="button" className={adminStyles.presetChip} onClick={() => add(p)}>
+              + {p}
+            </button>
+          ))}
+        </div>
+      )}
 
       {message && (
         <p className={message === 'Saved.' ? adminStyles.formMsgSuccess : adminStyles.formMsgError} style={{ marginTop: '0.75rem' }}>
