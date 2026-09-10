@@ -194,6 +194,9 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
                 {item.approval_status === 'pending' && <> · <span style={{ color: 'var(--text-error)' }}>Pending approval</span></>}
                 {item.approval_status === 'rejected' && <> · <span style={{ color: 'var(--text-error)' }}>Rejected</span></>}
                 {item.visible_to_client && <> · <span style={{ color: 'var(--text-success)' }}>Shared with client</span></>}
+                {item.paid_via === 'stripe' && item.status === 'paid' && <> · <span style={{ color: 'var(--text-success)' }}>Paid online{item.payment_method ? ` (${item.payment_method})` : ''}</span></>}
+                {item.payment_state === 'processing' && <> · <span style={{ color: 'var(--gold)' }}>Payment clearing (ACH)</span></>}
+                {item.payment_state === 'failed' && <> · <span style={{ color: 'var(--text-error)' }}>Online payment failed</span></>}
               </div>
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>
