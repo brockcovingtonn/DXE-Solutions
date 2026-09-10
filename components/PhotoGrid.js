@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import styles from '@/components/portal-shared.module.css';
 
 // Shared photo grid with contain-fit thumbnails and a click-to-enlarge
-// lightbox. `renderOverlay(photo)` lets a caller drop per-tile controls
-// (download / delete / select) into the top corners of each tile.
-export default function PhotoGrid({ photos, renderOverlay }) {
+// lightbox. `showDownload` renders a per-tile download link (safe to use
+// from a Server Component). `renderOverlay(photo)` lets a Client
+// Component caller drop extra per-tile controls (delete / select).
+export default function PhotoGrid({ photos, showDownload = false, renderOverlay }) {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const withUrl = (photos || []).filter((p) => p.url);
 
@@ -57,6 +58,28 @@ export default function PhotoGrid({ photos, renderOverlay }) {
                 </div>
               )}
               {p.caption && <div className={styles.photoTag}>{p.caption}</div>}
+              {showDownload && p.url && (
+                <a
+                  href={`/api/photos/${p.id}/download`}
+                  title="Download"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'absolute',
+                    top: '0.4rem',
+                    right: '0.4rem',
+                    background: 'rgba(62,84,104,0.85)',
+                    color: 'var(--gold-light)',
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2,
+                  }}
+                >
+                  <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
+                </a>
+              )}
               {renderOverlay && renderOverlay(p)}
             </div>
           );

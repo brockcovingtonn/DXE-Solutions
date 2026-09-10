@@ -144,28 +144,10 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
       ) : (
         <PhotoGrid
           photos={initialPhotos}
+          showDownload
           renderOverlay={(p) =>
             p.url ? (
               <>
-                <a
-                  href={`/api/photos/${p.id}/download`}
-                  title="Download"
-                  onClick={(e) => e.stopPropagation()}
-                  style={{
-                    position: 'absolute',
-                    top: '0.4rem',
-                    left: '0.4rem',
-                    background: 'rgba(62,84,104,0.85)',
-                    color: 'var(--gold-light)',
-                    width: '24px',
-                    height: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
-                </a>
                 <button
                   type="button"
                   onClick={() => handleDelete(p.id)}
@@ -174,7 +156,7 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
                   style={{
                     position: 'absolute',
                     top: '0.4rem',
-                    right: '0.4rem',
+                    left: '0.4rem',
                     background: 'rgba(62,84,104,0.85)',
                     border: 'none',
                     color: '#fca5a5',
@@ -184,6 +166,7 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
+                    zIndex: 2,
                   }}
                 >
                   <i className="ti ti-trash" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>

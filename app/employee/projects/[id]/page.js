@@ -9,6 +9,7 @@ import DocumentUpload from '@/components/DocumentUpload';
 import NewNoteForm from '@/components/NewNoteForm';
 import ClientCalendar from '@/components/ClientCalendar';
 import PhaseBar from '@/components/PhaseBar';
+import PhotoGrid from '@/components/PhotoGrid';
 import { PERMIT_STATUSES } from '@/lib/constants';
 import { UTILITY_TYPES, UTILITY_STATUSES } from '@/lib/constants';
 
@@ -386,34 +387,11 @@ export default async function EmployeeProjectPage({ params }) {
 
       <div className={styles.fullWidthCard}>
         <h3>Photos</h3>
-        <div className={styles.photosGrid}>
-          {photosWithUrls.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1' }}>
-              <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Progress photos on this project will show up here." />
-            </div>
-          ) : (
-            photosWithUrls.map((p) => (
-              <div
-                className={styles.photoItem}
-                key={p.id}
-                style={{
-                  backgroundImage: p.url ? `url(${p.url})` : undefined,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  background: p.url ? undefined : 'var(--navy-mid)',
-                }}
-              >
-                {!p.url && (
-                  <div className={styles.photoPlaceholder}>
-                    <i className="ti ti-photo" aria-hidden="true"></i>
-                    <span>Photo</span>
-                  </div>
-                )}
-                {p.caption && <div className={styles.photoTag}>{p.caption}</div>}
-              </div>
-            ))
-          )}
-        </div>
+        {photosWithUrls.length === 0 ? (
+          <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Progress photos on this project will show up here." />
+        ) : (
+          <PhotoGrid photos={photosWithUrls} showDownload />
+        )}
       </div>
 
       <div className={styles.fullWidthCard}>
