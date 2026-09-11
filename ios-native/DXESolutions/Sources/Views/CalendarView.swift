@@ -37,6 +37,12 @@ struct CalendarView: View {
                         if isOffline {
                             OfflineBanner(lastSyncedAt: lastSyncedAt)
                         }
+                        // Only on the firm-wide calendar (project == nil),
+                        // matching where the web version shows this — a
+                        // project's own Calendar tab doesn't.
+                        if project == nil && canAddEvents {
+                            GoogleCalendarConnection()
+                        }
                         monthHeader
                         monthGrid
                         selectedDaySection

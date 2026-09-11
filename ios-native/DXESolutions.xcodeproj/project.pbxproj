@@ -15,6 +15,7 @@
 		1D34D391C61DB93CA87E1DD0 /* AdminNotesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D8312592E64FDB8E2394EF /* AdminNotesEditor.swift */; };
 		1EAA242983742B8BB8CE5FFD /* SignaturePadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F230DC3FDB8154E17CF7F5 /* SignaturePadView.swift */; };
 		1FE534446585B2467EC8749A /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157B22EBAEEF952E297EDEE7 /* AssistantView.swift */; };
+		248E586CD76A0579A7F6186C /* GoogleCalendarConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5522EE9C4C62DBD0CECE97 /* GoogleCalendarConnection.swift */; };
 		2845AF7C7210CAD8B3D93E38 /* AdminMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6292F71DB994B94DCD3B84B9 /* AdminMoreView.swift */; };
 		29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */; };
 		2D03A643414451D499AB7477 /* DocumentScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45771A049E23067317A74197 /* DocumentScannerView.swift */; };
@@ -132,6 +133,7 @@
 		331740BCC45D93200407D340 /* ClientTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTabView.swift; sourceTree = "<group>"; };
 		34B18B8BC32188870E3B713B /* AdminChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminChatListView.swift; sourceTree = "<group>"; };
 		3818DF9DB37FA921B849D4A9 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		3C5522EE9C4C62DBD0CECE97 /* GoogleCalendarConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCalendarConnection.swift; sourceTree = "<group>"; };
 		3D257CF59F321363E8147DF8 /* DXESolutions.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DXESolutions.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45771A049E23067317A74197 /* DocumentScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerView.swift; sourceTree = "<group>"; };
 		4ABBA5571AB04A7A9271D144 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 				A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */,
 				1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */,
 				8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */,
+				3C5522EE9C4C62DBD0CECE97 /* GoogleCalendarConnection.swift */,
 				4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */,
 				8724BE8656A8DDAFCCB47E06 /* MessageBubble.swift */,
 				1404C0F760DC8E54C35359A5 /* NotesView.swift */,
@@ -496,6 +499,7 @@
 				29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */,
 				98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */,
 				6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */,
+				248E586CD76A0579A7F6186C /* GoogleCalendarConnection.swift in Sources */,
 				361AFD8C4DD4B42339834058 /* HapticManager.swift in Sources */,
 				6BE771DBE5C2CC733BE896A2 /* KeyboardDismiss.swift in Sources */,
 				AD866F552B5BD92C510F7D60 /* LoginView.swift in Sources */,
