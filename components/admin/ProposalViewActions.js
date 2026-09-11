@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import DownloadLink from '@/components/DownloadLink';
 
 export default function ProposalViewActions({ proposalId, projectId, hasPdf, visibleToClient }) {
   const router = useRouter();
@@ -50,9 +51,9 @@ export default function ProposalViewActions({ proposalId, projectId, hasPdf, vis
         {visible ? 'Shared with client' : 'Not shared with client'}
       </button>
       {hasPdf && (
-        <a href={`/api/admin/proposals/${proposalId}/download`} className="btn-navy">
+        <DownloadLink href={`/api/admin/proposals/${proposalId}/download`} className="btn-navy">
           <i className="ti ti-download" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Download PDF
-        </a>
+        </DownloadLink>
       )}
       <button type="button" className="btn-navy" onClick={duplicate} disabled={busy} style={{ background: 'none', border: '1px solid var(--navy)', color: 'var(--navy)' }}>
         <i className="ti ti-copy" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> {busy ? 'Duplicating…' : 'Duplicate as new draft'}

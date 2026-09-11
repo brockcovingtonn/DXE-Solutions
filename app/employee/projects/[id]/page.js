@@ -6,6 +6,7 @@ import styles from '@/components/portal-shared.module.css';
 import EmptyState from '@/components/EmptyState';
 import EmployeeActionItems from '@/components/EmployeeActionItems';
 import DocumentUpload from '@/components/DocumentUpload';
+import DownloadLink from '@/components/DownloadLink';
 import NewNoteForm from '@/components/NewNoteForm';
 import ClientCalendar from '@/components/ClientCalendar';
 import PhaseBar from '@/components/PhaseBar';
@@ -371,13 +372,13 @@ export default async function EmployeeProjectPage({ params }) {
                   <div className={styles.docName}>{d.file_name}</div>
                   <div className={styles.docMeta}>{formatDate(d.created_at)}</div>
                 </div>
-                <a
+                <DownloadLink
                   href={`/api/documents/${d.id}/download`}
                   style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}
                   title="Download"
                 >
                   <i className="ti ti-download" aria-hidden="true"></i>
-                </a>
+                </DownloadLink>
               </div>
             ))}
           </div>

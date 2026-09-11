@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import DownloadLink from '@/components/DownloadLink';
 import styles from '@/components/portal-shared.module.css';
 
 // Shared photo grid with contain-fit thumbnails and a click-to-enlarge
@@ -59,7 +60,7 @@ export default function PhotoGrid({ photos, showDownload = false, renderOverlay 
               )}
               {p.caption && <div className={styles.photoTag}>{p.caption}</div>}
               {showDownload && p.url && (
-                <a
+                <DownloadLink
                   href={`/api/photos/${p.id}/download`}
                   title="Download"
                   onClick={(e) => e.stopPropagation()}
@@ -78,7 +79,7 @@ export default function PhotoGrid({ photos, showDownload = false, renderOverlay 
                   }}
                 >
                   <i className="ti ti-download" style={{ fontSize: '0.85rem' }} aria-hidden="true"></i>
-                </a>
+                </DownloadLink>
               )}
               {renderOverlay && renderOverlay(p)}
             </div>

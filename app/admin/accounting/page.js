@@ -4,6 +4,7 @@ import adminStyles from '@/components/admin.module.css';
 import MasterAccountingList from '@/components/admin/MasterAccountingList';
 import MasterAccountingFilters from '@/components/admin/MasterAccountingFilters';
 import UpcomingPaymentsList from '@/components/admin/UpcomingPaymentsList';
+import DownloadLink from '@/components/DownloadLink';
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -56,9 +57,9 @@ export default async function MasterAccountingPage({ searchParams }) {
             <h1>Accounting</h1>
             <p>Invoices and receipts across every project, in one place</p>
           </div>
-          <a href="/api/admin/accounting/export" className="btn-navy">
+          <DownloadLink href="/api/admin/accounting/export" className="btn-navy">
             <i className="ti ti-file-export" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Export for tax expert
-          </a>
+          </DownloadLink>
         </div>
       </div>
 
