@@ -109,21 +109,6 @@ export default function HeroForm() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="projectType">Project type</label>
-              <select
-                id="projectType"
-                name="projectType"
-                value={form.projectType}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select type...</option>
-                {PROJECT_TYPES.map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
               <label htmlFor="hearAbout">How did you hear about us?</label>
               <select
                 id="hearAbout"
@@ -150,6 +135,21 @@ export default function HeroForm() {
                 />
               </div>
             )}
+            <div className="form-group">
+              <label htmlFor="projectType">Project type</label>
+              <select
+                id="projectType"
+                name="projectType"
+                value={form.projectType}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select type...</option>
+                {PROJECT_TYPES.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            </div>
             <div className="form-group">
               <label htmlFor="details">Where it stands</label>
               <textarea
