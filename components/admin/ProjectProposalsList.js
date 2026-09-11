@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import DownloadLink from '@/components/DownloadLink';
 
 function formatCurrency(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
@@ -61,9 +60,9 @@ function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate, onToggl
               <i className="ti ti-file-description" aria-hidden="true"></i>
             </Link>
             {proposal.pdf_path && (
-              <DownloadLink href={`/api/admin/proposals/${proposal.id}/download`} className={adminStyles.iconBtn} aria-label="Download PDF">
+              <a href={`/api/admin/proposals/${proposal.id}/download`} className={adminStyles.iconBtn} aria-label="Download PDF">
                 <i className="ti ti-download" aria-hidden="true"></i>
-              </DownloadLink>
+              </a>
             )}
             <button type="button" className={adminStyles.iconBtn} aria-label="Duplicate as new draft" onClick={() => onDuplicate(proposal.id)} disabled={busy}>
               <i className="ti ti-copy" aria-hidden="true"></i>

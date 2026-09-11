@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SignaturePad from '@/components/SignaturePad';
 import EmptyState from '@/components/EmptyState';
-import DownloadLink from '@/components/DownloadLink';
 import styles from '@/components/portal-shared.module.css';
 
 const BADGE_CLASS = {
@@ -37,7 +36,7 @@ export default function DocumentsList({ docs, currentUserName }) {
                 <i className="ti ti-file-text" aria-hidden="true"></i>
               </div>
               <div style={{ flex: 1 }}>
-                <DownloadLink
+                <a
                   href={`/api/documents/${d.id}/download`}
                   target="_blank"
                   rel="noreferrer"
@@ -45,7 +44,7 @@ export default function DocumentsList({ docs, currentUserName }) {
                   style={{ textDecoration: 'none' }}
                 >
                   {d.file_name}
-                </DownloadLink>
+                </a>
                 <div className={styles.docMeta}>
                   {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : 'You'}
                 </div>
@@ -57,13 +56,13 @@ export default function DocumentsList({ docs, currentUserName }) {
                 )}
               </div>
               <span className={`${styles.docBadge} ${BADGE_CLASS[d.badge] || ''}`}>{d.badge}</span>
-              <DownloadLink
+              <a
                 href={`/api/documents/${d.id}/download?download=1`}
                 style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginLeft: '0.75rem', cursor: 'pointer' }}
                 title="Download"
               >
                 <i className="ti ti-download" aria-hidden="true"></i>
-              </DownloadLink>
+              </a>
               {isPdf && !signature && (
                 <button
                   type="button"

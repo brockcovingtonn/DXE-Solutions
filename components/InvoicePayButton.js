@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function InvoicePayButton({ invoiceId, small, preview }) {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [note, setNote] = useState('');
@@ -24,26 +22,6 @@ export default function InvoicePayButton({ invoiceId, small, preview }) {
         setBusy(false);
         return;
       }
-
-      // Inside the native app shell, a top-level navigation to Stripe's
-      // hosted checkout (a different origin than the app's configured
-      // server URL) would get kicked out to the system Safari app by
-      // Capacitor's navigation policy, stranding the user outside the
-      // app. Opening it in the in-app browser instead keeps them inside
-      // the app the whole time — Stripe's success/cancel redirect lands
-      // back on our own origin inside that same sheet, and the sheet's
-      // own "Done" button returns to the app.
-      const { Capacitor } = await import('@capacitor/core');
-      if (Capacitor.isNativePlatform()) {
-        const { Browser } = await import('@capacitor/browser');
-        Browser.addListener('browserFinished', () => {
-          router.refresh();
-        });
-        await Browser.open({ url: data.url });
-        setBusy(false);
-        return;
-      }
-
       window.location.href = data.url;
     } catch {
       setError('Could not start the payment.');

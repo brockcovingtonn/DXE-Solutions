@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import { stripeConfigured, paymentsPreviewEnabled, paymentMethodLabel } from '@/lib/stripe';
 import InvoicePayButton from '@/components/InvoicePayButton';
-import DownloadLink from '@/components/DownloadLink';
 import styles from '@/components/portal-shared.module.css';
 
 function formatCurrency(amount) {
@@ -121,9 +120,9 @@ export default async function AccountingPage({ params, searchParams }) {
                       {item.file_name && (
                         <>
                           {' · '}
-                          <DownloadLink href={`/api/invoices/${item.id}/download`} style={{ color: 'var(--gold)' }}>
+                          <a href={`/api/invoices/${item.id}/download`} style={{ color: 'var(--gold)' }}>
                             {item.file_name}
-                          </DownloadLink>
+                          </a>
                         </>
                       )}
                     </div>

@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import adminStyles from '@/components/admin.module.css';
-import DownloadLink from '@/components/DownloadLink';
 
 const emptyForm = { kind: 'invoice', description: '', amount: '', dueDate: '' };
 
@@ -187,9 +186,9 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
                 {item.file_name && (
                   <>
                     {' · '}
-                    <DownloadLink href={`/api/invoices/${item.id}/download`} style={{ color: 'var(--gold)' }}>
+                    <a href={`/api/invoices/${item.id}/download`} style={{ color: 'var(--gold)' }}>
                       {item.file_name}
-                    </DownloadLink>
+                    </a>
                   </>
                 )}
                 {item.approval_status === 'pending' && <> · <span style={{ color: 'var(--text-error)' }}>Pending approval</span></>}

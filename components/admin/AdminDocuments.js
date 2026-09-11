@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
-import DownloadLink from '@/components/DownloadLink';
 
 const BADGE_CLASS = {
   new: styles.badgeNew,
@@ -214,7 +213,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               <i className="ti ti-file-text" aria-hidden="true"></i>
             </div>
             <div style={{ flex: 1 }}>
-              <DownloadLink
+              <a
                 href={`/api/documents/${d.id}/download`}
                 target="_blank"
                 rel="noreferrer"
@@ -222,7 +221,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
                 style={{ textDecoration: 'none' }}
               >
                 {d.file_name}
-              </DownloadLink>
+              </a>
               <div className={styles.docMeta}>
                 {formatDate(d.created_at)} · Uploaded by {d.uploaded_by_role === 'dxe' ? 'DXE' : d.uploaded_by_role === 'employee' ? 'Employee' : 'Client'}
               </div>
@@ -231,9 +230,9 @@ export default function AdminDocuments({ projectId, initialDocs }) {
                 return signature ? (
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-success)', marginTop: '0.2rem' }}>
                     <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on {formatDate(signature.created_at)} ·{' '}
-                    <DownloadLink href={`/api/documents/${d.id}/download`} target="_blank" rel="noreferrer" style={{ color: 'var(--text-success)', fontWeight: 500 }}>
+                    <a href={`/api/documents/${d.id}/download`} target="_blank" rel="noreferrer" style={{ color: 'var(--text-success)', fontWeight: 500 }}>
                       View signed PDF
-                    </DownloadLink>
+                    </a>
                   </div>
                 ) : null;
               })()}
@@ -258,7 +257,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               <option value="signed">Signed</option>
               <option value="contract">Contract</option>
             </select>
-            <DownloadLink
+            <a
               href={`/api/documents/${d.id}/download?download=1`}
               className={adminStyles.iconBtn}
               aria-label="Download document"
@@ -266,7 +265,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
               style={{ marginLeft: '0.25rem' }}
             >
               <i className="ti ti-download" aria-hidden="true"></i>
-            </DownloadLink>
+            </a>
             <button
               type="button"
               className={adminStyles.iconBtn}

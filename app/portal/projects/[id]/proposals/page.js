@@ -2,7 +2,6 @@ import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
-import DownloadLink from '@/components/DownloadLink';
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -45,7 +44,7 @@ export default async function ClientProposalsPage({ params }) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {proposals.map((proposal) => (
-              <DownloadLink
+              <a
                 key={proposal.id}
                 href={proposal.pdf_path ? `/api/proposals/${proposal.id}/download` : undefined}
                 target={proposal.pdf_path ? '_blank' : undefined}
@@ -87,7 +86,7 @@ export default async function ClientProposalsPage({ params }) {
                 {proposal.pdf_path && (
                   <i className="ti ti-external-link" style={{ color: 'var(--gold)', flexShrink: 0 }} aria-hidden="true"></i>
                 )}
-              </DownloadLink>
+              </a>
             ))}
           </div>
         )}

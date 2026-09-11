@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import EmptyState from '@/components/EmptyState';
-import DownloadLink from '@/components/DownloadLink';
 
 export default async function EmployeeTemplatesPage() {
   const supabase = createClient();
@@ -45,9 +44,9 @@ export default async function EmployeeTemplatesPage() {
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem' }}>{t.description}</p>
                   )}
                 </div>
-                <DownloadLink href={`/api/employee/templates/${t.id}/download`} className="btn-navy" style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', flexShrink: 0 }}>
+                <a href={`/api/employee/templates/${t.id}/download`} className="btn-navy" style={{ padding: '0.5rem 1rem', fontSize: '0.75rem', flexShrink: 0 }}>
                   Download
-                </DownloadLink>
+                </a>
               </div>
             ))}
           </div>
