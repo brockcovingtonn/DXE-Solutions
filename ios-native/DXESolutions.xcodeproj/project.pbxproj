@@ -42,6 +42,7 @@
 		5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */; };
 		5EBB1D68780D9170DA5E5BCB /* AdminSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */; };
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
+		5ED4DB22916321F096DA4FBE /* AdminProposalsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692A7D0BA388BE58455243F /* AdminProposalsEditor.swift */; };
 		64A2F1AA3B2A1816F0E7D603 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A716BA4B5FC1BD5641D099FD /* SafariView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
 		6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */; };
@@ -51,6 +52,7 @@
 		6F428D795A36A9C46DDB2B9D /* AdminEmployeeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ECC45E00D0B560C82CF395 /* AdminEmployeeDetailView.swift */; };
 		74160C950BD6EFBB7D730BC1 /* AdminClientDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D27F88BBEDBCB4B401A85F9 /* AdminClientDetailView.swift */; };
 		741D7C1E63E86AE1432BB7F9 /* AdminTemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB799B82344845DEE91B9C1 /* AdminTemplatesView.swift */; };
+		762EC99DCA29F989C2A048BC /* AdminPaymentScheduleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0181533C592188C370411A8F /* AdminPaymentScheduleEditor.swift */; };
 		7B6CBFF97861CA12A1E56138 /* DocumentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1023192C3D89DE9C1F1B394 /* DocumentsView.swift */; };
 		7D736C1B5F977FC491D33D95 /* EmployeeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511721C9D81DE62866876F7A /* EmployeeChatView.swift */; };
 		7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */; };
@@ -93,6 +95,7 @@
 		DB68E213A6893E9DB3921E32 /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ABBA5571AB04A7A9271D144 /* BiometricLockView.swift */; };
 		E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0932077758FDD662093311B1 /* SettingsView.swift */; };
 		E560AD659F28464AB3258AA1 /* AdminNewEmployeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */; };
+		E7419A6DD11A666C61B2B0D3 /* ProposalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0D8F73809963CECEDE2423 /* ProposalsView.swift */; };
 		E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */; };
 		EE44949AF66C0CD5E33C0D39 /* EmployeeSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1968E713938BB8924E79B45B /* EmployeeSearchView.swift */; };
 		F33221E84A5FADD5B1DD3A0C /* ClientSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39D2B414F43A21A3A06B4C6 /* ClientSearchView.swift */; };
@@ -103,6 +106,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0181533C592188C370411A8F /* AdminPaymentScheduleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPaymentScheduleEditor.swift; sourceTree = "<group>"; };
 		045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackEnabler.swift; sourceTree = "<group>"; };
 		07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProjectDetailView.swift; sourceTree = "<group>"; };
@@ -122,6 +126,7 @@
 		21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		23318D848D19D0A00E2C60CB /* AdminMilestonesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMilestonesListView.swift; sourceTree = "<group>"; };
 		2953CB626BF873B468477CA2 /* AdminTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTabView.swift; sourceTree = "<group>"; };
+		2A0D8F73809963CECEDE2423 /* ProposalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProposalsView.swift; sourceTree = "<group>"; };
 		304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminDashboardView.swift; sourceTree = "<group>"; };
 		319A3974E3477D17BEA6B031 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		331740BCC45D93200407D340 /* ClientTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTabView.swift; sourceTree = "<group>"; };
@@ -168,6 +173,7 @@
 		AE316F0BD4513147D1CB72E0 /* EmployeeActivityListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeActivityListView.swift; sourceTree = "<group>"; };
 		AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		B1BC5D704AA740F73561D6F8 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		B692A7D0BA388BE58455243F /* AdminProposalsEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProposalsEditor.swift; sourceTree = "<group>"; };
 		B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminAccountingListView.swift; sourceTree = "<group>"; };
 		B770A62E58C1A60B56DEF8FE /* ReviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewView.swift; sourceTree = "<group>"; };
 		B8284D2BF1D867C9B7C6D066 /* EmployeeProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeProjectDetailView.swift; sourceTree = "<group>"; };
@@ -253,10 +259,12 @@
 				0A56877301A622C00BF68FC4 /* AdminNewClientView.swift */,
 				E9F3A2C037F3C60F844D64FD /* AdminNewEmployeeView.swift */,
 				A1D8312592E64FDB8E2394EF /* AdminNotesEditor.swift */,
+				0181533C592188C370411A8F /* AdminPaymentScheduleEditor.swift */,
 				189BB6966905BD23E7197CAA /* AdminPermitsEditor.swift */,
 				5DEFDBC6DDB87816A502B532 /* AdminPhotosEditor.swift */,
 				07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */,
 				9A270B2F6972E90601183DDE /* AdminProjectListView.swift */,
+				B692A7D0BA388BE58455243F /* AdminProposalsEditor.swift */,
 				FB9E990C472EBBD319C247F0 /* AdminReviewsListView.swift */,
 				90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */,
 				2953CB626BF873B468477CA2 /* AdminTabView.swift */,
@@ -295,6 +303,7 @@
 				EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */,
 				69F02EDDCAEBE42441638003 /* ProjectListView.swift */,
 				9276FE0E4772501897C61A48 /* ProjectOverviewView.swift */,
+				2A0D8F73809963CECEDE2423 /* ProposalsView.swift */,
 				8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */,
 				B770A62E58C1A60B56DEF8FE /* ReviewView.swift */,
 				EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */,
@@ -443,10 +452,12 @@
 				DAD09E4A28DF7A9C10FE1ED5 /* AdminNewClientView.swift in Sources */,
 				E560AD659F28464AB3258AA1 /* AdminNewEmployeeView.swift in Sources */,
 				1D34D391C61DB93CA87E1DD0 /* AdminNotesEditor.swift in Sources */,
+				762EC99DCA29F989C2A048BC /* AdminPaymentScheduleEditor.swift in Sources */,
 				C3DCF6B13BD373B35FECAD33 /* AdminPermitsEditor.swift in Sources */,
 				42BF2EF32A983805D4AF5E43 /* AdminPhotosEditor.swift in Sources */,
 				A6592951B64AF98BE8B7280F /* AdminProjectDetailView.swift in Sources */,
 				19817E31170FA85611BECB2A /* AdminProjectListView.swift in Sources */,
+				5ED4DB22916321F096DA4FBE /* AdminProposalsEditor.swift in Sources */,
 				3D84CD6D84D500F1BB973E18 /* AdminReviewsListView.swift in Sources */,
 				5EBB1D68780D9170DA5E5BCB /* AdminSearchView.swift in Sources */,
 				A25E0822E937BEDFF38A161B /* AdminTabView.swift in Sources */,
@@ -497,6 +508,7 @@
 				FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */,
 				303BAC9A0B5F16185811D398 /* ProjectListView.swift in Sources */,
 				BB2396FE76196F2E6C6D5CCA /* ProjectOverviewView.swift in Sources */,
+				E7419A6DD11A666C61B2B0D3 /* ProposalsView.swift in Sources */,
 				5B2952FC3CA427731B844EBC /* PushNotificationManager.swift in Sources */,
 				3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */,
 				B6DEEE56D8018C8EA544378A /* ReviewView.swift in Sources */,

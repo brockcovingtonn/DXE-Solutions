@@ -60,6 +60,11 @@ struct ProjectOverviewView: View {
                 filesButton(icon: "bolt", label: "Utilities")
             }
             NavigationLink {
+                ProposalsView(project: project)
+            } label: {
+                filesButton(icon: "doc.text.fill", label: "Proposals")
+            }
+            NavigationLink {
                 AccountingView(project: project)
             } label: {
                 filesButton(icon: "dollarsign.circle", label: "Accounting")

@@ -8,3 +8,18 @@ enum Theme {
     static let gold = Color(red: 0.788, green: 0.659, blue: 0.341)       // --gold: #C9A857
     static let cream = Color(red: 0.965, green: 0.973, blue: 0.980)      // --cream: #F6F8FA
 }
+
+extension Color {
+    // Parses a "#RRGGBB" hex string — used for the per-project calendar
+    // colors stored in projects.color (see PROJECT_COLOR_PALETTE on web).
+    init?(hex: String) {
+        var sanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        if sanitized.hasPrefix("#") { sanitized.removeFirst() }
+        guard sanitized.count == 6, let value = UInt32(sanitized, radix: 16) else { return nil }
+        self.init(
+            red: Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8) & 0xFF) / 255,
+            blue: Double(value & 0xFF) / 255
+        )
+    }
+}

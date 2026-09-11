@@ -14,9 +14,10 @@ struct Project: Codable, Identifiable, Hashable {
     let zoning: String?
     let lotSize: String?
     let buildingSize: String?
+    let color: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, address, status, apn, jurisdiction, zoning
+        case id, name, address, status, apn, jurisdiction, zoning, color
         case projectType = "project_type"
         case progressPct = "progress_pct"
         case startedOn = "started_on"
@@ -273,6 +274,50 @@ struct Invoice: Codable, Identifiable, Hashable {
     }
 }
 
+struct PaymentScheduleItem: Codable, Identifiable, Hashable {
+    let id: String
+    let projectId: String
+    let description: String
+    let amount: Double
+    let percent: Double?
+    let dueDate: String?
+    let status: String
+    let confirmedAt: String?
+    let projects: AdminProjectRef?
+
+    enum CodingKeys: String, CodingKey {
+        case id, description, amount, percent, status, projects
+        case projectId = "project_id"
+        case dueDate = "due_date"
+        case confirmedAt = "confirmed_at"
+    }
+}
+
+struct Proposal: Codable, Identifiable, Hashable {
+    let id: String
+    let projectId: String
+    let title: String
+    let status: String
+    let total: Double
+    let pdfPath: String?
+    let visibleToClient: Bool
+    let sentAt: String?
+    let sentToEmail: String?
+    let finalizedAt: String?
+    let validUntil: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, status, total
+        case projectId = "project_id"
+        case pdfPath = "pdf_path"
+        case visibleToClient = "visible_to_client"
+        case sentAt = "sent_at"
+        case sentToEmail = "sent_to_email"
+        case finalizedAt = "finalized_at"
+        case validUntil = "valid_until"
+    }
+}
+
 struct Note: Codable, Identifiable, Hashable {
     let id: String
     let projectId: String
@@ -367,6 +412,7 @@ struct ProjectTeamMember: Codable, Identifiable, Hashable {
 struct AdminProjectRef: Codable, Hashable {
     let id: String
     let name: String
+    let color: String?
 }
 
 struct ActivityItem: Codable, Identifiable, Hashable {

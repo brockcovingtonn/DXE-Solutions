@@ -37,10 +37,33 @@ private struct AdminInvoiceItem: Codable, Identifiable, Hashable {
 
 struct AdminAccountingListView: View {
     @State private var invoices: [AdminInvoiceItem] = []
+    @State private var upcomingPayments: [PaymentScheduleItem] = []
     @State private var isLoading = true
     @State private var busyId: String?
+    @State private var confirmBusyId: String?
     @State private var kindFilter = ""
     @State private var statusFilter = ""
+
+    private var upcomingByMonth: [(month: String, items: [PaymentScheduleItem])] {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        let monthFormatter = DateFormatter()
+        monthFormatter.dateFormat = "LLLL yyyy"
+
+        var order: [String] = []
+        var groups: [String: [PaymentScheduleItem]] = [:]
+        for item in upcomingPayments {
+            guard let dueDate = item.dueDate, let date = formatter.date(from: dueDate) else { continue }
+            let key = monthFormatter.string(from: date)
+            if groups[key] == nil {
+                groups[key] = []
+                order.append(key)
+            }
+            groups[key]?.append(item)
+        }
+        return order.map { (month: $0, items: groups[$0] ?? []) }
+    }
 
     private var totalOutstanding: Double {
         invoices.filter { $0.kind == "invoice" && $0.status == "unpaid" }.reduce(0) { $0 + $1.amount }
@@ -67,6 +90,7 @@ struct AdminAccountingListView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         statCards
+                        upcomingPaymentsSection
                         filters
 
                         VStack(alignment: .leading, spacing: 10) {
@@ -104,6 +128,67 @@ struct AdminAccountingListView: View {
             Text(value).font(.subheadline.weight(.semibold)).foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var upcomingPaymentsSection: some View {
+        Group {
+            if !upcomingPayments.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Upcoming Payments").font(.headline).foregroundColor(Theme.navy)
+                    Text("Scheduled milestones grouped by month, so you can estimate expected income.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    ForEach(upcomingByMonth, id: \.month) { group in
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text(group.month.uppercased())
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(currency(group.items.reduce(0) { $0 + $1.amount }) + " expected")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundColor(Theme.navy)
+                            }
+                            ForEach(group.items) { item in
+                                upcomingRow(item)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func upcomingRow(_ item: PaymentScheduleItem) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            if let hex = item.projects?.color, let color = Color(hex: hex) {
+                Circle().fill(color).frame(width: 8, height: 8).padding(.top, 4)
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                Text(item.projects?.name ?? "Project").font(.subheadline.weight(.medium))
+                Text(item.description).font(.caption).foregroundColor(.secondary)
+                Text((item.dueDate.map { "Due \($0)" } ?? "—") + (item.confirmedAt != nil ? " · Confirmed" : " · Not yet confirmed"))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+            Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            if confirmBusyId == item.id {
+                ProgressView()
+            } else {
+                Button {
+                    Task { await confirmUpcoming(item) }
+                } label: {
+                    Image(systemName: item.confirmedAt != nil ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(item.confirmedAt != nil ? .green : .secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
         .padding(10)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -193,7 +278,27 @@ struct AdminAccountingListView: View {
             .select("*, projects(id,name,profiles!projects_owner_id_fkey(first_name,last_name))")
             .order("created_at", ascending: false)
             .execute().value) ?? []
+        // Undated (event-triggered) milestones are filtered out by
+        // upcomingByMonth below, not here — simpler than the
+        // IS NOT NULL filter syntax for a list this small.
+        upcomingPayments = (try? await SupabaseConfig.client
+            .from("payment_schedule_items")
+            .select("*, projects(id,name,color)")
+            .eq("status", value: "scheduled")
+            .order("due_date", ascending: true)
+            .execute().value) ?? []
         isLoading = false
+    }
+
+    private func confirmUpcoming(_ item: PaymentScheduleItem) async {
+        confirmBusyId = item.id
+        defer { confirmBusyId = nil }
+        do {
+            try await APIClient.send("api/admin/payment-schedule/\(item.id)/confirm", method: "POST", body: EmptyBody())
+            await load()
+        } catch {
+            // Leave as-is; row remains tappable to retry.
+        }
     }
 
     private func togglePaid(_ item: AdminInvoiceItem) async {

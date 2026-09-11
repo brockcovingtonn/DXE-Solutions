@@ -84,7 +84,9 @@ struct AdminProjectDetailView: View {
                         milestonesSection
                         sectionCard("Utilities") { AdminUtilitiesEditor(projectId: projectId) }
                         sectionCard("Documents") { AdminDocumentsEditor(projectId: projectId) }
+                        sectionCard("Proposals") { AdminProposalsEditor(projectId: projectId) }
                         sectionCard("Accounting") { AdminAccountingEditor(projectId: projectId) }
+                        sectionCard("Payment Schedule") { AdminPaymentScheduleEditor(projectId: projectId) }
                         sectionCard("Photos") { AdminPhotosEditor(projectId: projectId) }
                         sectionCard("Notes & Updates") { AdminNotesEditor(projectId: projectId) }
                     }
@@ -210,7 +212,8 @@ struct AdminProjectDetailView: View {
             jurisdiction: project.jurisdiction,
             zoning: project.zoning,
             lotSize: project.lotSize,
-            buildingSize: project.buildingSize
+            buildingSize: project.buildingSize,
+            color: nil
         )
     }
 

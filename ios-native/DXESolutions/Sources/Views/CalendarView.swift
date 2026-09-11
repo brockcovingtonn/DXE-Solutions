@@ -141,6 +141,10 @@ struct CalendarView: View {
         let isToday = calendar.isDateInToday(day)
         let isSelected = calendar.isDate(day, inSameDayAs: selectedDate)
         let dayEvents = events(on: day)
+        // Distinct project colors tagged on this day's events, capped at
+        // 3 dots so a busy day doesn't overflow the tiny cell. Untagged
+        // events fall back to a single plain gold dot, same as before.
+        let projectColors = Array(Set(dayEvents.compactMap { $0.projects?.color })).sorted().prefix(3)
 
         return Button {
             selectedDate = day
@@ -150,9 +154,24 @@ struct CalendarView: View {
                     .font(.caption)
                     .fontWeight(isToday ? .bold : .regular)
                     .foregroundColor(isSelected ? .white : (isToday ? Theme.gold : (inMonth ? .primary : .secondary)))
-                Circle()
-                    .fill(dayEvents.isEmpty ? Color.clear : (isSelected ? Color.white : Theme.gold))
-                    .frame(width: 4, height: 4)
+                if !dayEvents.isEmpty {
+                    HStack(spacing: 2) {
+                        if projectColors.isEmpty {
+                            Circle()
+                                .fill(isSelected ? Color.white : Theme.gold)
+                                .frame(width: 4, height: 4)
+                        } else {
+                            ForEach(Array(projectColors), id: \.self) { hex in
+                                Circle()
+                                    .fill(isSelected ? Color.white : (Color(hex: hex) ?? Theme.gold))
+                                    .frame(width: 4, height: 4)
+                            }
+                        }
+                    }
+                    .frame(height: 4)
+                } else {
+                    Color.clear.frame(height: 4)
+                }
             }
             .frame(maxWidth: .infinity, minHeight: 36)
             .background(isSelected ? Theme.navy : Color.clear)
@@ -200,36 +219,44 @@ struct CalendarView: View {
     }
 
     private func eventRow(_ event: CalendarEvent) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Button {
-                if canAddEvents {
-                    eventToEdit = event
-                }
-            } label: {
-                HStack(alignment: .top, spacing: 12) {
-                    Text(event.allDay ? "All day" : timeString(event.startTime))
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(Theme.gold)
-                        .frame(width: 70, alignment: .leading)
-                    Image(systemName: typeIcon(event.eventType))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(event.title).font(.subheadline.weight(.medium))
-                        if let description = event.description, !description.isEmpty {
-                            Text(description).font(.caption).foregroundColor(.secondary)
+        HStack(alignment: .top, spacing: 0) {
+            if let hex = event.projects?.color, let color = Color(hex: hex) {
+                Rectangle().fill(color).frame(width: 3)
+            }
+            HStack(alignment: .top, spacing: 12) {
+                Button {
+                    if canAddEvents {
+                        eventToEdit = event
+                    }
+                } label: {
+                    HStack(alignment: .top, spacing: 12) {
+                        Text(event.allDay ? "All day" : timeString(event.startTime))
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(Theme.gold)
+                            .frame(width: 70, alignment: .leading)
+                        Image(systemName: typeIcon(event.eventType))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(event.title).font(.subheadline.weight(.medium))
+                            if let description = event.description, !description.isEmpty {
+                                Text(description).font(.caption).foregroundColor(.secondary)
+                            }
+                            if let projectName = event.projects?.name {
+                                Text(projectName).font(.caption2).foregroundColor(.secondary)
+                            }
                         }
                     }
                 }
-            }
-            .buttonStyle(.plain)
-            .disabled(!canAddEvents)
+                .buttonStyle(.plain)
+                .disabled(!canAddEvents)
 
-            Spacer()
-            AddToCalendarButton(event: event)
+                Spacer()
+                AddToCalendarButton(event: event)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 10)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -291,7 +318,7 @@ struct CalendarView: View {
             if let project {
                 freshEvents = try await SupabaseConfig.client
                     .from("calendar_events")
-                    .select()
+                    .select("*, projects(name, color)")
                     .eq("project_id", value: project.id)
                     .order("start_time", ascending: true)
                     .execute()
@@ -299,7 +326,7 @@ struct CalendarView: View {
             } else {
                 freshEvents = try await SupabaseConfig.client
                     .from("calendar_events")
-                    .select()
+                    .select("*, projects(name, color)")
                     .order("start_time", ascending: true)
                     .execute()
                     .value
