@@ -47,7 +47,13 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dxesolutions.native
         MARKETING_VERSION: "1.0"
+        # Local/manual builds use this as a fallback. Xcode Cloud
+        # overrides it on every run via ci_scripts/ci_post_clone.sh
+        # (agvtool + $CI_BUILD_NUMBER), which is always higher than
+        # whatever was last uploaded — see that script for why a static
+        # number here can't work once more than one build ships.
         CURRENT_PROJECT_VERSION: "3"
+        VERSIONING_SYSTEM: apple-generic
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: JNQ2U9HTA3
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
