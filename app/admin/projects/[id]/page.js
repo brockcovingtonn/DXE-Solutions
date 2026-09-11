@@ -18,6 +18,7 @@ import AdminPhotos from '@/components/admin/AdminPhotos';
 import AdminNotes from '@/components/admin/AdminNotes';
 import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
+import ProjectBidsList from '@/components/admin/ProjectBidsList';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -51,6 +52,12 @@ export default async function AdminProjectPage({ params }) {
       supabase.from('contacts').select('*').order('name'),
     ]);
 
+  const { data: bids } = await supabase
+    .from('bids')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+
   const assignedEmployeeIds = (employeeAssignments || []).map((a) => a.employee_id);
 
   // Generate signed URLs for photos so admin can preview them
@@ -82,6 +89,9 @@ export default async function AdminProjectPage({ params }) {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <Link href={`/admin/projects/${projectId}/bids/new`} className="btn-navy">
+              <i className="ti ti-file-invoice" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Create A Bid
+            </Link>
             <Link
               href={`/projects/${projectId}/cover-sheet`}
               className={adminStyles.viewAsClientLink}
@@ -180,6 +190,11 @@ export default async function AdminProjectPage({ params }) {
       <div className={styles.fullWidthCard}>
         <h3>Documents</h3>
         <AdminDocuments projectId={projectId} initialDocs={docs || []} />
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Bids</h3>
+        <ProjectBidsList projectId={projectId} bids={bids || []} />
       </div>
 
       <div className={styles.fullWidthCard}>
