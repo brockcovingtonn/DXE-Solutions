@@ -10,10 +10,10 @@ async function requireAdmin(supabase) {
 }
 
 // Averages unit_price per scope category across every past finalized/sent
-// bid's line items — the data-driven "estimate from past bids" the bid
-// builder offers when you toggle on a scope item. Deliberately a plain
-// average rather than an LLM guess: bid pricing needs to be traceable
-// back to what was actually charged before.
+// proposal's line items — the data-driven "estimate from past proposals"
+// the proposal builder offers when you toggle on a scope item.
+// Deliberately a plain average rather than an LLM guess: pricing needs
+// to be traceable back to what was actually charged before.
 export async function GET(request) {
   const { supabase } = await getRequestClient(request);
   const { error: authError } = await requireAdmin(supabase);
@@ -23,14 +23,14 @@ export async function GET(request) {
   const categories = (searchParams.get('categories') || '').split(',').map((c) => c.trim()).filter(Boolean);
   if (categories.length === 0) return NextResponse.json({ estimates: {} });
 
-  const { data: bidIdsRows } = await supabase.from('bids').select('id').in('status', ['finalized', 'sent']);
-  const bidIds = (bidIdsRows || []).map((b) => b.id);
-  if (bidIds.length === 0) return NextResponse.json({ estimates: {} });
+  const { data: proposalIdsRows } = await supabase.from('proposals').select('id').in('status', ['finalized', 'sent']);
+  const proposalIds = (proposalIdsRows || []).map((b) => b.id);
+  if (proposalIds.length === 0) return NextResponse.json({ estimates: {} });
 
   const { data: rows, error } = await supabase
-    .from('bid_line_items')
+    .from('proposal_line_items')
     .select('category, unit_price, amount, unit')
-    .in('bid_id', bidIds)
+    .in('proposal_id', proposalIds)
     .in('category', categories);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
-import { computeTotals } from '@/lib/bid-totals';
+import { computeTotals } from '@/lib/proposal-totals';
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -24,15 +24,16 @@ export async function POST(request) {
 
   const { items, subtotal, total } = computeTotals(lineItems, adjustment);
 
-  const { data: bid, error } = await supabase
-    .from('bids')
+  const { data: proposal, error } = await supabase
+    .from('proposals')
     .insert({
       project_id: projectId,
       status: 'draft',
-      title: body.title || 'Bid',
+      title: body.title || 'Proposal',
       client_name: body.clientName || null,
       project_address: body.projectAddress || null,
       prepared_by: body.preparedBy || [profile.first_name, profile.last_name].filter(Boolean).join(' ') || null,
+      intro_paragraph: body.introParagraph || null,
       scope_summary: body.scopeSummary || null,
       selected_scopes: body.selectedScopes || [],
       subtotal,
@@ -40,6 +41,7 @@ export async function POST(request) {
       adjustment_label: body.adjustmentLabel || null,
       total,
       payment_terms: body.paymentTerms || null,
+      limitations: body.limitations || null,
       valid_until: body.validUntil || null,
       notes: body.notes || null,
       created_by: user.id,
@@ -50,9 +52,9 @@ export async function POST(request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   if (items.length > 0) {
-    const { error: liError } = await supabase.from('bid_line_items').insert(
+    const { error: liError } = await supabase.from('proposal_line_items').insert(
       items.map((li, i) => ({
-        bid_id: bid.id,
+        proposal_id: proposal.id,
         category: li.category || null,
         description: li.description || null,
         quantity: li.quantity,
@@ -65,5 +67,5 @@ export async function POST(request) {
     if (liError) return NextResponse.json({ error: liError.message }, { status: 400 });
   }
 
-  return NextResponse.json({ success: true, bid });
+  return NextResponse.json({ success: true, proposal });
 }

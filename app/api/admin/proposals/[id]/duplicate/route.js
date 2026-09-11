@@ -9,21 +9,21 @@ async function requireAdmin(supabase) {
   return { user };
 }
 
-// Copies a finalized/sent bid into a new editable draft — the way to
-// "change" a bid that's already gone out, without touching the sent
-// record.
+// Copies a finalized/sent proposal into a new editable draft — the way
+// to "change" a proposal that's already gone out, without touching the
+// sent record.
 export async function POST(request, { params }) {
   const { supabase } = await getRequestClient(request);
   const { user, error: authError } = await requireAdmin(supabase);
   if (authError) return authError;
 
-  const { data: source } = await supabase.from('bids').select('*').eq('id', params.id).maybeSingle();
-  if (!source) return NextResponse.json({ error: 'Bid not found' }, { status: 404 });
+  const { data: source } = await supabase.from('proposals').select('*').eq('id', params.id).maybeSingle();
+  if (!source) return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
 
-  const { data: lineItems } = await supabase.from('bid_line_items').select('*').eq('bid_id', params.id).order('sort_order');
+  const { data: lineItems } = await supabase.from('proposal_line_items').select('*').eq('proposal_id', params.id).order('sort_order');
 
   const { data: copy, error } = await supabase
-    .from('bids')
+    .from('proposals')
     .insert({
       project_id: source.project_id,
       status: 'draft',
@@ -31,6 +31,7 @@ export async function POST(request, { params }) {
       client_name: source.client_name,
       project_address: source.project_address,
       prepared_by: source.prepared_by,
+      intro_paragraph: source.intro_paragraph,
       scope_summary: source.scope_summary,
       selected_scopes: source.selected_scopes,
       subtotal: source.subtotal,
@@ -38,6 +39,7 @@ export async function POST(request, { params }) {
       adjustment_label: source.adjustment_label,
       total: source.total,
       payment_terms: source.payment_terms,
+      limitations: source.limitations,
       valid_until: source.valid_until,
       notes: source.notes,
       created_by: user.id,
@@ -48,9 +50,9 @@ export async function POST(request, { params }) {
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   if (lineItems && lineItems.length > 0) {
-    await supabase.from('bid_line_items').insert(
+    await supabase.from('proposal_line_items').insert(
       lineItems.map((li) => ({
-        bid_id: copy.id,
+        proposal_id: copy.id,
         category: li.category,
         description: li.description,
         quantity: li.quantity,
@@ -62,5 +64,5 @@ export async function POST(request, { params }) {
     );
   }
 
-  return NextResponse.json({ success: true, bid: copy });
+  return NextResponse.json({ success: true, proposal: copy });
 }

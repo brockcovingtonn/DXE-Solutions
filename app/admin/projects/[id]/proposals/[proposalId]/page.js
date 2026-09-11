@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
-import BidForm from '@/components/admin/BidForm';
+import ProposalForm from '@/components/admin/ProposalForm';
 
-export default async function NewBidPage({ params }) {
+export default async function EditProposalPage({ params }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
@@ -15,11 +15,17 @@ export default async function NewBidPage({ params }) {
     .select('id, name, address, profiles!projects_owner_id_fkey(first_name, last_name, email)')
     .eq('id', params.id)
     .single();
-
   if (!project) notFound();
 
-  const { data: me } = await supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single();
-  const preparedByDefault = [me?.first_name, me?.last_name].filter(Boolean).join(' ') || 'DXE Solutions';
+  const { data: proposal } = await supabase.from('proposals').select('*').eq('id', params.proposalId).eq('project_id', params.id).single();
+  if (!proposal) notFound();
+
+  // A finalized/sent proposal is a record of what went out — view it instead.
+  if (proposal.status !== 'draft') {
+    redirect(`/admin/projects/${params.id}/proposals/${params.proposalId}/view`);
+  }
+
+  const { data: lineItems } = await supabase.from('proposal_line_items').select('*').eq('proposal_id', params.proposalId).order('sort_order');
 
   return (
     <div>
@@ -27,11 +33,18 @@ export default async function NewBidPage({ params }) {
         <i className="ti ti-arrow-left" aria-hidden="true"></i> Back to project
       </Link>
       <div className={styles.portalHeader}>
-        <h1>Create A Bid</h1>
+        <h1>Edit Proposal</h1>
         <p>{project.name}</p>
       </div>
       <div className={styles.fullWidthCard}>
-        <BidForm projectId={params.id} project={project} preparedByDefault={preparedByDefault} />
+        <ProposalForm
+          projectId={params.id}
+          proposalId={params.proposalId}
+          initialProposal={proposal}
+          initialLineItems={lineItems || []}
+          project={project}
+          preparedByDefault={proposal.prepared_by}
+        />
       </div>
     </div>
   );

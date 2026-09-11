@@ -14,12 +14,12 @@ export async function GET(request, { params }) {
   const { error: authError } = await requireAdmin(supabase);
   if (authError) return authError;
 
-  const { data: bid } = await supabase.from('bids').select('pdf_path, title').eq('id', params.id).maybeSingle();
-  if (!bid?.pdf_path) return NextResponse.json({ error: 'No PDF for this bid yet' }, { status: 404 });
+  const { data: proposal } = await supabase.from('proposals').select('pdf_path, title').eq('id', params.id).maybeSingle();
+  if (!proposal?.pdf_path) return NextResponse.json({ error: 'No PDF for this proposal yet' }, { status: 404 });
 
   const { data: signed, error } = await supabase.storage
-    .from('project-bids')
-    .createSignedUrl(bid.pdf_path, 300, { download: `${bid.title || 'bid'}.pdf` });
+    .from('project-proposals')
+    .createSignedUrl(proposal.pdf_path, 300, { download: `${proposal.title || 'proposal'}.pdf` });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return NextResponse.redirect(signed.signedUrl);

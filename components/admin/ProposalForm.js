@@ -3,8 +3,8 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import { BID_SCOPE_GROUPS, BID_SCOPE_ITEMS, BID_UNITS } from '@/lib/constants';
-import BidPreviewModal from '@/components/admin/BidPreviewModal';
+import { PROPOSAL_SCOPE_GROUPS, PROPOSAL_UNITS } from '@/lib/constants';
+import ProposalPreviewModal from '@/components/admin/ProposalPreviewModal';
 
 let keyCounter = 0;
 function nextKey() {
@@ -16,23 +16,31 @@ function formatCurrency(n) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
 }
 
-export default function BidForm({ projectId, bidId, initialBid, initialLineItems, project, preparedByDefault }) {
+const DEFAULT_INTRO =
+  'Thank you for considering DXE Solutions. We are committed to providing structured, results-driven project support while coordinating closely with all stakeholders to help ensure smooth execution and successful project outcomes. DXE Solutions was founded with a clear mission: to simplify and streamline the construction backend process. Our services are detail-oriented, practical, and focused on solving real-world challenges faced in the construction and engineering environment.';
+
+const DEFAULT_LIMITATIONS =
+  'This proposal is based on the scope of work described herein and information reasonably available at the time of preparation. Pricing assumes normal working conditions and does not include costs arising from concealed or unforeseen conditions, code changes, or scope changes requested after acceptance — any such items will be addressed through a written change order. Permit fees, utility fees, and other third-party or agency fees are the responsibility of the property owner unless specifically included above. This proposal is not a contract; a signed agreement and deposit are required before work begins.';
+
+export default function ProposalForm({ projectId, proposalId, initialProposal, initialLineItems, project, preparedByDefault }) {
   const router = useRouter();
 
-  const [title, setTitle] = useState(initialBid?.title || `${project.name} — Bid`);
+  const [title, setTitle] = useState(initialProposal?.title || `${project.name} — Proposal`);
   const [clientName, setClientName] = useState(
-    initialBid?.client_name || [project.profiles?.first_name, project.profiles?.last_name].filter(Boolean).join(' ') || ''
+    initialProposal?.client_name || [project.profiles?.first_name, project.profiles?.last_name].filter(Boolean).join(' ') || ''
   );
-  const [projectAddress, setProjectAddress] = useState(initialBid?.project_address || project.address || '');
-  const [preparedBy, setPreparedBy] = useState(initialBid?.prepared_by || preparedByDefault || '');
-  const [scopeSummary, setScopeSummary] = useState(initialBid?.scope_summary || '');
-  const [paymentTerms, setPaymentTerms] = useState(initialBid?.payment_terms || '50% deposit due upon acceptance, balance due upon completion.');
-  const [validUntil, setValidUntil] = useState(initialBid?.valid_until || '');
-  const [notes, setNotes] = useState(initialBid?.notes || '');
-  const [adjustment, setAdjustment] = useState(initialBid?.adjustment ?? 0);
-  const [adjustmentLabel, setAdjustmentLabel] = useState(initialBid?.adjustment_label || 'Discount');
+  const [projectAddress, setProjectAddress] = useState(initialProposal?.project_address || project.address || '');
+  const [preparedBy, setPreparedBy] = useState(initialProposal?.prepared_by || preparedByDefault || '');
+  const [introParagraph, setIntroParagraph] = useState(initialProposal?.intro_paragraph ?? DEFAULT_INTRO);
+  const [scopeSummary, setScopeSummary] = useState(initialProposal?.scope_summary || '');
+  const [paymentTerms, setPaymentTerms] = useState(initialProposal?.payment_terms || '50% deposit due upon acceptance, balance due upon completion.');
+  const [limitations, setLimitations] = useState(initialProposal?.limitations ?? DEFAULT_LIMITATIONS);
+  const [validUntil, setValidUntil] = useState(initialProposal?.valid_until || '');
+  const [notes, setNotes] = useState(initialProposal?.notes || '');
+  const [adjustment, setAdjustment] = useState(initialProposal?.adjustment ?? 0);
+  const [adjustmentLabel, setAdjustmentLabel] = useState(initialProposal?.adjustment_label || 'Discount');
 
-  const [selectedScopes, setSelectedScopes] = useState(() => new Set(initialBid?.selected_scopes || []));
+  const [selectedScopes, setSelectedScopes] = useState(() => new Set(initialProposal?.selected_scopes || []));
   const [lineItems, setLineItems] = useState(() =>
     (initialLineItems && initialLineItems.length > 0
       ? initialLineItems.map((li) => ({ ...li, _key: li.id }))
@@ -44,7 +52,7 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
   const [estimating, setEstimating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const [currentBidId, setCurrentBidId] = useState(bidId || null);
+  const [currentProposalId, setCurrentProposalId] = useState(proposalId || null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewData, setPreviewData] = useState(null);
 
@@ -88,7 +96,7 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
     if (categories.length === 0) return;
     setEstimating(true);
     try {
-      const res = await fetch(`/api/admin/bids/estimate?categories=${encodeURIComponent(categories.join(','))}`);
+      const res = await fetch(`/api/admin/proposals/estimate?categories=${encodeURIComponent(categories.join(','))}`);
       const data = await res.json();
       if (res.ok) setEstimates(data.estimates || {});
     } finally {
@@ -103,9 +111,11 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
       clientName,
       projectAddress,
       preparedBy,
+      introParagraph,
       scopeSummary,
       selectedScopes: [...selectedScopes],
       paymentTerms,
+      limitations,
       validUntil: validUntil || null,
       notes,
       adjustment: Number(adjustment) || 0,
@@ -124,8 +134,8 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
     setSaving(true);
     setMessage('');
     try {
-      if (currentBidId) {
-        const res = await fetch(`/api/admin/bids/${currentBidId}`, {
+      if (currentProposalId) {
+        const res = await fetch(`/api/admin/proposals/${currentProposalId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(buildPayload()),
@@ -134,21 +144,21 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
         if (!res.ok) throw new Error(data.error);
         setMessage('Draft saved.');
         router.refresh();
-        return { id: currentBidId };
+        return { id: currentProposalId };
       }
-      const res = await fetch('/api/admin/bids', {
+      const res = await fetch('/api/admin/proposals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildPayload()),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setCurrentBidId(data.bid.id);
+      setCurrentProposalId(data.proposal.id);
       setMessage('Draft saved.');
-      router.replace(`/admin/projects/${projectId}/bids/${data.bid.id}`);
-      return { id: data.bid.id };
+      router.replace(`/admin/projects/${projectId}/proposals/${data.proposal.id}`);
+      return { id: data.proposal.id };
     } catch (err) {
-      setMessage(err.message || 'Could not save this bid.');
+      setMessage(err.message || 'Could not save this proposal.');
       return null;
     } finally {
       setSaving(false);
@@ -167,19 +177,21 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
     const saved = await saveDraft();
     if (!saved) return;
     setPreviewData({
-      bid: {
+      proposal: {
         title,
         client_name: clientName,
         project_address: projectAddress,
         prepared_by: preparedBy,
+        intro_paragraph: introParagraph,
         scope_summary: scopeSummary,
         payment_terms: paymentTerms,
+        limitations,
         valid_until: validUntil,
         subtotal: totals.subtotal,
         adjustment: Number(adjustment) || 0,
         adjustment_label: adjustmentLabel,
         total: totals.total,
-        created_at: initialBid?.created_at || new Date().toISOString(),
+        created_at: initialProposal?.created_at || new Date().toISOString(),
       },
       lineItems: lineItems.map((li) => ({
         ...li,
@@ -193,7 +205,7 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
     <div>
       <div className={adminStyles.formGrid2}>
         <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Bid title</label>
+          <label className={adminStyles.fieldLabel}>Proposal title</label>
           <input className={adminStyles.fieldInput} value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <div className={adminStyles.fieldGroup}>
@@ -211,8 +223,13 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
           <input className={adminStyles.fieldInput} value={projectAddress} onChange={(e) => setProjectAddress(e.target.value)} />
         </div>
       </div>
+
       <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Scope summary (intro paragraph, optional)</label>
+        <label className={adminStyles.fieldLabel}>Cover letter intro</label>
+        <textarea className={adminStyles.fieldTextarea} style={{ minHeight: '90px' }} value={introParagraph} onChange={(e) => setIntroParagraph(e.target.value)} />
+      </div>
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Project description (optional)</label>
         <textarea className={adminStyles.fieldTextarea} value={scopeSummary} onChange={(e) => setScopeSummary(e.target.value)} />
       </div>
       <div className={adminStyles.formGrid2}>
@@ -224,9 +241,9 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
 
       <h4 style={{ fontSize: '0.95rem', color: 'var(--navy)', margin: '1.5rem 0 0.75rem' }}>Scope of work</h4>
       <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-        Click to add or remove a scope item. Each one drops a line item into the bid below.
+        Click to add or remove a scope item. Each one drops a line item into the proposal below and a bullet into the Scope of Services section.
       </p>
-      {BID_SCOPE_GROUPS.map((group) => (
+      {PROPOSAL_SCOPE_GROUPS.map((group) => (
         <div key={group.group} style={{ marginBottom: '0.85rem' }}>
           <div style={{ fontSize: '0.68rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: '0.4rem' }}>
             {group.group}
@@ -260,10 +277,10 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
       ))}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1.5rem 0 0.75rem' }}>
-        <h4 style={{ fontSize: '0.95rem', color: 'var(--navy)', margin: 0 }}>Line items</h4>
+        <h4 style={{ fontSize: '0.95rem', color: 'var(--navy)', margin: 0 }}>Compensation breakdown</h4>
         <button type="button" className={adminStyles.cancelBtn} onClick={fetchEstimates} disabled={estimating || lineItems.length === 0}>
           <i className="ti ti-chart-bar" aria-hidden="true" style={{ marginRight: '0.35rem' }}></i>
-          {estimating ? 'Estimating…' : 'Estimate from past bids'}
+          {estimating ? 'Estimating…' : 'Estimate from past proposals'}
         </button>
       </div>
 
@@ -300,7 +317,7 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
                   onChange={(e) => updateLineItem(row._key, 'quantity', e.target.value)}
                 />
                 <select className={adminStyles.fieldInput} value={row.unit} onChange={(e) => updateLineItem(row._key, 'unit', e.target.value)}>
-                  {BID_UNITS.map((u) => (
+                  {PROPOSAL_UNITS.map((u) => (
                     <option key={u} value={u}>{u}</option>
                   ))}
                 </select>
@@ -320,7 +337,7 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
               </div>
               {est && (
                 <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                  Avg from {est.sampleSize} past bid{est.sampleSize === 1 ? '' : 's'}: {formatCurrency(est.avgUnitPrice)}{' '}
+                  Avg from {est.sampleSize} past proposal{est.sampleSize === 1 ? '' : 's'}: {formatCurrency(est.avgUnitPrice)}{' '}
                   <button
                     type="button"
                     onClick={() => updateLineItem(row._key, 'unit_price', est.avgUnitPrice)}
@@ -374,7 +391,11 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
         <textarea className={adminStyles.fieldTextarea} value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} />
       </div>
       <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Internal notes (not shown on the bid)</label>
+        <label className={adminStyles.fieldLabel}>Limitations of responsibility</label>
+        <textarea className={adminStyles.fieldTextarea} style={{ minHeight: '90px' }} value={limitations} onChange={(e) => setLimitations(e.target.value)} />
+      </div>
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Internal notes (not shown on the proposal)</label>
         <textarea className={adminStyles.fieldTextarea} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
 
@@ -389,10 +410,10 @@ export default function BidForm({ projectId, bidId, initialBid, initialLineItems
         </button>
       </div>
 
-      {showPreview && previewData && currentBidId && (
-        <BidPreviewModal
-          bidId={currentBidId}
-          bid={previewData.bid}
+      {showPreview && previewData && currentProposalId && (
+        <ProposalPreviewModal
+          proposalId={currentProposalId}
+          proposal={previewData.proposal}
           lineItems={previewData.lineItems}
           projectId={projectId}
           defaultRecipientEmail={project.profiles?.email || ''}

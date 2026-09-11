@@ -18,7 +18,7 @@ import AdminPhotos from '@/components/admin/AdminPhotos';
 import AdminNotes from '@/components/admin/AdminNotes';
 import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
-import ProjectBidsList from '@/components/admin/ProjectBidsList';
+import ProjectProposalsList from '@/components/admin/ProjectProposalsList';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -52,8 +52,8 @@ export default async function AdminProjectPage({ params }) {
       supabase.from('contacts').select('*').order('name'),
     ]);
 
-  const { data: bids } = await supabase
-    .from('bids')
+  const { data: proposals } = await supabase
+    .from('proposals')
     .select('*')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
@@ -89,8 +89,8 @@ export default async function AdminProjectPage({ params }) {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href={`/admin/projects/${projectId}/bids/new`} className="btn-navy">
-              <i className="ti ti-file-invoice" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Create A Bid
+            <Link href={`/admin/projects/${projectId}/proposals/new`} className="btn-navy">
+              <i className="ti ti-file-invoice" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Create A Proposal
             </Link>
             <Link
               href={`/projects/${projectId}/cover-sheet`}
@@ -193,8 +193,8 @@ export default async function AdminProjectPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <h3>Bids</h3>
-        <ProjectBidsList projectId={projectId} bids={bids || []} />
+        <h3>Proposals</h3>
+        <ProjectProposalsList projectId={projectId} proposals={proposals || []} />
       </div>
 
       <div className={styles.fullWidthCard}>

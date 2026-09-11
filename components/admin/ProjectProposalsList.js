@@ -20,9 +20,9 @@ const STATUS_STYLE = {
   sent: { bg: 'rgba(16,185,129,0.12)', color: 'var(--text-success)', label: 'Sent' },
 };
 
-function BidRow({ bid, projectId, busy, onDelete, onDuplicate }) {
-  const s = STATUS_STYLE[bid.status] || STATUS_STYLE.draft;
-  const href = bid.status === 'draft' ? `/admin/projects/${projectId}/bids/${bid.id}` : `/admin/projects/${projectId}/bids/${bid.id}/view`;
+function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate }) {
+  const s = STATUS_STYLE[proposal.status] || STATUS_STYLE.draft;
+  const href = proposal.status === 'draft' ? `/admin/projects/${projectId}/proposals/${proposal.id}` : `/admin/projects/${projectId}/proposals/${proposal.id}/view`;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid rgba(var(--border-rgb),0.12)', opacity: busy ? 0.6 : 1, flexWrap: 'wrap' }}>
@@ -31,34 +31,34 @@ function BidRow({ bid, projectId, busy, onDelete, onDuplicate }) {
       </span>
       <div style={{ flex: 1, minWidth: '200px' }}>
         <Link href={href} style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--navy)' }}>
-          {bid.title}
+          {proposal.title}
         </Link>
         <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
-          {bid.status === 'draft' ? `Last edited ${formatDate(bid.updated_at)}` : bid.status === 'sent' ? `Sent ${formatDate(bid.sent_at)} to ${bid.sent_to_email || ''}` : `Finalized ${formatDate(bid.finalized_at)}`}
+          {proposal.status === 'draft' ? `Last edited ${formatDate(proposal.updated_at)}` : proposal.status === 'sent' ? `Sent ${formatDate(proposal.sent_at)} to ${proposal.sent_to_email || ''}` : `Finalized ${formatDate(proposal.finalized_at)}`}
         </div>
       </div>
-      <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(bid.total)}</div>
+      <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(proposal.total)}</div>
       <div style={{ display: 'flex', gap: '0.25rem', flexShrink: 0 }}>
-        {bid.status === 'draft' ? (
-          <Link href={href} className={adminStyles.iconBtn} aria-label="Edit bid">
+        {proposal.status === 'draft' ? (
+          <Link href={href} className={adminStyles.iconBtn} aria-label="Edit proposal">
             <i className="ti ti-pencil" aria-hidden="true"></i>
           </Link>
         ) : (
           <>
-            <Link href={href} className={adminStyles.iconBtn} aria-label="View bid">
+            <Link href={href} className={adminStyles.iconBtn} aria-label="View proposal">
               <i className="ti ti-eye" aria-hidden="true"></i>
             </Link>
-            {bid.pdf_path && (
-              <a href={`/api/admin/bids/${bid.id}/download`} className={adminStyles.iconBtn} aria-label="Download PDF">
+            {proposal.pdf_path && (
+              <a href={`/api/admin/proposals/${proposal.id}/download`} className={adminStyles.iconBtn} aria-label="Download PDF">
                 <i className="ti ti-download" aria-hidden="true"></i>
               </a>
             )}
-            <button type="button" className={adminStyles.iconBtn} aria-label="Duplicate as new draft" onClick={() => onDuplicate(bid.id)} disabled={busy}>
+            <button type="button" className={adminStyles.iconBtn} aria-label="Duplicate as new draft" onClick={() => onDuplicate(proposal.id)} disabled={busy}>
               <i className="ti ti-copy" aria-hidden="true"></i>
             </button>
           </>
         )}
-        <button type="button" className={adminStyles.iconBtn} aria-label="Delete bid" onClick={() => onDelete(bid.id)} disabled={busy}>
+        <button type="button" className={adminStyles.iconBtn} aria-label="Delete proposal" onClick={() => onDelete(proposal.id)} disabled={busy}>
           <i className="ti ti-trash" aria-hidden="true"></i>
         </button>
       </div>
@@ -66,18 +66,18 @@ function BidRow({ bid, projectId, busy, onDelete, onDuplicate }) {
   );
 }
 
-export default function ProjectBidsList({ projectId, bids }) {
+export default function ProjectProposalsList({ projectId, proposals }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState(null);
 
-  const drafts = bids.filter((b) => b.status === 'draft');
-  const finalized = bids.filter((b) => b.status !== 'draft');
+  const drafts = proposals.filter((b) => b.status === 'draft');
+  const finalized = proposals.filter((b) => b.status !== 'draft');
 
   async function handleDelete(id) {
-    if (!confirm('Delete this bid? This cannot be undone.')) return;
+    if (!confirm('Delete this proposal? This cannot be undone.')) return;
     setBusyId(id);
     try {
-      await fetch(`/api/admin/bids/${id}`, { method: 'DELETE' });
+      await fetch(`/api/admin/proposals/${id}`, { method: 'DELETE' });
       router.refresh();
     } finally {
       setBusyId(null);
@@ -87,10 +87,10 @@ export default function ProjectBidsList({ projectId, bids }) {
   async function handleDuplicate(id) {
     setBusyId(id);
     try {
-      const res = await fetch(`/api/admin/bids/${id}/duplicate`, { method: 'POST' });
+      const res = await fetch(`/api/admin/proposals/${id}/duplicate`, { method: 'POST' });
       const data = await res.json();
-      if (res.ok && data.bid) {
-        router.push(`/admin/projects/${projectId}/bids/${data.bid.id}`);
+      if (res.ok && data.proposal) {
+        router.push(`/admin/projects/${projectId}/proposals/${data.proposal.id}`);
       }
     } finally {
       setBusyId(null);
@@ -100,28 +100,28 @@ export default function ProjectBidsList({ projectId, bids }) {
   return (
     <div>
       <h4 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', margin: '0 0 0.6rem' }}>
-        Draft Bids
+        Draft Proposals
       </h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
-        {drafts.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No draft bids.</p>}
-        {drafts.map((bid) => (
-          <BidRow key={bid.id} bid={bid} projectId={projectId} busy={busyId === bid.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+        {drafts.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No draft proposals.</p>}
+        {drafts.map((proposal) => (
+          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
         ))}
       </div>
 
       <h4 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', margin: '0 0 0.6rem' }}>
-        Finalized &amp; Sent Bids
+        Finalized &amp; Sent Proposals
       </h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {finalized.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No finalized bids yet.</p>}
-        {finalized.map((bid) => (
-          <BidRow key={bid.id} bid={bid} projectId={projectId} busy={busyId === bid.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+        {finalized.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No finalized proposals yet.</p>}
+        {finalized.map((proposal) => (
+          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
         ))}
       </div>
 
       <div className={adminStyles.saveBar}>
-        <Link href={`/admin/projects/${projectId}/bids/new`} className="btn-navy">
-          <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Create A Bid
+        <Link href={`/admin/projects/${projectId}/proposals/new`} className="btn-navy">
+          <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Create A Proposal
         </Link>
       </div>
     </div>

@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import BidDocument from '@/components/admin/BidDocument';
+import ProposalDocument from '@/components/admin/ProposalDocument';
 
-export default function BidPreviewModal({ bidId, bid, lineItems, projectId, defaultRecipientEmail, onClose }) {
+export default function ProposalPreviewModal({ proposalId, proposal, lineItems, projectId, defaultRecipientEmail, onClose }) {
   const router = useRouter();
   const [recipientEmail, setRecipientEmail] = useState(defaultRecipientEmail || '');
   const [busy, setBusy] = useState(false);
@@ -13,27 +13,27 @@ export default function BidPreviewModal({ bidId, bid, lineItems, projectId, defa
 
   async function finalize(sendEmail) {
     if (sendEmail && !recipientEmail.trim()) {
-      setError('Enter an email address to send the bid to.');
+      setError('Enter an email address to send the proposal to.');
       return;
     }
     setBusy(true);
     setError('');
     try {
-      const res = await fetch(`/api/admin/bids/${bidId}/finalize`, {
+      const res = await fetch(`/api/admin/proposals/${proposalId}/finalize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sendEmail, recipientEmail: recipientEmail.trim() }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Could not finalize this bid.');
+        setError(data.error || 'Could not finalize this proposal.');
         setBusy(false);
         return;
       }
-      router.push(`/admin/projects/${projectId}/bids/${bidId}/view`);
+      router.push(`/admin/projects/${projectId}/proposals/${proposalId}/view`);
       router.refresh();
     } catch {
-      setError('Could not finalize this bid.');
+      setError('Could not finalize this proposal.');
       setBusy(false);
     }
   }
@@ -45,14 +45,14 @@ export default function BidPreviewModal({ bidId, bid, lineItems, projectId, defa
     >
       <div style={{ background: 'var(--cream, #F6F8FA)', borderRadius: '8px', width: '100%', maxWidth: '860px', overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid rgba(var(--border-rgb),0.12)' }}>
-          <h3 style={{ margin: 0 }}>Preview bid</h3>
+          <h3 style={{ margin: 0 }}>Preview proposal</h3>
           <button type="button" onClick={onClose} aria-label="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.3rem', color: 'var(--text-secondary)' }}>
             <i className="ti ti-x" aria-hidden="true"></i>
           </button>
         </div>
 
         <div style={{ padding: '1.5rem', maxHeight: '65vh', overflowY: 'auto', background: '#DCE5EC' }}>
-          <BidDocument bid={bid} lineItems={lineItems} />
+          <ProposalDocument proposal={proposal} lineItems={lineItems} />
         </div>
 
         <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(var(--border-rgb),0.12)' }}>
