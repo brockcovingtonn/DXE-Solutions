@@ -42,6 +42,7 @@
 		5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */; };
 		5EBB1D68780D9170DA5E5BCB /* AdminSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90CB742CAB9C87D8EDFE042B /* AdminSearchView.swift */; };
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
+		64A2F1AA3B2A1816F0E7D603 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A716BA4B5FC1BD5641D099FD /* SafariView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
 		6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */; };
 		6BE771DBE5C2CC733BE896A2 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */; };
@@ -161,6 +162,7 @@
 		A2ECC45E00D0B560C82CF395 /* AdminEmployeeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminEmployeeDetailView.swift; sourceTree = "<group>"; };
 		A32A95DB5A03BD73D899630E /* AdminUtilitiesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUtilitiesListView.swift; sourceTree = "<group>"; };
 		A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeTabView.swift; sourceTree = "<group>"; };
+		A716BA4B5FC1BD5641D099FD /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminEmployeeListView.swift; sourceTree = "<group>"; };
 		AC09D9E2B356D55BA7BA0740 /* ClientActivityListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientActivityListView.swift; sourceTree = "<group>"; };
 		AE316F0BD4513147D1CB72E0 /* EmployeeActivityListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeActivityListView.swift; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 				8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */,
 				B770A62E58C1A60B56DEF8FE /* ReviewView.swift */,
 				EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */,
+				A716BA4B5FC1BD5641D099FD /* SafariView.swift */,
 				0932077758FDD662093311B1 /* SettingsView.swift */,
 				C4F230DC3FDB8154E17CF7F5 /* SignaturePadView.swift */,
 				B1BC5D704AA740F73561D6F8 /* SplashView.swift */,
@@ -498,6 +501,7 @@
 				3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */,
 				B6DEEE56D8018C8EA544378A /* ReviewView.swift in Sources */,
 				9C82A5BC619614FDDDB94E1A /* RoleHomeView.swift in Sources */,
+				64A2F1AA3B2A1816F0E7D603 /* SafariView.swift in Sources */,
 				E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */,
 				1EAA242983742B8BB8CE5FFD /* SignaturePadView.swift in Sources */,
 				D65F58FFB6D302567FBA6A27 /* SplashView.swift in Sources */,

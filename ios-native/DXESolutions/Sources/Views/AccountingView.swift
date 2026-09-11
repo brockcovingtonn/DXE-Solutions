@@ -8,6 +8,9 @@ struct AccountingView: View {
     @State private var errorMessage: String?
     @State private var downloadingId: String?
     @State private var previewItem: PreviewItem?
+    @State private var payingId: String?
+    @State private var paymentSheetURL: IdentifiableURL?
+    @State private var paymentError: String?
 
     private var balanceDue: Double {
         invoices
@@ -32,13 +35,7 @@ struct AccountingView: View {
                                 .padding(.top, 8)
                         } else {
                             ForEach(invoices) { item in
-                                Button {
-                                    Task { await openFile(item) }
-                                } label: {
-                                    invoiceRow(item)
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(item.filePath == nil || downloadingId != nil)
+                                invoiceRow(item)
                             }
                         }
                     }
@@ -51,6 +48,16 @@ struct AccountingView: View {
         .task { await loadInvoices() }
         .sheet(item: $previewItem) { item in
             QuickLookPreview(url: item.url).ignoresSafeArea()
+        }
+        .sheet(item: $paymentSheetURL, onDismiss: {
+            Task { await loadInvoices() }
+        }) { item in
+            SafariView(url: item.url)
+        }
+        .alert("Payment", isPresented: Binding(get: { paymentError != nil }, set: { if !$0 { paymentError = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(paymentError ?? "")
         }
     }
 
@@ -76,37 +83,66 @@ struct AccountingView: View {
     }
 
     private func invoiceRow(_ item: Invoice) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Text(item.kind.uppercased())
-                .font(.caption2.weight(.semibold))
-                .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(item.kind == "receipt" ? Color.blue.opacity(0.12) : Theme.gold.opacity(0.18))
-                .foregroundColor(item.kind == "receipt" ? .blue : Theme.navy)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                Task { await openFile(item) }
+            } label: {
+                HStack(alignment: .top, spacing: 10) {
+                    Text(item.kind.uppercased())
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(item.kind == "receipt" ? Color.blue.opacity(0.12) : Theme.gold.opacity(0.18))
+                        .foregroundColor(item.kind == "receipt" ? .blue : Theme.navy)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text(item.description)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundColor(.primary)
-                Text(subtitle(item))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(item.description)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(.primary)
+                        Text(subtitle(item))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+
+                    if downloadingId == item.id {
+                        ProgressView()
+                    } else {
+                        Text(currency(item.amount))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(Theme.navy)
+                    }
+                }
             }
+            .buttonStyle(.plain)
+            .disabled(item.filePath == nil || downloadingId != nil)
 
-            Spacer()
-
-            if downloadingId == item.id {
-                ProgressView()
-            } else {
-                Text(currency(item.amount))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(Theme.navy)
+            if isPayable(item) {
+                Button {
+                    Task { await payInvoice(item) }
+                } label: {
+                    if payingId == item.id {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Pay now")
+                            .font(.caption.weight(.semibold))
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.navy)
+                .controlSize(.small)
+                .disabled(payingId != nil)
             }
         }
         .padding()
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func isPayable(_ item: Invoice) -> Bool {
+        item.kind == "invoice" && item.status == "unpaid" && item.paymentState != "processing"
     }
 
     private func subtitle(_ item: Invoice) -> String {
@@ -117,6 +153,9 @@ struct AccountingView: View {
             parts.append("Paid \(paid)")
         }
         if item.status == "unpaid" { parts.append("Unpaid") }
+        if item.paymentState == "processing" { parts.append("Payment clearing") }
+        if item.paymentState == "failed" { parts.append("Last payment failed") }
+        if item.status == "paid" && item.paidVia == "stripe" { parts.append("Paid online") }
         if let fileName = item.fileName { parts.append(fileName) }
         return parts.isEmpty ? "—" : parts.joined(separator: " · ")
     }
@@ -142,6 +181,32 @@ struct AccountingView: View {
             errorMessage = "Could not load invoices."
         }
         isLoading = false
+    }
+
+    // Same Stripe Checkout Session the web portal uses — reuses
+    // POST /api/invoices/:id/pay via APIClient's Bearer-token auth, then
+    // opens the returned hosted checkout URL in an in-app Safari sheet.
+    // Stripe's success/cancel redirect lands back on our own site inside
+    // that same sheet; the invoice's actual paid status is flipped by
+    // the Stripe webhook, not by this call, so we just reload on dismiss.
+    private func payInvoice(_ item: Invoice) async {
+        payingId = item.id
+        defer { payingId = nil }
+        do {
+            struct PayResponse: Decodable { let url: String }
+            let response: PayResponse = try await APIClient.sendDecoding(
+                "api/invoices/\(item.id)/pay",
+                method: "POST",
+                body: EmptyBody()
+            )
+            guard let url = URL(string: response.url) else {
+                paymentError = "Could not start the payment."
+                return
+            }
+            paymentSheetURL = IdentifiableURL(url: url)
+        } catch {
+            paymentError = (error as? APIError)?.errorDescription ?? "Could not start the payment."
+        }
     }
 
     private func openFile(_ item: Invoice) async {

@@ -258,6 +258,8 @@ struct Invoice: Codable, Identifiable, Hashable {
     let paidDate: String?
     let filePath: String?
     let fileName: String?
+    let paymentState: String?
+    let paidVia: String?
 
     enum CodingKeys: String, CodingKey {
         case id, kind, description, amount, status
@@ -266,6 +268,8 @@ struct Invoice: Codable, Identifiable, Hashable {
         case paidDate = "paid_date"
         case filePath = "file_path"
         case fileName = "file_name"
+        case paymentState = "payment_state"
+        case paidVia = "paid_via"
     }
 }
 
