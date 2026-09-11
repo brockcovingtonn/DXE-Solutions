@@ -45,6 +45,14 @@ function eventsOnDay(events, day) {
     .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 }
 
+function paymentsOnDay(payments, day) {
+  return (payments || []).filter((p) => isSameDay(startOfDay(new Date(`${p.due_date}T00:00:00`)), day));
+}
+
+function formatCurrency(n) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n) || 0);
+}
+
 const navBtnStyle = {
   background: 'none',
   border: '1px solid rgba(var(--border-rgb),0.15)',
@@ -65,7 +73,7 @@ const tabBtnStyle = {
 
 const activeTabStyle = { background: 'var(--navy)', color: 'var(--white)', borderColor: 'var(--navy)' };
 
-export default function CalendarView({ events, onSelectEvent, selectedEventId, headerActions }) {
+export default function CalendarView({ events, onSelectEvent, selectedEventId, headerActions, payments }) {
   const [view, setView] = useState('month');
   const [refDate, setRefDate] = useState(() => startOfDay(new Date()));
   const [weatherDays, setWeatherDays] = useState([]);
@@ -135,19 +143,19 @@ export default function CalendarView({ events, onSelectEvent, selectedEventId, h
       </div>
 
       {view === 'month' && (
-        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
+        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} />
       )}
       {view === 'week' && (
-        <WeekGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
+        <WeekGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} />
       )}
       {view === 'day' && (
-        <DayBrief refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} />
+        <DayBrief refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} />
       )}
     </div>
   );
 }
 
-function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
+function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays, payments }) {
   const monthStart = startOfMonth(refDate);
   const gridStart = startOfWeek(monthStart);
   const days = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
@@ -175,13 +183,22 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
       {days.map((day, i) => {
         const inMonth = day.getMonth() === monthStart.getMonth();
         const dayEvents = eventsOnDay(events, day);
+        const dayPayments = paymentsOnDay(payments, day);
         const isToday = isSameDay(day, today);
         const weather = weatherForDate(weatherDays, day);
         return (
           <div key={i} style={{ background: 'var(--white)', minHeight: '92px', padding: '0.4rem', opacity: inMonth ? 1 : 0.4 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>
-                {day.getDate()}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>
+                  {day.getDate()}
+                </div>
+                {dayPayments.length > 0 && (
+                  <span
+                    title={`${dayPayments.length} payment${dayPayments.length > 1 ? 's' : ''} due: ${formatCurrency(dayPayments.reduce((s, p) => s + Number(p.amount), 0))}`}
+                    style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }}
+                  />
+                )}
               </div>
               {weather && (
                 <div title={`${weatherDisplay(weather.weatherCode).label} · High ${weather.high}° / Low ${weather.low}°`} style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)' }}>
@@ -202,7 +219,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
   );
 }
 
-function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
+function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays, payments }) {
   const start = startOfWeek(refDate);
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const today = startOfDay(new Date());
@@ -211,13 +228,22 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.5rem' }}>
       {days.map((day, i) => {
         const dayEvents = eventsOnDay(events, day);
+        const dayPayments = paymentsOnDay(payments, day);
         const isToday = isSameDay(day, today);
         const weather = weatherForDate(weatherDays, day);
         return (
           <div key={i} style={{ border: '1px solid var(--border)', minHeight: '170px' }}>
             <div style={{ padding: '0.5rem', background: isToday ? 'var(--surface)' : 'transparent', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
               <div style={{ fontSize: '0.62rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>{WEEKDAY_LABELS[day.getDay()]}</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>{day.getDate()}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>{day.getDate()}</div>
+                {dayPayments.length > 0 && (
+                  <span
+                    title={`${dayPayments.length} payment${dayPayments.length > 1 ? 's' : ''} due: ${formatCurrency(dayPayments.reduce((s, p) => s + Number(p.amount), 0))}`}
+                    style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }}
+                  />
+                )}
+              </div>
               {weather && (
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
                   {weatherDisplay(weather.weatherCode).emoji} {weather.high}°/{weather.low}°
@@ -237,12 +263,21 @@ function WeekGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays
   );
 }
 
-function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays }) {
+function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays, payments }) {
   const dayEvents = eventsOnDay(events, refDate);
+  const dayPayments = paymentsOnDay(payments, refDate);
   const weather = weatherForDate(weatherDays, refDate);
 
   return (
     <div>
+      {dayPayments.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--navy)', marginBottom: '0.85rem' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--gold)', flexShrink: 0 }} />
+          <span>
+            {dayPayments.length} payment{dayPayments.length > 1 ? 's' : ''} due today · {formatCurrency(dayPayments.reduce((s, p) => s + Number(p.amount), 0))}
+          </span>
+        </div>
+      )}
       {weather && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--navy)', marginBottom: '0.85rem' }}>
           <span style={{ fontSize: '1.3rem' }}>{weatherDisplay(weather.weatherCode).emoji}</span>
@@ -279,7 +314,10 @@ function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays
                 <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--navy)' }}>{e.title}</div>
                 {e.description && <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>{e.description}</div>}
                 {e.projects?.name && (
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    {e.projects.color && (
+                      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: e.projects.color, flexShrink: 0 }} />
+                    )}
                     {e.projects.name}
                     {e.visible_to_client ? ' · Visible to client' : ''}
                   </div>
@@ -294,15 +332,19 @@ function DayBrief({ refDate, events, onSelectEvent, selectedEventId, weatherDays
 }
 
 function EventChip({ event, selected, onClick, showTime }) {
+  const projectColor = event.projects?.color;
   return (
     <button
       type="button"
       onClick={onClick}
+      title={event.projects?.name || undefined}
       style={{
         fontSize: '0.68rem',
         textAlign: 'left',
         padding: '0.2rem 0.4rem',
-        border: 'none',
+        borderWidth: '0 0 0 3px',
+        borderStyle: 'solid',
+        borderColor: projectColor || 'transparent',
         cursor: 'pointer',
         background: selected ? 'var(--navy)' : event.visible_to_client ? 'rgba(201,168,87,0.2)' : 'var(--surface)',
         color: selected ? 'var(--white)' : 'var(--navy)',

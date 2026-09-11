@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
-import { PROJECT_TYPES } from '@/lib/constants';
+import { PROJECT_TYPES, PROJECT_COLOR_PALETTE } from '@/lib/constants';
 
 export default function ProjectInfoForm({ project }) {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function ProjectInfoForm({ project }) {
     zoning: project.zoning || '',
     lot_size: project.lot_size || '',
     building_size: project.building_size || '',
+    color: project.color || PROJECT_COLOR_PALETTE[0],
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -105,6 +106,38 @@ export default function ProjectInfoForm({ project }) {
             <option value="on-hold">On hold</option>
             <option value="completed">Completed</option>
           </select>
+        </div>
+      </div>
+
+      <div className={adminStyles.fieldGroup}>
+        <label className={adminStyles.fieldLabel}>Calendar color</label>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {PROJECT_COLOR_PALETTE.map((hex) => (
+            <button
+              key={hex}
+              type="button"
+              onClick={() => setForm((prev) => ({ ...prev, color: hex }))}
+              aria-label={`Use color ${hex}`}
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: hex,
+                border: form.color === hex ? '2px solid var(--navy)' : '2px solid transparent',
+                outline: form.color === hex ? '2px solid var(--navy)' : 'none',
+                outlineOffset: '1px',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            />
+          ))}
+          <input
+            type="color"
+            value={form.color}
+            onChange={(e) => setForm((prev) => ({ ...prev, color: e.target.value }))}
+            style={{ width: '28px', height: '28px', padding: 0, border: 'none', cursor: 'pointer' }}
+            aria-label="Custom color"
+          />
         </div>
       </div>
 

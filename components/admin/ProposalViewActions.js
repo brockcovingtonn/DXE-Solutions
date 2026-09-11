@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function ProposalViewActions({ proposalId, projectId, hasPdf }) {
+export default function ProposalViewActions({ proposalId, projectId, hasPdf, visibleToClient }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [visible, setVisible] = useState(!!visibleToClient);
 
   async function duplicate() {
     setBusy(true);
@@ -20,8 +21,34 @@ export default function ProposalViewActions({ proposalId, projectId, hasPdf }) {
     }
   }
 
+  async function toggleVisible() {
+    setBusy(true);
+    try {
+      const next = !visible;
+      await fetch(`/api/admin/proposals/${proposalId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visible_to_client: next }),
+      });
+      setVisible(next);
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <button
+        type="button"
+        onClick={toggleVisible}
+        disabled={busy}
+        className="btn-navy"
+        style={{ background: 'none', border: '1px solid var(--navy)', color: visible ? 'var(--text-success)' : 'var(--navy)' }}
+      >
+        <i className={`ti ${visible ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
+        {visible ? 'Shared with client' : 'Not shared with client'}
+      </button>
       {hasPdf && (
         <a href={`/api/admin/proposals/${proposalId}/download`} className="btn-navy">
           <i className="ti ti-download" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Download PDF

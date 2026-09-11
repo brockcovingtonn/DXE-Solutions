@@ -43,7 +43,7 @@ export default async function ViewProposalPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <ProposalViewActions proposalId={params.proposalId} projectId={params.id} hasPdf={Boolean(proposal.pdf_path)} />
+        <ProposalViewActions proposalId={params.proposalId} projectId={params.id} hasPdf={Boolean(proposal.pdf_path)} visibleToClient={proposal.visible_to_client} />
       </div>
 
       <div className={styles.fullWidthCard} style={{ background: '#DCE5EC', padding: '1.5rem' }}>

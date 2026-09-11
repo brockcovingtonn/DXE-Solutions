@@ -10,7 +10,7 @@ export default async function PortalCalendarPage() {
 
   const { data: events } = await supabase
     .from('calendar_events')
-    .select('*, projects(name)')
+    .select('*, projects(name, color)')
     .eq('visible_to_client', true)
     .order('start_time');
 

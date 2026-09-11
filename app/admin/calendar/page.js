@@ -7,18 +7,19 @@ export default async function AdminCalendarPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: events }, { data: projects }, { data: people }, { data: contacts }] = await Promise.all([
+  const [{ data: events }, { data: projects }, { data: people }, { data: contacts }, { data: upcomingPayments }] = await Promise.all([
     supabase
       .from('calendar_events')
-      .select('*, projects(name), calendar_event_guests(email, name), calendar_event_contacts(contact_id)')
+      .select('*, projects(name, color), calendar_event_guests(email, name), calendar_event_contacts(contact_id)')
       .order('start_time'),
-    supabase.from('projects').select('id, name').order('name'),
+    supabase.from('projects').select('id, name, color').order('name'),
     supabase
       .from('profiles')
       .select('id, first_name, last_name')
       .or('is_admin.eq.true,is_employee.eq.true')
       .order('first_name'),
     supabase.from('contacts').select('*').order('name'),
+    supabase.from('payment_schedule_items').select('due_date, amount, description, projects(name)').eq('status', 'scheduled').not('due_date', 'is', null),
   ]);
 
   // Service-role check only — this table has no client-readable RLS
@@ -39,7 +40,14 @@ export default async function AdminCalendarPage() {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <AdminCalendar initialEvents={events || []} projects={projects || []} people={people || []} contacts={contacts || []} googleConnected={!!connection} />
+        <AdminCalendar
+          initialEvents={events || []}
+          projects={projects || []}
+          people={people || []}
+          contacts={contacts || []}
+          googleConnected={!!connection}
+          payments={upcomingPayments || []}
+        />
       </div>
     </div>
   );

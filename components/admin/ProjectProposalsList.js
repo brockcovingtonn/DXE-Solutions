@@ -20,7 +20,7 @@ const STATUS_STYLE = {
   sent: { bg: 'rgba(16,185,129,0.12)', color: 'var(--text-success)', label: 'Sent' },
 };
 
-function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate }) {
+function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate, onToggleVisible }) {
   const s = STATUS_STYLE[proposal.status] || STATUS_STYLE.draft;
   const href = proposal.status === 'draft' ? `/admin/projects/${projectId}/proposals/${proposal.id}` : `/admin/projects/${projectId}/proposals/${proposal.id}/view`;
 
@@ -35,6 +35,7 @@ function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate }) {
         </Link>
         <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
           {proposal.status === 'draft' ? `Last edited ${formatDate(proposal.updated_at)}` : proposal.status === 'sent' ? `Sent ${formatDate(proposal.sent_at)} to ${proposal.sent_to_email || ''}` : `Finalized ${formatDate(proposal.finalized_at)}`}
+          {proposal.status !== 'draft' && proposal.visible_to_client && <> · <span style={{ color: 'var(--text-success)' }}>Shared with client</span></>}
         </div>
       </div>
       <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(proposal.total)}</div>
@@ -45,8 +46,18 @@ function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate }) {
           </Link>
         ) : (
           <>
+            <button
+              type="button"
+              className={adminStyles.iconBtn}
+              onClick={() => onToggleVisible(proposal)}
+              disabled={busy}
+              title={proposal.visible_to_client ? 'Shared with client — click to unshare' : 'Share with client'}
+              style={{ color: proposal.visible_to_client ? 'var(--text-success)' : undefined }}
+            >
+              <i className={`ti ${proposal.visible_to_client ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true"></i>
+            </button>
             <Link href={href} className={adminStyles.iconBtn} aria-label="View proposal">
-              <i className="ti ti-eye" aria-hidden="true"></i>
+              <i className="ti ti-file-description" aria-hidden="true"></i>
             </Link>
             {proposal.pdf_path && (
               <a href={`/api/admin/proposals/${proposal.id}/download`} className={adminStyles.iconBtn} aria-label="Download PDF">
@@ -97,6 +108,20 @@ export default function ProjectProposalsList({ projectId, proposals }) {
     }
   }
 
+  async function handleToggleVisible(proposal) {
+    setBusyId(proposal.id);
+    try {
+      await fetch(`/api/admin/proposals/${proposal.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visible_to_client: !proposal.visible_to_client }),
+      });
+      router.refresh();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div>
       <h4 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', margin: '0 0 0.6rem' }}>
@@ -105,7 +130,7 @@ export default function ProjectProposalsList({ projectId, proposals }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
         {drafts.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No draft proposals.</p>}
         {drafts.map((proposal) => (
-          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} onToggleVisible={handleToggleVisible} />
         ))}
       </div>
 
@@ -115,7 +140,7 @@ export default function ProjectProposalsList({ projectId, proposals }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {finalized.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No finalized proposals yet.</p>}
         {finalized.map((proposal) => (
-          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} />
+          <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} onToggleVisible={handleToggleVisible} />
         ))}
       </div>
 

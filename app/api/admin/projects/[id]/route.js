@@ -42,6 +42,7 @@ export async function PATCH(request, { params }) {
       'zoning',
       'lot_size',
       'building_size',
+      'color',
     ];
 
     const update = {};

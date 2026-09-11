@@ -21,11 +21,25 @@ export async function PATCH(request, { params }) {
 
   const { data: existing } = await supabase.from('proposals').select('status').eq('id', params.id).maybeSingle();
   if (!existing) return NextResponse.json({ error: 'Proposal not found' }, { status: 404 });
+
+  const body = await request.json();
+
+  // The client-visibility flag is a display toggle, not a change to what
+  // was promised — allow it on finalized/sent proposals too, and skip
+  // the draft-only content edit path entirely.
+  if ('visible_to_client' in body && Object.keys(body).length === 1) {
+    const { error } = await supabase
+      .from('proposals')
+      .update({ visible_to_client: !!body.visible_to_client })
+      .eq('id', params.id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    return NextResponse.json({ success: true });
+  }
+
   if (existing.status !== 'draft') {
     return NextResponse.json({ error: 'Only draft proposals can be edited. Duplicate it to make changes.' }, { status: 409 });
   }
 
-  const body = await request.json();
   const { lineItems, adjustment } = body;
   const { items, subtotal, total } = computeTotals(lineItems, adjustment);
 

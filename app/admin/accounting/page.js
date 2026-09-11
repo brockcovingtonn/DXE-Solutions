@@ -3,6 +3,7 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import MasterAccountingList from '@/components/admin/MasterAccountingList';
 import MasterAccountingFilters from '@/components/admin/MasterAccountingFilters';
+import UpcomingPaymentsList from '@/components/admin/UpcomingPaymentsList';
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -33,6 +34,13 @@ export default async function MasterAccountingPage({ searchParams }) {
 
   const pendingCount = (allInvoices || []).filter((i) => i.approval_status === 'pending').length;
 
+  const { data: upcomingPayments } = await supabase
+    .from('payment_schedule_items')
+    .select('*, projects(name, color)')
+    .eq('status', 'scheduled')
+    .not('due_date', 'is', null)
+    .order('due_date');
+
   const filtered = (allInvoices || []).filter((i) => {
     if (kindFilter && i.kind !== kindFilter) return false;
     if (statusFilter && i.status !== statusFilter) return false;
@@ -43,8 +51,15 @@ export default async function MasterAccountingPage({ searchParams }) {
   return (
     <div>
       <div className={styles.portalHeader}>
-        <h1>Accounting</h1>
-        <p>Invoices and receipts across every project, in one place</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <div>
+            <h1>Accounting</h1>
+            <p>Invoices and receipts across every project, in one place</p>
+          </div>
+          <a href="/api/admin/accounting/export" className="btn-navy">
+            <i className="ti ti-file-export" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Export for tax expert
+          </a>
+        </div>
       </div>
 
       <div className={styles.statCards4}>
@@ -68,6 +83,14 @@ export default async function MasterAccountingPage({ searchParams }) {
             {pendingCount}
           </div>
         </div>
+      </div>
+
+      <div className={styles.fullWidthCard}>
+        <h3>Upcoming Payments</h3>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', marginTop: '-0.5rem', marginBottom: '1rem' }}>
+          Scheduled milestones grouped by month, so you can estimate expected income.
+        </p>
+        <UpcomingPaymentsList initialItems={upcomingPayments || []} />
       </div>
 
       <div className={adminStyles.actionsRow} style={{ justifyContent: 'flex-start' }}>

@@ -97,6 +97,7 @@ export async function POST(request, { params }) {
       update.status = 'sent';
       update.sent_at = nowIso;
       update.sent_to_email = recipientEmail;
+      update.visible_to_client = true;
     }
   }
 

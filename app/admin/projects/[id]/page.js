@@ -19,6 +19,7 @@ import AdminNotes from '@/components/admin/AdminNotes';
 import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 import ProjectProposalsList from '@/components/admin/ProjectProposalsList';
+import PaymentScheduleEditor from '@/components/admin/PaymentScheduleEditor';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -57,6 +58,12 @@ export default async function AdminProjectPage({ params }) {
     .select('*')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
+
+  const { data: paymentSchedule } = await supabase
+    .from('payment_schedule_items')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('due_date');
 
   const assignedEmployeeIds = (employeeAssignments || []).map((a) => a.employee_id);
 
@@ -197,9 +204,24 @@ export default async function AdminProjectPage({ params }) {
         <ProjectProposalsList projectId={projectId} proposals={proposals || []} />
       </div>
 
-      <div className={styles.fullWidthCard}>
+      <div className={styles.fullWidthCard} id="accounting">
         <h3>Accounting</h3>
         <AccountingEditor projectId={projectId} initialInvoices={invoices || []} />
+
+        <h4
+          style={{
+            fontSize: '0.82rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            color: 'var(--text-secondary)',
+            margin: '1.5rem 0 0.75rem',
+            paddingTop: '1.25rem',
+            borderTop: '1px solid rgba(var(--border-rgb),0.08)',
+          }}
+        >
+          Payment Schedule
+        </h4>
+        <PaymentScheduleEditor projectId={projectId} initialItems={paymentSchedule || []} />
       </div>
 
       <div className={styles.fullWidthCard}>

@@ -14,7 +14,7 @@ export default async function EmployeeCalendarPage() {
   const [{ data: events }, { data: assignments }] = await Promise.all([
     supabase
       .from('calendar_events')
-      .select('*, projects(name)')
+      .select('*, projects(name, color)')
       .order('start_time'),
     supabase
       .from('project_employees')
