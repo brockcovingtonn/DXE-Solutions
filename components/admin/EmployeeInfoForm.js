@@ -11,6 +11,7 @@ export default function EmployeeInfoForm({ employee }) {
     firstName: employee.first_name || '',
     lastName: employee.last_name || '',
     phone: employee.phone || '',
+    email: employee.email || '',
   });
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
@@ -31,7 +32,11 @@ export default function EmployeeInfoForm({ employee }) {
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) throw new Error();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMessage(data.error || 'Could not save changes.');
+        return;
+      }
 
       setMessage('Saved.');
       router.refresh();
@@ -84,8 +89,14 @@ export default function EmployeeInfoForm({ employee }) {
       <div className={adminStyles.formGrid2}>
         <div className={adminStyles.fieldGroup}>
           <label className={adminStyles.fieldLabel}>Email</label>
-          <input className={adminStyles.fieldInput} value={employee.email || ''} disabled />
-          <p className={adminStyles.fieldHint}>This is their login email and can&apos;t be changed here.</p>
+          <input
+            className={adminStyles.fieldInput}
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+          />
+          <p className={adminStyles.fieldHint}>This is their login email — changing it takes effect immediately, no confirmation email is sent.</p>
         </div>
         <div className={adminStyles.fieldGroup}>
           <label className={adminStyles.fieldLabel}>Phone</label>
