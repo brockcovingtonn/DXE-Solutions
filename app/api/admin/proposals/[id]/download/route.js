@@ -17,10 +17,18 @@ export async function GET(request, { params }) {
   const { data: proposal } = await supabase.from('proposals').select('pdf_path, title').eq('id', params.id).maybeSingle();
   if (!proposal?.pdf_path) return NextResponse.json({ error: 'No PDF for this proposal yet' }, { status: 404 });
 
-  const { data: signed, error } = await supabase.storage
-    .from('project-proposals')
-    .createSignedUrl(proposal.pdf_path, 300, { download: `${proposal.title || 'proposal'}.pdf` });
+  // Once signed, the countersigned PDF is the authoritative version.
+  const { data: signature } = await supabase
+    .from('proposal_signatures')
+    .select('signed_pdf_path')
+    .eq('proposal_id', params.id)
+    .maybeSingle();
+
+  const downloadOption = { download: `${proposal.title || 'proposal'}.pdf` };
+  const { data: signedUrl, error } = signature
+    ? await supabase.storage.from('proposal-signatures').createSignedUrl(signature.signed_pdf_path, 300, downloadOption)
+    : await supabase.storage.from('project-proposals').createSignedUrl(proposal.pdf_path, 300, downloadOption);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  return NextResponse.redirect(signed.signedUrl);
+  return NextResponse.redirect(signedUrl.signedUrl);
 }

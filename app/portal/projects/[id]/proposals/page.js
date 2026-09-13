@@ -1,16 +1,8 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
+import ClientProposalsList from '@/components/ClientProposalsList';
 import styles from '@/components/portal-shared.module.css';
-
-function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
-function formatDate(d) {
-  if (!d) return '';
-  return new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
 
 export default async function ClientProposalsPage({ params }) {
   const supabase = createClient();
@@ -27,9 +19,12 @@ export default async function ClientProposalsPage({ params }) {
   // project.
   const { data: proposals } = await supabase
     .from('proposals')
-    .select('*')
+    .select('*, proposal_signatures(signer_name, created_at)')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
+
+  const { data: profile } = await supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single();
+  const currentUserName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
 
   return (
     <div>
@@ -39,57 +34,7 @@ export default async function ClientProposalsPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
-        {!proposals || proposals.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No proposals have been shared on this project yet.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {proposals.map((proposal) => (
-              <a
-                key={proposal.id}
-                href={proposal.pdf_path ? `/api/proposals/${proposal.id}/download` : undefined}
-                target={proposal.pdf_path ? '_blank' : undefined}
-                rel="noreferrer"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.9rem 1rem',
-                  border: '1px solid rgba(var(--border-rgb),0.1)',
-                  color: 'inherit',
-                  textDecoration: 'none',
-                  flexWrap: 'wrap',
-                  cursor: proposal.pdf_path ? 'pointer' : 'default',
-                }}
-              >
-                <div
-                  style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
-                    background: 'rgba(62,84,104,0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  <i className="ti ti-file-description" style={{ color: 'var(--navy)' }} aria-hidden="true"></i>
-                </div>
-                <div style={{ flex: 1, minWidth: '180px' }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--navy)' }}>{proposal.title}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
-                    {proposal.status === 'sent' ? `Sent ${formatDate(proposal.sent_at)}` : `Shared ${formatDate(proposal.finalized_at)}`}
-                    {proposal.valid_until ? ` · Valid until ${formatDate(proposal.valid_until)}` : ''}
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(proposal.total)}</div>
-                {proposal.pdf_path && (
-                  <i className="ti ti-external-link" style={{ color: 'var(--gold)', flexShrink: 0 }} aria-hidden="true"></i>
-                )}
-              </a>
-            ))}
-          </div>
-        )}
+        <ClientProposalsList proposals={proposals} currentUserName={currentUserName} />
       </div>
     </div>
   );

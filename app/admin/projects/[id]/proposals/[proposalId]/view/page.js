@@ -27,6 +27,7 @@ export default async function ViewProposalPage({ params }) {
   }
 
   const { data: lineItems } = await supabase.from('proposal_line_items').select('*').eq('proposal_id', params.proposalId).order('sort_order');
+  const { data: signature } = await supabase.from('proposal_signatures').select('signer_name, created_at').eq('proposal_id', params.proposalId).maybeSingle();
 
   return (
     <div>
@@ -40,6 +41,11 @@ export default async function ViewProposalPage({ params }) {
           {proposal.status === 'sent' && proposal.sent_at && ` · Sent ${formatDate(proposal.sent_at)} to ${proposal.sent_to_email}`}
           {proposal.status === 'finalized' && proposal.finalized_at && ` · Finalized ${formatDate(proposal.finalized_at)}, not yet sent`}
         </p>
+        {signature && (
+          <p style={{ color: 'var(--text-success)', fontSize: '0.85rem', marginTop: '0.3rem' }}>
+            <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on {formatDate(signature.created_at)}
+          </p>
+        )}
       </div>
 
       <div className={styles.fullWidthCard}>

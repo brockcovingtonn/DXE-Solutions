@@ -23,6 +23,7 @@ const STATUS_STYLE = {
 function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate, onToggleVisible }) {
   const s = STATUS_STYLE[proposal.status] || STATUS_STYLE.draft;
   const href = proposal.status === 'draft' ? `/admin/projects/${projectId}/proposals/${proposal.id}` : `/admin/projects/${projectId}/proposals/${proposal.id}/view`;
+  const signature = Array.isArray(proposal.proposal_signatures) ? proposal.proposal_signatures[0] : proposal.proposal_signatures;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid rgba(var(--border-rgb),0.12)', opacity: busy ? 0.6 : 1, flexWrap: 'wrap' }}>
@@ -37,6 +38,11 @@ function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate, onToggl
           {proposal.status === 'draft' ? `Last edited ${formatDate(proposal.updated_at)}` : proposal.status === 'sent' ? `Sent ${formatDate(proposal.sent_at)} to ${proposal.sent_to_email || ''}` : `Finalized ${formatDate(proposal.finalized_at)}`}
           {proposal.status !== 'draft' && proposal.visible_to_client && <> · <span style={{ color: 'var(--text-success)' }}>Shared with client</span></>}
         </div>
+        {signature && (
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-success)', marginTop: '0.2rem' }}>
+            <i className="ti ti-circle-check" aria-hidden="true"></i> Signed by {signature.signer_name} on {formatDate(signature.created_at)}
+          </div>
+        )}
       </div>
       <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(proposal.total)}</div>
       <div style={{ display: 'flex', gap: '0.25rem', flexShrink: 0 }}>

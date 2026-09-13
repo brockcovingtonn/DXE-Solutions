@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function SignaturePad({ documentId, defaultName, onSigned, onCancel }) {
+export default function SignaturePad({ documentId, signUrl, defaultName, onSigned, onCancel }) {
   const canvasRef = useRef(null);
   const drawingRef = useRef(false);
   const [hasDrawn, setHasDrawn] = useState(false);
@@ -70,7 +70,7 @@ export default function SignaturePad({ documentId, defaultName, onSigned, onCanc
     setError('');
     try {
       const dataUrl = canvasRef.current.toDataURL('image/png');
-      const res = await fetch(`/api/documents/${documentId}/sign`, {
+      const res = await fetch(signUrl || `/api/documents/${documentId}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ signatureDataUrl: dataUrl, signerName }),
