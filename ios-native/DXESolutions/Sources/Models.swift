@@ -305,6 +305,7 @@ struct Proposal: Codable, Identifiable, Hashable {
     let sentToEmail: String?
     let finalizedAt: String?
     let validUntil: String?
+    let proposalSignatures: [ProposalSignatureRef]?
 
     enum CodingKeys: String, CodingKey {
         case id, title, status, total
@@ -315,6 +316,19 @@ struct Proposal: Codable, Identifiable, Hashable {
         case sentToEmail = "sent_to_email"
         case finalizedAt = "finalized_at"
         case validUntil = "valid_until"
+        case proposalSignatures = "proposal_signatures"
+    }
+
+    var signature: ProposalSignatureRef? { proposalSignatures?.first }
+}
+
+struct ProposalSignatureRef: Codable, Hashable {
+    let signerName: String
+    let createdAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case signerName = "signer_name"
+        case createdAt = "created_at"
     }
 }
 

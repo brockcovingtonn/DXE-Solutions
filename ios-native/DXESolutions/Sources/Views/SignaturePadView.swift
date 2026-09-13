@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct SignaturePadView: View {
-    let documentId: String
+    let signUrl: String
     let defaultName: String
+    var title: String = "Sign Document"
     var onSigned: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -15,9 +16,10 @@ struct SignaturePadView: View {
 
     private static let canvasSize = CGSize(width: 340, height: 160)
 
-    init(documentId: String, defaultName: String, onSigned: @escaping () -> Void) {
-        self.documentId = documentId
+    init(signUrl: String, defaultName: String, title: String = "Sign Document", onSigned: @escaping () -> Void) {
+        self.signUrl = signUrl
         self.defaultName = defaultName
+        self.title = title
         self.onSigned = onSigned
         _signerName = State(initialValue: defaultName)
     }
@@ -58,7 +60,7 @@ struct SignaturePadView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Sign Document")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -134,7 +136,7 @@ struct SignaturePadView: View {
         let dataUrl = "data:image/png;base64,\(pngData.base64EncodedString())"
         do {
             try await APIClient.send(
-                "api/documents/\(documentId)/sign", method: "POST",
+                signUrl, method: "POST",
                 body: Payload(signatureDataUrl: dataUrl, signerName: signerName.trimmingCharacters(in: .whitespacesAndNewlines))
             )
             HapticManager.success()

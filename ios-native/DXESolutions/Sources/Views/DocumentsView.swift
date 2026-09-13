@@ -85,7 +85,7 @@ struct DocumentsView: View {
             }
         }
         .sheet(item: $signingDocument) { doc in
-            SignaturePadView(documentId: doc.id, defaultName: defaultSignerName) {
+            SignaturePadView(signUrl: "api/documents/\(doc.id)/sign", defaultName: defaultSignerName) {
                 Task { await loadDocuments() }
             }
         }

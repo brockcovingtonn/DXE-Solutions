@@ -52,6 +52,11 @@ struct AdminProposalsEditor: View {
                 if proposal.status != "draft" && proposal.visibleToClient {
                     Text("Shared with client").font(.caption2).foregroundColor(.green)
                 }
+                if let signature = proposal.signature {
+                    Label("Signed by \(signature.signerName)", systemImage: "checkmark.circle.fill")
+                        .font(.caption2)
+                        .foregroundColor(.green)
+                }
             }
             Spacer()
 
@@ -114,9 +119,25 @@ struct AdminProposalsEditor: View {
 
     private func load() async {
         proposals = (try? await SupabaseConfig.client
-            .from("proposals").select().eq("project_id", value: projectId)
+            .from("proposals").select("*, proposal_signatures(signer_name, created_at)").eq("project_id", value: projectId)
             .order("created_at", ascending: false).execute().value) ?? []
         isLoading = false
+    }
+
+    private func signedPdfPath(for proposal: Proposal) async -> String? {
+        guard proposal.signature != nil else { return nil }
+        struct SignedPdfRow: Codable {
+            let signedPdfPath: String
+            enum CodingKeys: String, CodingKey { case signedPdfPath = "signed_pdf_path" }
+        }
+        let row: SignedPdfRow? = try? await SupabaseConfig.client
+            .from("proposal_signatures")
+            .select("signed_pdf_path")
+            .eq("proposal_id", value: proposal.id)
+            .single()
+            .execute()
+            .value
+        return row?.signedPdfPath
     }
 
     private func toggleVisible(_ proposal: Proposal) async {
@@ -143,9 +164,12 @@ struct AdminProposalsEditor: View {
         busyId = proposal.id
         defer { busyId = nil }
         do {
-            let data = try await SupabaseConfig.client.storage
-                .from("project-proposals")
-                .download(path: path)
+            let data: Data
+            if let signedPath = await signedPdfPath(for: proposal) {
+                data = try await SupabaseConfig.client.storage.from("proposal-signatures").download(path: signedPath)
+            } else {
+                data = try await SupabaseConfig.client.storage.from("project-proposals").download(path: path)
+            }
             let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(proposal.title).pdf")
             try data.write(to: tempURL)
             previewItem = PreviewItem(url: tempURL)
