@@ -283,6 +283,7 @@ struct PaymentScheduleItem: Codable, Identifiable, Hashable {
     let dueDate: String?
     let status: String
     let confirmedAt: String?
+    let lastNotificationError: String?
     let projects: AdminProjectRef?
 
     enum CodingKeys: String, CodingKey {
@@ -290,6 +291,7 @@ struct PaymentScheduleItem: Codable, Identifiable, Hashable {
         case projectId = "project_id"
         case dueDate = "due_date"
         case confirmedAt = "confirmed_at"
+        case lastNotificationError = "last_notification_error"
     }
 }
 

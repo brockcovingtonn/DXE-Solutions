@@ -49,6 +49,12 @@ struct AdminPaymentScheduleEditor: View {
                 Text(subtitle(item))
                     .font(.caption)
                     .foregroundColor(overdue ? .red : .secondary)
+                if let error = item.lastNotificationError {
+                    Label("Last reminder failed to send — will retry automatically", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption2)
+                        .foregroundColor(.red)
+                        .help(error)
+                }
             }
             Spacer()
             Text(currency(item.amount))

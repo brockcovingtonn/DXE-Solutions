@@ -174,6 +174,12 @@ struct AdminAccountingListView: View {
                 Text((item.dueDate.map { "Due \($0)" } ?? "—") + (item.confirmedAt != nil ? " · Confirmed" : " · Not yet confirmed"))
                     .font(.caption2)
                     .foregroundColor(.secondary)
+                if let error = item.lastNotificationError {
+                    Label("Reminder failed — will retry", systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption2)
+                        .foregroundColor(.red)
+                        .help(error)
+                }
             }
             Spacer()
             Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
