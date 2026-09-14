@@ -6,6 +6,8 @@ struct ProjectOverviewView: View {
     @State private var phases: [ProjectPhase] = []
     @State private var milestones: [ProjectMilestone] = []
     @State private var actionItems: [ActionItem] = []
+    @State private var proposals: [Proposal] = []
+    @State private var invoices: [Invoice] = []
     @State private var isLoading = true
 
     var body: some View {
@@ -16,6 +18,7 @@ struct ProjectOverviewView: View {
                 if isLoading {
                     ProgressView().frame(maxWidth: .infinity).padding(.top, 40)
                 } else {
+                    whatsNextSection
                     filesSection
                     progressSection
                     if !phases.isEmpty { phasesSection }
@@ -29,6 +32,75 @@ struct ProjectOverviewView: View {
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadData() }
+    }
+
+    // Ties proposals -> payment schedule -> accounting together for a
+    // client, matching the web WhatsNextChecklist. payment_schedule_items
+    // is admin-only (no client RLS policy), so the schedule is mentioned
+    // in the copy rather than built as its own step — these two are
+    // exactly what a client can actually see. Persistent, not a one-time
+    // tour: stays until both are resolved, then disappears entirely.
+    private var whatsNextSection: some View {
+        let visibleProposals = proposals.filter { $0.status != "draft" }
+        let hasUnsignedProposal = visibleProposals.contains { $0.signature == nil }
+        let proposalsDone = !visibleProposals.isEmpty && !hasUnsignedProposal
+        let unpaidInvoices = invoices.filter { $0.kind == "invoice" && $0.status == "unpaid" }
+        let paymentDone = unpaidInvoices.isEmpty
+        let unpaidTotal = unpaidInvoices.reduce(0) { $0 + $1.amount }
+
+        return Group {
+            if !(visibleProposals.isEmpty && unpaidInvoices.isEmpty) && !(proposalsDone && paymentDone) {
+                VStack(alignment: .leading, spacing: 14) {
+                    SectionHeader("What's Next")
+
+                    if !visibleProposals.isEmpty {
+                        whatsNextRow(
+                            done: proposalsDone,
+                            title: proposalsDone ? "Proposal signed" : "Review and sign your proposal",
+                            subtitle: "Once signed, invoices will be sent automatically per the agreed payment schedule.",
+                            actionLabel: proposalsDone ? nil : "Review proposal",
+                            destination: AnyView(ProposalsView(project: project))
+                        )
+                    }
+
+                    whatsNextRow(
+                        done: paymentDone,
+                        title: paymentDone ? "You're caught up on payments" : "Pay your invoice",
+                        subtitle: paymentDone ? nil : "\(unpaidInvoices.count) invoice\(unpaidInvoices.count == 1 ? "" : "s") totaling \(currency(unpaidTotal)).",
+                        actionLabel: paymentDone ? nil : "View accounting",
+                        destination: AnyView(AccountingView(project: project))
+                    )
+                }
+                .padding()
+                .background(Theme.cream)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+
+    private func whatsNextRow(done: Bool, title: String, subtitle: String?, actionLabel: String?, destination: AnyView) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(done ? .green : Theme.gold)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(.subheadline.weight(.medium)).foregroundColor(Theme.navy)
+                if let subtitle {
+                    Text(subtitle).font(.caption).foregroundColor(.secondary)
+                }
+                if let actionLabel {
+                    NavigationLink(destination: destination) {
+                        Text("\(actionLabel) →").font(.caption.weight(.semibold)).foregroundColor(Theme.gold)
+                    }
+                }
+            }
+        }
+    }
+
+    private func currency(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: NSNumber(value: amount)) ?? "$0.00"
     }
 
     private var filesSection: some View {
@@ -217,10 +289,21 @@ struct ProjectOverviewView: View {
         async let actionItemsTask: [ActionItem] = SupabaseConfig.client
             .from("action_items").select().eq("project_id", value: project.id)
             .execute().value
+        // RLS already limits clients to their own non-draft, visible
+        // proposals — see whatsNextSection for why this drives the
+        // "what's next" card instead of the (admin-only) payment schedule.
+        async let proposalsTask: [Proposal] = SupabaseConfig.client
+            .from("proposals").select("*, proposal_signatures(signer_name, created_at)").eq("project_id", value: project.id)
+            .execute().value
+        async let invoicesTask: [Invoice] = SupabaseConfig.client
+            .from("invoices").select().eq("project_id", value: project.id)
+            .execute().value
 
         phases = (try? await phasesTask) ?? []
         milestones = (try? await milestonesTask) ?? []
         actionItems = (try? await actionItemsTask) ?? []
+        proposals = (try? await proposalsTask) ?? []
+        invoices = (try? await invoicesTask) ?? []
         isLoading = false
     }
 }
