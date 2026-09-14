@@ -8,6 +8,7 @@ struct AdminProposalsEditor: View {
     @State private var message: String?
     @State private var busyId: String?
     @State private var previewItem: PreviewItem?
+    @State private var generatingProposal: Proposal?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -30,6 +31,11 @@ struct AdminProposalsEditor: View {
         .task { await load() }
         .sheet(item: $previewItem) { item in
             QuickLookPreview(url: item.url).ignoresSafeArea()
+        }
+        .sheet(item: $generatingProposal) { proposal in
+            GeneratePaymentScheduleView(proposalId: proposal.id) { count in
+                message = "Created \(count) payment milestone\(count == 1 ? "" : "s")."
+            }
         }
     }
 
@@ -77,6 +83,14 @@ struct AdminProposalsEditor: View {
                         Task { await openPDF(proposal) }
                     } label: {
                         Image(systemName: "doc.text.magnifyingglass")
+                    }
+                    .buttonStyle(.plain)
+                }
+                if proposal.status != "draft" {
+                    Button {
+                        generatingProposal = proposal
+                    } label: {
+                        Image(systemName: "calendar.badge.plus")
                     }
                     .buttonStyle(.plain)
                 }
