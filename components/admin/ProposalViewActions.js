@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import GeneratePaymentScheduleModal from '@/components/admin/GeneratePaymentScheduleModal';
 
 export default function ProposalViewActions({ proposalId, projectId, hasPdf, visibleToClient }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [visible, setVisible] = useState(!!visibleToClient);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleMessage, setScheduleMessage] = useState('');
 
   async function duplicate() {
     setBusy(true);
@@ -38,25 +41,48 @@ export default function ProposalViewActions({ proposalId, projectId, hasPdf, vis
   }
 
   return (
-    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-      <button
-        type="button"
-        onClick={toggleVisible}
-        disabled={busy}
-        className="btn-navy"
-        style={{ background: 'none', border: '1px solid var(--navy)', color: visible ? 'var(--text-success)' : 'var(--navy)' }}
-      >
-        <i className={`ti ${visible ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
-        {visible ? 'Shared with client' : 'Not shared with client'}
-      </button>
-      {hasPdf && (
-        <a href={`/api/admin/proposals/${proposalId}/download`} className="btn-navy">
-          <i className="ti ti-download" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Download PDF
-        </a>
+    <div>
+      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <button
+          type="button"
+          onClick={toggleVisible}
+          disabled={busy}
+          className="btn-navy"
+          style={{ background: 'none', border: '1px solid var(--navy)', color: visible ? 'var(--text-success)' : 'var(--navy)' }}
+        >
+          <i className={`ti ${visible ? 'ti-eye' : 'ti-eye-off'}`} aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
+          {visible ? 'Shared with client' : 'Not shared with client'}
+        </button>
+        {hasPdf && (
+          <a href={`/api/admin/proposals/${proposalId}/download`} className="btn-navy">
+            <i className="ti ti-download" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Download PDF
+          </a>
+        )}
+        <button type="button" className="btn-navy" onClick={duplicate} disabled={busy} style={{ background: 'none', border: '1px solid var(--navy)', color: 'var(--navy)' }}>
+          <i className="ti ti-copy" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> {busy ? 'Duplicating…' : 'Duplicate as new draft'}
+        </button>
+        <button
+          type="button"
+          className="btn-navy"
+          onClick={() => setShowScheduleModal(true)}
+          style={{ background: 'none', border: '1px solid var(--navy)', color: 'var(--navy)' }}
+        >
+          <i className="ti ti-calendar-dollar" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Generate Payment Schedule
+        </button>
+      </div>
+
+      {scheduleMessage && <p style={{ fontSize: '0.8rem', color: 'var(--text-success)', marginTop: '0.6rem' }}>{scheduleMessage}</p>}
+
+      {showScheduleModal && (
+        <GeneratePaymentScheduleModal
+          proposalId={proposalId}
+          onClose={() => setShowScheduleModal(false)}
+          onGenerated={(items) => {
+            setScheduleMessage(`Created ${items?.length || 0} payment milestone${items?.length === 1 ? '' : 's'}.`);
+            router.refresh();
+          }}
+        />
       )}
-      <button type="button" className="btn-navy" onClick={duplicate} disabled={busy} style={{ background: 'none', border: '1px solid var(--navy)', color: 'var(--navy)' }}>
-        <i className="ti ti-copy" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> {busy ? 'Duplicating…' : 'Duplicate as new draft'}
-      </button>
     </div>
   );
 }
