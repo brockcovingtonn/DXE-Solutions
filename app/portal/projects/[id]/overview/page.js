@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import PhaseBar from '@/components/PhaseBar';
+import WhatsNextChecklist from '@/components/WhatsNextChecklist';
 
 export default async function ProjectOverviewPage({ params }) {
   const supabase = createClient();
@@ -15,7 +16,7 @@ export default async function ProjectOverviewPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: proposals }, { data: invoices }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -31,11 +32,18 @@ export default async function ProjectOverviewPage({ params }) {
         .eq('project_id', projectId)
         .eq('visible_to_client', true)
         .order('created_at', { ascending: false }),
+      // RLS already limits clients to their own non-draft, visible
+      // proposals — see WhatsNextChecklist for why this drives the
+      // "what's next" card instead of the (admin-only) payment schedule.
+      supabase.from('proposals').select('id, status, signed_at').eq('project_id', projectId),
+      supabase.from('invoices').select('amount, status, kind').eq('project_id', projectId),
     ]);
 
   const doneMilestones = (milestones || []).filter((m) => m.state === 'done').length;
   const totalMilestones = (milestones || []).length;
   const recentDocs = (docs || []).slice(0, 4);
+  const unpaidInvoices = (invoices || []).filter((i) => i.kind === 'invoice' && i.status === 'unpaid');
+  const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount), 0);
 
   const ICONS = {
     note: 'ti-notes',
@@ -64,6 +72,13 @@ export default async function ProjectOverviewPage({ params }) {
         <h1>{project.name}</h1>
         <p>{project.project_type}</p>
       </div>
+
+      <WhatsNextChecklist
+        projectId={projectId}
+        proposals={proposals}
+        unpaidTotal={unpaidTotal}
+        unpaidCount={unpaidInvoices.length}
+      />
 
       <div className={styles.statCards}>
         <div className={styles.statCard}>
