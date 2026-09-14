@@ -20,6 +20,23 @@ function daysUntil(dueDate) {
   return Math.round((due - today) / 86400000);
 }
 
+// Records the real outcome of a send attempt directly on the item it
+// was about — last_notification_error is cleared on success, so a
+// non-null value always means "currently failing," not "failed once."
+async function recordDeliveryStatus(admin, itemId, result) {
+  if (result?.sent) {
+    await admin
+      .from('payment_schedule_items')
+      .update({ last_notification_sent_at: new Date().toISOString(), last_notification_error: null, last_notification_error_at: null })
+      .eq('id', itemId);
+  } else if (result?.error) {
+    await admin
+      .from('payment_schedule_items')
+      .update({ last_notification_error: result.error, last_notification_error_at: new Date().toISOString() })
+      .eq('id', itemId);
+  }
+}
+
 // Runs once a day via pg_cron (see payment_schedule_migration.sql).
 // Sends admin reminders at T-30/14/7/3 days for each scheduled
 // milestone, then on/after the due date either auto-creates and sends
@@ -74,7 +91,7 @@ export async function POST(request) {
             .eq('id', item.id);
 
           if (project.profiles?.email) {
-            await sendScheduledInvoiceEmail({
+            const result = await sendScheduledInvoiceEmail({
               clientEmail: project.profiles.email,
               clientNotificationsEnabled: project.profiles.email_notifications,
               clientName: `${project.profiles.first_name || ''} ${project.profiles.last_name || ''}`.trim(),
@@ -83,29 +100,35 @@ export async function POST(request) {
               description: item.description,
               amount: item.amount,
             });
+            await recordDeliveryStatus(admin, item.id, result);
           }
           invoicesSent += 1;
         }
       } else if (!item.missed_alert_sent_at) {
-        await notifyAdminOfUnconfirmedPayment({
+        const result = await notifyAdminOfUnconfirmedPayment({
           projectName: project.name,
           projectId: item.project_id,
           description: item.description,
           amount: item.amount,
           dueDate: item.due_date,
         });
-        await admin
-          .from('payment_schedule_items')
-          .update({ missed_alert_sent_at: new Date().toISOString() })
-          .eq('id', item.id);
-        missedAlerts += 1;
+        await recordDeliveryStatus(admin, item.id, result);
+        // Only mark it done once it actually went out — a failed send
+        // (Resend outage, etc.) retries tomorrow instead of being lost.
+        if (result?.sent) {
+          await admin
+            .from('payment_schedule_items')
+            .update({ missed_alert_sent_at: new Date().toISOString() })
+            .eq('id', item.id);
+          missedAlerts += 1;
+        }
       }
       continue;
     }
 
     const threshold = REMINDER_THRESHOLDS.find((t) => t.days === daysOut);
     if (threshold && !item[threshold.column]) {
-      await notifyAdminOfUpcomingPayment({
+      const result = await notifyAdminOfUpcomingPayment({
         projectName: project.name,
         projectId: item.project_id,
         description: item.description,
@@ -113,11 +136,14 @@ export async function POST(request) {
         dueDate: item.due_date,
         daysOut: threshold.days,
       });
-      await admin
-        .from('payment_schedule_items')
-        .update({ [threshold.column]: new Date().toISOString() })
-        .eq('id', item.id);
-      remindersSent += 1;
+      await recordDeliveryStatus(admin, item.id, result);
+      if (result?.sent) {
+        await admin
+          .from('payment_schedule_items')
+          .update({ [threshold.column]: new Date().toISOString() })
+          .eq('id', item.id);
+        remindersSent += 1;
+      }
     }
   }
 

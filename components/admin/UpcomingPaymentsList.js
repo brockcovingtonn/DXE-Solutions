@@ -72,6 +72,11 @@ export default function UpcomingPaymentsList({ initialItems }) {
                         {item.confirmed_at ? ' · Confirmed' : ' · Not yet confirmed'}
                         {overdue ? ' · Past due' : ''}
                       </div>
+                      {item.last_notification_error && (
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-error)', marginTop: '0.15rem' }} title={item.last_notification_error}>
+                          <i className="ti ti-alert-triangle" aria-hidden="true"></i> Last reminder failed to send — will retry automatically
+                        </div>
+                      )}
                     </div>
                     <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(item.amount)}</div>
                     <button

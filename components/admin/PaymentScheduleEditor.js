@@ -139,6 +139,11 @@ export default function PaymentScheduleEditor({ projectId, initialItems }) {
                   {!undated && (item.confirmed_at ? ` · Confirmed on schedule` : item.status === 'scheduled' ? ' · Not yet confirmed' : '')}
                   {overdue ? ' · Past due, unconfirmed' : ''}
                 </div>
+                {item.last_notification_error && (
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-error)', marginTop: '0.2rem' }} title={item.last_notification_error}>
+                    <i className="ti ti-alert-triangle" aria-hidden="true"></i> Last reminder failed to send — will retry automatically
+                  </div>
+                )}
               </div>
               <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>{formatCurrency(item.amount)}</div>
               {item.status === 'scheduled' && !undated && (
