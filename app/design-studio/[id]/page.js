@@ -21,7 +21,6 @@ export default async function QuoteDetailPage({ params }) {
   const internal = p.internal || {};
 
   return (
-    <div style={S.page}>
       <div style={S.shell}>
         <Link href="/design-studio" style={{ ...S.small, color: C.clay, textDecoration: 'none' }}>
           ← {BRAND.shortName} quotes
@@ -83,7 +82,6 @@ export default async function QuoteDetailPage({ params }) {
           </aside>
         </div>
       </div>
-    </div>
   );
 }
 

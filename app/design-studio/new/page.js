@@ -12,7 +12,6 @@ export default async function NewQuotePage() {
   const config = await loadActiveConfig();
 
   return (
-    <div style={S.page}>
       <div style={S.shell}>
         <Link href="/design-studio" style={{ ...S.small, color: C.clay, textDecoration: 'none' }}>
           ← {BRAND.shortName} quotes
@@ -20,6 +19,5 @@ export default async function NewQuotePage() {
         <h1 style={{ ...S.h1, margin: '10px 0 22px' }}>New quote</h1>
         <QuoteBuilder config={config} viewer={user} />
       </div>
-    </div>
   );
 }

@@ -35,7 +35,6 @@ export default async function DesignStudioDashboard() {
   const winRate = decided ? Math.round((won.length / decided) * 100) : null;
 
   return (
-    <div style={S.page}>
       <div style={S.shell}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14, marginBottom: 22 }}>
           <div>
@@ -120,7 +119,6 @@ export default async function DesignStudioDashboard() {
           )}
         </section>
       </div>
-    </div>
   );
 }
 

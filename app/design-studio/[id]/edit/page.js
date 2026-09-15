@@ -37,7 +37,6 @@ export default async function EditQuotePage({ params }) {
   };
 
   return (
-    <div style={S.page}>
       <div style={S.shell}>
         <Link href={`/design-studio/${id}`} style={{ ...S.small, color: C.clay, textDecoration: 'none' }}>
           ← {quote.quote_number}
@@ -48,6 +47,5 @@ export default async function EditQuotePage({ params }) {
         </div>
         <QuoteBuilder config={config} viewer={user} initial={initial} quoteId={id} />
       </div>
-    </div>
   );
 }

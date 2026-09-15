@@ -14,7 +14,6 @@ export default async function RateCardPage() {
   const config = await loadActiveConfig();
 
   return (
-    <div style={S.page}>
       <div style={S.shell}>
         <Link href="/design-studio" style={{ ...S.small, color: C.clay, textDecoration: 'none' }}>
           ← {BRAND.shortName} quotes
@@ -26,6 +25,5 @@ export default async function RateCardPage() {
         </div>
         <RateCardEditor initialConfig={config} />
       </div>
-    </div>
   );
 }
