@@ -27,7 +27,7 @@ async function loadOwned(db, id, user) {
 
 export async function GET(request, { params }) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const { id } = await params;
     const quote = await loadOwned(supabaseAdmin(), id, user);
     return Response.json({ quote, viewer: user });
@@ -38,7 +38,7 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const { id } = await params;
     const db = supabaseAdmin();
     const existing = await loadOwned(db, id, user);
@@ -111,7 +111,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const { id } = await params;
     const db = supabaseAdmin();
     const existing = await loadOwned(db, id, user);

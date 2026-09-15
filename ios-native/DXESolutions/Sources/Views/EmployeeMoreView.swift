@@ -7,6 +7,11 @@ struct EmployeeMoreView: View {
         NavigationStack {
             List {
                 NavigationLink {
+                    DesignStudioListView()
+                } label: {
+                    Label("Design Studio", systemImage: "square.stack.3d.up.fill")
+                }
+                NavigationLink {
                     EmployeeTrainingView()
                 } label: {
                     Label("Training", systemImage: "graduationcap.fill")

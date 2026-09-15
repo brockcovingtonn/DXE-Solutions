@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const db = supabaseAdmin();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -33,7 +33,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const body = await request.json();
     const config = await loadActiveConfig();
 

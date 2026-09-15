@@ -3,9 +3,9 @@ import { DEFAULT_CONFIG } from '@/lib/design-studio/pricing';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request) {
   try {
-    await requireStaff();
+    await requireStaff(request);
     const config = await loadActiveConfig();
     return Response.json({ config });
   } catch (err) {
@@ -20,7 +20,7 @@ export async function GET() {
  */
 export async function PUT(request) {
   try {
-    const user = await requireMaster();
+    const user = await requireMaster(request);
     const body = await request.json();
     const incoming = body.config;
     if (!incoming || typeof incoming !== 'object') {
@@ -68,9 +68,9 @@ export async function PUT(request) {
 }
 
 /** Restores the shipped defaults as a new version. */
-export async function POST() {
+export async function POST(request) {
   try {
-    const user = await requireMaster();
+    const user = await requireMaster(request);
     const db = supabaseAdmin();
     const { data: current } = await db
       .from('design_studio_config')

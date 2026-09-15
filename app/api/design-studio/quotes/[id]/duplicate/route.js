@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 // quote's frozen snapshot.
 export async function POST(request, { params }) {
   try {
-    const user = await requireStaff();
+    const user = await requireStaff(request);
     const { id } = await params;
     const db = supabaseAdmin();
 
