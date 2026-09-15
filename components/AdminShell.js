@@ -92,6 +92,14 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
             active={pathname.startsWith('/admin/calendar')}
           />
 
+          <div className={styles.sidebarSectionLabel}>Design Studio</div>
+          <SidebarLink
+            href="/design-studio"
+            icon="ti-armchair"
+            label="Design Studio"
+            active={pathname.startsWith('/design-studio')}
+          />
+
           <div className={styles.sidebarSectionLabel}>Manage</div>
           <SidebarLink
             href="/admin/contacts"

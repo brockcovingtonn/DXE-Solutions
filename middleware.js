@@ -54,6 +54,29 @@ export async function middleware(request) {
     }
   }
 
+  // Protect /design-studio routes - require auth AND (is_admin OR is_employee).
+  // Kept as its own top-level prefix (not nested under /admin) specifically so
+  // employees can reach it without loosening the /admin gate above. Page-level
+  // checks in lib/design-studio/server.js still enforce the finer rules (own
+  // quotes only, rate card is master-only).
+  if (request.nextUrl.pathname.startsWith('/design-studio')) {
+    if (!user) {
+      const redirectUrl = new URL('/login', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin, is_employee')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin && !profile?.is_employee) {
+      const redirectUrl = new URL('/portal', request.url);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
   // Protect /employee routes - require auth AND is_employee flag
   if (request.nextUrl.pathname.startsWith('/employee')) {
     if (!user) {
@@ -77,5 +100,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/portal/:path*', '/admin/:path*', '/employee/:path*'],
+  matcher: ['/portal/:path*', '/admin/:path*', '/employee/:path*', '/design-studio/:path*'],
 };

@@ -86,6 +86,14 @@ export default function EmployeeShell({ profile, currentUserId, chatThreads, ass
             active={pathname.startsWith('/employee/calendar')}
           />
 
+          <div className={styles.sidebarSectionLabel}>Design Studio</div>
+          <SidebarLink
+            href="/design-studio"
+            icon="ti-armchair"
+            label="Design Studio"
+            active={pathname.startsWith('/design-studio')}
+          />
+
           <div className={styles.sidebarSectionLabel}>Resources</div>
           <SidebarLink
             href="/employee/contacts"
