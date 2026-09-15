@@ -32,6 +32,10 @@ struct DesignStudioQuoteBuilderView: View {
     @State private var errorMessage: String?
     @State private var previewTask: Task<Void, Never>?
 
+    @State private var showScanRoom = false
+    @State private var pendingScanId: String?
+    @State private var attachedScanLabel: String?
+
     private var currentInput: DesignStudioQuoteInput {
         var addOns: [String: Double] = [:]
         for key in designStudioAddOnOrder {
@@ -64,6 +68,17 @@ struct DesignStudioQuoteBuilderView: View {
                         sectionHeader("Project")
                         pickerField("Project type", selection: $projectType, options: designStudioProjectTypeOrder, labels: designStudioProjectTypeLabels)
                         labeledField("Approximate area (sf)", text: $areaSqftText, keyboard: .numberPad)
+
+                        Button {
+                            showScanRoom = true
+                        } label: {
+                            Label("Scan room with LiDAR", systemImage: "viewfinder")
+                        }
+                        .buttonStyle(.bordered)
+                        if let attachedScanLabel {
+                            Text(attachedScanLabel).font(.caption2).foregroundColor(.secondary)
+                        }
+
                         pickerField("Service level", selection: $serviceLevel, options: designStudioServiceLevelOrder, labels: designStudioServiceLevelLabels)
                         pickerField("Complexity", selection: $complexity, options: designStudioComplexityOrder, labels: designStudioComplexityLabels)
 
@@ -115,6 +130,22 @@ struct DesignStudioQuoteBuilderView: View {
         }
         .task { await load() }
         .onChange(of: currentInput) { _ in schedulePreview() }
+        .sheet(isPresented: $showScanRoom) {
+            RoomScanView(quoteId: existingQuoteId) { scan in
+                if let area = scan.areaSqft {
+                    areaSqftText = String(format: "%.0f", area)
+                }
+                if existingQuoteId == nil {
+                    // Not saved yet — attach once save() has a quote id.
+                    pendingScanId = scan.id
+                }
+                attachedScanLabel = [
+                    scan.roomLabel,
+                    scan.areaSqft.map { "\(Int($0)) sf" },
+                    "scan attached",
+                ].compactMap { $0 }.joined(separator: " · ")
+            }
+        }
     }
 
     private var rushPctLabel: String { config.map { "\(Int(($0.rushPct * 100).rounded()))%" } ?? "30%" }
@@ -259,9 +290,15 @@ struct DesignStudioQuoteBuilderView: View {
                     "api/design-studio/quotes/\(id)", method: "PATCH", body: DesignStudioRepricePayload(reprice: currentInput)
                 )
             } else {
-                let _: DesignStudioQuoteCreateResponse = try await APIClient.sendDecoding(
+                let created: DesignStudioQuoteCreateResponse = try await APIClient.sendDecoding(
                     "api/design-studio/quotes", method: "POST", body: currentInput
                 )
+                if let scanId = pendingScanId {
+                    let _: RoomScanResponse = try await APIClient.sendDecoding(
+                        "api/design-studio/scans/\(scanId)", method: "PATCH",
+                        body: RoomScanAttachPayload(quoteId: created.quote.id)
+                    )
+                }
             }
             HapticManager.success()
             onSaved?()

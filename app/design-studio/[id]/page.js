@@ -17,6 +17,34 @@ export default async function QuoteDetailPage({ params }) {
   if (!quote) notFound();
   if (!user.isMaster && quote.created_by !== user.id) redirect('/design-studio');
 
+  const { data: scanRows } = await db
+    .from('design_studio_room_scans')
+    .select('*')
+    .eq('quote_id', id)
+    .order('created_at', { ascending: false });
+
+  const roomScans = await Promise.all(
+    (scanRows || []).map(async (scan) => {
+      const [{ data: model }, { data: floorPlan }] = await Promise.all([
+        db.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
+        scan.floor_plan_path
+          ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+          : Promise.resolve({ data: null }),
+      ]);
+      return {
+        id: scan.id,
+        roomLabel: scan.room_label,
+        areaSqft: scan.area_sqft,
+        areaIsEstimate: scan.area_is_estimate,
+        wallCount: scan.wall_count,
+        doorCount: scan.door_count,
+        windowCount: scan.window_count,
+        modelUrl: model?.signedUrl || null,
+        floorPlanUrl: floorPlan?.signedUrl || null,
+      };
+    })
+  );
+
   const p = quote.pricing || {};
   const internal = p.internal || {};
 
@@ -44,10 +72,31 @@ export default async function QuoteDetailPage({ params }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 22, alignItems: 'start', marginTop: 18 }}>
           <div>
-            <ProposalDocument quote={quote} pricing={p} />
+            <ProposalDocument quote={quote} pricing={p} roomScans={roomScans} />
           </div>
 
           <aside>
+            {roomScans.length > 0 ? (
+              <section style={S.card}>
+                <h2 style={S.h2}>Room scans</h2>
+                {roomScans.map((scan) => (
+                  <div key={scan.id} style={{ paddingBottom: 10, marginBottom: 10, borderBottom: `1px solid ${C.line}` }}>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>{scan.roomLabel || 'Scanned space'}</div>
+                    <Row
+                      label="Area"
+                      value={scan.areaSqft ? `${Number(scan.areaSqft).toLocaleString()} sf${scan.areaIsEstimate ? ' (approx.)' : ''}` : '—'}
+                    />
+                    <Row label="Walls / doors / windows" value={`${scan.wallCount} / ${scan.doorCount} / ${scan.windowCount}`} />
+                    {scan.modelUrl ? (
+                      <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}>
+                        View 3D model →
+                      </a>
+                    ) : null}
+                  </div>
+                ))}
+              </section>
+            ) : null}
+
             <section style={S.card}>
               <h2 style={S.h2}>Internal breakdown</h2>
               <Row label="Package base" value={money(p.package?.base)} />

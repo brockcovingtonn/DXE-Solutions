@@ -263,6 +263,61 @@ struct DesignStudioConfigResponse: Decodable {
     var config: DesignStudioConfig
 }
 
+// MARK: - Room scans (LiDAR / RoomPlan)
+// Captured natively only — no web equivalent — via api/design-studio/scans.
+
+struct RoomScan: Codable, Identifiable {
+    var id: String
+    var quoteId: String?
+    var roomLabel: String?
+    var areaSqft: Double?
+    var areaIsEstimate: Bool
+    var wallCount: Int
+    var doorCount: Int
+    var windowCount: Int
+    var modelUrl: String?
+    var floorPlanUrl: String?
+    var createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case quoteId = "quote_id"
+        case roomLabel = "room_label"
+        case areaSqft = "area_sqft"
+        case areaIsEstimate = "area_is_estimate"
+        case wallCount = "wall_count"
+        case doorCount = "door_count"
+        case windowCount = "window_count"
+        case modelUrl = "model_url"
+        case floorPlanUrl = "floor_plan_url"
+        case createdAt = "created_at"
+    }
+}
+
+struct RoomScanResponse: Decodable { var scan: RoomScan }
+struct RoomScanListResponse: Decodable { var scans: [RoomScan] }
+
+struct RoomScanUploadURLResponse: Decodable {
+    var scanId: String
+    var model: SignedUpload
+    var floorPlan: SignedUpload
+
+    struct SignedUpload: Decodable { var path: String; var token: String }
+}
+
+struct RoomScanCreatePayload: Encodable {
+    var scanId: String
+    var quoteId: String?
+    var roomLabel: String?
+    var areaSqft: Double?
+    var areaIsEstimate: Bool
+    var wallCount: Int
+    var doorCount: Int
+    var windowCount: Int
+}
+
+struct RoomScanAttachPayload: Encodable { var quoteId: String }
+
 // MARK: - Request payloads
 // Sent to the same api/design-studio routes the web builder posts to.
 // Property names are deliberately camelCase with no CodingKeys override —

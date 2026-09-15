@@ -30,11 +30,35 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: quote } = await db
     .from('design_studio_quotes')
-    .select('quote_number, status, client_name, project_address, pricing, valid_until, created_at')
+    .select('id, quote_number, status, client_name, project_address, pricing, valid_until, created_at')
     .eq('share_token', token)
     .maybeSingle();
 
   if (!quote) notFound();
+
+  const { data: scanRows } = await db
+    .from('design_studio_room_scans')
+    .select('id, room_label, area_sqft, model_path, floor_plan_path')
+    .eq('quote_id', quote.id)
+    .order('created_at', { ascending: false });
+
+  const roomScans = await Promise.all(
+    (scanRows || []).map(async (scan) => {
+      const [{ data: model }, { data: floorPlan }] = await Promise.all([
+        db.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
+        scan.floor_plan_path
+          ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+          : Promise.resolve({ data: null }),
+      ]);
+      return {
+        id: scan.id,
+        roomLabel: scan.room_label,
+        areaSqft: scan.area_sqft,
+        modelUrl: model?.signedUrl || null,
+        floorPlanUrl: floorPlan?.signedUrl || null,
+      };
+    })
+  );
 
   const { internal, inputs, ...safePricing } = quote.pricing || {};
   const pricing = {
@@ -64,7 +88,7 @@ export default async function PublicProposalPage({ params }) {
         </div>
       ) : null}
 
-      <ProposalDocument quote={quote} pricing={pricing} />
+      <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} />
 
       <div
         style={{

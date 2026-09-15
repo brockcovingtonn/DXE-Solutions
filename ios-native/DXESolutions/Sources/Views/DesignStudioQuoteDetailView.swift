@@ -14,6 +14,9 @@ struct DesignStudioQuoteDetailView: View {
     @State private var pushToDraftEdit = false
     @State private var pushToDuplicateEdit = false
     @State private var duplicatedQuoteId: String?
+    @State private var roomScans: [RoomScan] = []
+    @State private var previewItem: PreviewItem?
+    @State private var showScanRoom = false
 
     private var canReprice: Bool { quote?.status == "draft" }
 
@@ -30,6 +33,7 @@ struct DesignStudioQuoteDetailView: View {
                             Text(errorMessage).font(.caption).foregroundColor(.red)
                         }
                         clientSection(quote)
+                        scanSection
                         priceSection(quote)
                         if let internalInfo = quote.pricing?.internalInfo {
                             internalSection(internalInfo)
@@ -57,6 +61,14 @@ struct DesignStudioQuoteDetailView: View {
         }
         .sheet(item: $safariURL) { item in
             SafariView(url: item.url)
+        }
+        .sheet(item: $previewItem) { item in
+            QuickLookPreview(url: item.url)
+        }
+        .sheet(isPresented: $showScanRoom) {
+            RoomScanView(quoteId: quoteId) { _ in
+                Task { await load() }
+            }
         }
         .task { await load() }
     }
@@ -143,6 +155,48 @@ struct DesignStudioQuoteDetailView: View {
         .padding(10)
         .background(Color(.secondarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var scanSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("ROOM SCANS").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
+            ForEach(roomScans) { scan in
+                HStack(spacing: 10) {
+                    if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
+                        AsyncImage(url: url) { image in
+                            image.resizable().aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            Color(.tertiarySystemFill)
+                        }
+                        .frame(width: 54, height: 54)
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(scan.roomLabel?.isEmpty == false ? scan.roomLabel! : "Scanned space").font(.subheadline)
+                        if let area = scan.areaSqft {
+                            Text("\(Int(area)) sf\(scan.areaIsEstimate ? " (approx.)" : "") · \(scan.wallCount) walls")
+                                .font(.caption2).foregroundColor(.secondary)
+                        }
+                    }
+                    Spacer()
+                    if let urlString = scan.modelUrl, let url = URL(string: urlString) {
+                        Button("View 3D") { previewItem = PreviewItem(url: url) }
+                            .font(.caption)
+                            .buttonStyle(.bordered)
+                    }
+                }
+                .padding(8)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            Button {
+                showScanRoom = true
+            } label: {
+                Label(roomScans.isEmpty ? "Scan room with LiDAR" : "Scan another room", systemImage: "viewfinder")
+                    .font(.caption)
+            }
+            .buttonStyle(.bordered)
+        }
     }
 
     private func priceSection(_ quote: DesignStudioQuote) -> some View {
@@ -273,6 +327,8 @@ struct DesignStudioQuoteDetailView: View {
         } catch {
             errorMessage = "Could not load this quote."
         }
+        let scansResponse: RoomScanListResponse? = try? await APIClient.get("api/design-studio/scans?quoteId=\(quoteId)")
+        roomScans = scansResponse?.scans ?? []
         isLoading = false
     }
 }

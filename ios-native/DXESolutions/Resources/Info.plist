@@ -31,7 +31,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>DXE Solutions adds project events to your calendar when you tap "Add to Calendar".</string>
 	<key>NSCameraUsageDescription</key>
-	<string>DXE Solutions uses your camera to capture progress photos and scan documents for your projects.</string>
+	<string>DXE Solutions uses your camera to capture progress photos, scan documents, and scan rooms with LiDAR for Design Studio proposals.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>DXE Solutions uses Face ID to quickly and securely unlock the app.</string>
 	<key>UIApplicationSceneManifest</key>
