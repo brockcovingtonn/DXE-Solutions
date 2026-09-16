@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { C, S } from '@/lib/design-studio/brand';
+import SendProposalEmailModal from './SendProposalEmailModal';
 
 const FLOW = [
   { status: 'sent', label: 'Mark sent' },
@@ -16,6 +17,7 @@ export default function QuoteActions({ quote, canReprice }) {
   const [busy, setBusy] = useState('');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   const shareUrl =
     typeof window !== 'undefined' ? `${window.location.origin}/proposal/${quote.share_token}` : '';
@@ -79,6 +81,10 @@ export default function QuoteActions({ quote, canReprice }) {
       <a href={`/proposal/${quote.share_token}`} target="_blank" rel="noreferrer" style={{ ...S.btnGhost, textDecoration: 'none' }}>
         Open proposal
       </a>
+      <button style={S.btnGhost} onClick={() => setShowEmailModal(true)}>
+        Send proposal
+      </button>
+      {showEmailModal ? <SendProposalEmailModal quoteId={quote.id} onClose={() => setShowEmailModal(false)} /> : null}
       {canReprice ? (
         <Link href={`/design-studio/${quote.id}/edit`} style={{ ...S.btn, textDecoration: 'none' }}>
           Re-price draft
