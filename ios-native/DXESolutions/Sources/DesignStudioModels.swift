@@ -269,7 +269,10 @@ struct DesignStudioConfigResponse: Decodable {
 struct RoomScan: Codable, Identifiable {
     var id: String
     var quoteId: String?
+    var projectId: String?
+    var projectName: String?
     var roomLabel: String?
+    var showToClient: Bool
     var areaSqft: Double?
     var areaIsEstimate: Bool
     var wallCount: Int
@@ -282,7 +285,10 @@ struct RoomScan: Codable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case id
         case quoteId = "quote_id"
+        case projectId = "project_id"
+        case projectName = "project_name"
         case roomLabel = "room_label"
+        case showToClient = "show_to_client"
         case areaSqft = "area_sqft"
         case areaIsEstimate = "area_is_estimate"
         case wallCount = "wall_count"
@@ -292,6 +298,34 @@ struct RoomScan: Codable, Identifiable {
         case floorPlanUrl = "floor_plan_url"
         case createdAt = "created_at"
     }
+}
+
+struct DesignStudioProject: Codable, Identifiable {
+    var id: String
+    var name: String
+    var address: String?
+    var ownerName: String?
+}
+
+struct DesignStudioProjectListResponse: Decodable { var projects: [DesignStudioProject] }
+
+struct DesignStudioClient: Codable, Identifiable {
+    var id: String
+    var name: String
+    var email: String?
+}
+
+struct DesignStudioClientListResponse: Decodable { var clients: [DesignStudioClient] }
+
+struct DesignStudioNewProjectPayload: Encodable {
+    var ownerId: String
+    var projectName: String
+    var address: String?
+}
+
+struct DesignStudioNewProjectResponse: Decodable {
+    var success: Bool
+    var projectId: String
 }
 
 struct RoomScanResponse: Decodable { var scan: RoomScan }
@@ -309,6 +343,7 @@ struct RoomScanCreatePayload: Encodable {
     var scanId: String
     var quoteId: String?
     var roomLabel: String?
+    var showToClient: Bool
     var areaSqft: Double?
     var areaIsEstimate: Bool
     var wallCount: Int
@@ -317,6 +352,21 @@ struct RoomScanCreatePayload: Encodable {
 }
 
 struct RoomScanAttachPayload: Encodable { var quoteId: String }
+struct RoomScanVisibilityPayload: Encodable { var showToClient: Bool }
+
+// projectId: nil means "detach" and must reach the server as an explicit
+// JSON null, not an omitted key — Swift's synthesized Encodable silently
+// drops nil optionals instead, which the API reads as "no change".
+struct RoomScanProjectPayload: Encodable {
+    var projectId: String?
+
+    enum CodingKeys: String, CodingKey { case projectId }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(projectId, forKey: .projectId)
+    }
+}
 
 // MARK: - Request payloads
 // Sent to the same api/design-studio routes the web builder posts to.

@@ -15,6 +15,7 @@ struct RoomScanView: View {
 
     @State private var stage: Stage = RoomCaptureSession.isSupported ? .scanning : .unsupported
     @State private var roomLabel = ""
+    @State private var showToClient = false
     @State private var areaText = "0"
     @State private var areaIsEstimate = false
     @State private var wallCount = 0
@@ -116,6 +117,8 @@ struct RoomScanView: View {
                     Text("ROOM LABEL").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
                     TextField("e.g. Kitchen", text: $roomLabel).textFieldStyle(.roundedBorder)
                 }
+
+                Toggle("Show on client proposal", isOn: $showToClient)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("MEASURED AREA (SF)").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
@@ -234,6 +237,7 @@ struct RoomScanView: View {
                     scanId: urls.scanId,
                     quoteId: quoteId,
                     roomLabel: roomLabel.isEmpty ? nil : roomLabel,
+                    showToClient: showToClient,
                     areaSqft: Double(areaText),
                     areaIsEstimate: areaIsEstimate,
                     wallCount: wallCount,

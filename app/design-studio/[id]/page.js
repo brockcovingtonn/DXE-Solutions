@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getStaffUser, supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
 import QuoteActions from '@/components/design-studio/QuoteActions';
+import ScanManager from '@/components/design-studio/ScanManager';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
@@ -19,7 +20,7 @@ export default async function QuoteDetailPage({ params }) {
 
   const { data: scanRows } = await db
     .from('design_studio_room_scans')
-    .select('*')
+    .select('*, projects(id, name)')
     .eq('quote_id', id)
     .order('created_at', { ascending: false });
 
@@ -41,9 +42,13 @@ export default async function QuoteDetailPage({ params }) {
         windowCount: scan.window_count,
         modelUrl: model?.signedUrl || null,
         floorPlanUrl: floorPlan?.signedUrl || null,
+        showToClient: scan.show_to_client,
+        project: scan.projects ? { id: scan.projects.id, name: scan.projects.name } : null,
       };
     })
   );
+
+  const clientVisibleScans = roomScans.filter((s) => s.showToClient);
 
   const p = quote.pricing || {};
   const internal = p.internal || {};
@@ -72,28 +77,14 @@ export default async function QuoteDetailPage({ params }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 22, alignItems: 'start', marginTop: 18 }}>
           <div>
-            <ProposalDocument quote={quote} pricing={p} roomScans={roomScans} />
+            <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} />
           </div>
 
           <aside>
             {roomScans.length > 0 ? (
               <section style={S.card}>
                 <h2 style={S.h2}>Room scans</h2>
-                {roomScans.map((scan) => (
-                  <div key={scan.id} style={{ paddingBottom: 10, marginBottom: 10, borderBottom: `1px solid ${C.line}` }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{scan.roomLabel || 'Scanned space'}</div>
-                    <Row
-                      label="Area"
-                      value={scan.areaSqft ? `${Number(scan.areaSqft).toLocaleString()} sf${scan.areaIsEstimate ? ' (approx.)' : ''}` : '—'}
-                    />
-                    <Row label="Walls / doors / windows" value={`${scan.wallCount} / ${scan.doorCount} / ${scan.windowCount}`} />
-                    {scan.modelUrl ? (
-                      <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}>
-                        View 3D model →
-                      </a>
-                    ) : null}
-                  </div>
-                ))}
+                <ScanManager scans={roomScans} isMaster={user.isMaster} />
               </section>
             ) : null}
 

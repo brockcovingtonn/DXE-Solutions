@@ -40,6 +40,7 @@ export default async function PublicProposalPage({ params }) {
     .from('design_studio_room_scans')
     .select('id, room_label, area_sqft, model_path, floor_plan_path')
     .eq('quote_id', quote.id)
+    .eq('show_to_client', true)
     .order('created_at', { ascending: false });
 
   const roomScans = await Promise.all(

@@ -6,13 +6,14 @@ const BUCKET = 'design-studio-scans';
 const URL_TTL = 3600;
 
 async function signScan(db, scan) {
+  const { projects, ...rest } = scan;
   const [{ data: model }, { data: floorPlan }] = await Promise.all([
     db.storage.from(BUCKET).createSignedUrl(scan.model_path, URL_TTL),
     scan.floor_plan_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.floor_plan_path, URL_TTL)
       : Promise.resolve({ data: null }),
   ]);
-  return { ...scan, model_url: model?.signedUrl || null, floor_plan_url: floorPlan?.signedUrl || null };
+  return { ...rest, project_name: projects?.name || null, model_url: model?.signedUrl || null, floor_plan_url: floorPlan?.signedUrl || null };
 }
 
 export async function GET(request, { params }) {
@@ -20,7 +21,7 @@ export async function GET(request, { params }) {
     await requireStaff(request);
     const { id } = await params;
     const db = supabaseAdmin();
-    const { data, error } = await db.from('design_studio_room_scans').select('*').eq('id', id).maybeSingle();
+    const { data, error } = await db.from('design_studio_room_scans').select('*, projects(name)').eq('id', id).maybeSingle();
     if (error) throw error;
     if (!data) {
       const e = new Error('Scan not found');
@@ -45,12 +46,14 @@ export async function PATCH(request, { params }) {
     const patch = {};
     if (body.quoteId !== undefined) patch.quote_id = body.quoteId;
     if (body.roomLabel !== undefined) patch.room_label = body.roomLabel;
+    if (body.showToClient !== undefined) patch.show_to_client = Boolean(body.showToClient);
+    if (body.projectId !== undefined) patch.project_id = body.projectId;
 
     const { data, error } = await db
       .from('design_studio_room_scans')
       .update(patch)
       .eq('id', id)
-      .select('*')
+      .select('*, projects(name)')
       .single();
     if (error) throw error;
 

@@ -17,6 +17,9 @@ struct DesignStudioQuoteDetailView: View {
     @State private var roomScans: [RoomScan] = []
     @State private var previewItem: PreviewItem?
     @State private var showScanRoom = false
+    @State private var scanBusyId: String?
+    @State private var pickerScanId: String?
+    @State private var showProjectPicker = false
 
     private var canReprice: Bool { quote?.status == "draft" }
 
@@ -68,6 +71,13 @@ struct DesignStudioQuoteDetailView: View {
         .sheet(isPresented: $showScanRoom) {
             RoomScanView(quoteId: quoteId) { _ in
                 Task { await load() }
+            }
+        }
+        .sheet(isPresented: $showProjectPicker) {
+            ProjectPickerView(isMaster: viewer?.isMaster ?? false) { project in
+                if let id = pickerScanId, let scan = roomScans.first(where: { $0.id == id }) {
+                    attachProject(scan, projectId: project.id)
+                }
             }
         }
         .task { await load() }
@@ -161,28 +171,54 @@ struct DesignStudioQuoteDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("ROOM SCANS").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
             ForEach(roomScans) { scan in
-                HStack(spacing: 10) {
-                    if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
-                        AsyncImage(url: url) { image in
-                            image.resizable().aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            Color(.tertiarySystemFill)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
+                        if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
+                            AsyncImage(url: url) { image in
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Color(.tertiarySystemFill)
+                            }
+                            .frame(width: 54, height: 54)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
-                        .frame(width: 54, height: 54)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(scan.roomLabel?.isEmpty == false ? scan.roomLabel! : "Scanned space").font(.subheadline)
-                        if let area = scan.areaSqft {
-                            Text("\(Int(area)) sf\(scan.areaIsEstimate ? " (approx.)" : "") · \(scan.wallCount) walls")
-                                .font(.caption2).foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(scan.roomLabel?.isEmpty == false ? scan.roomLabel! : "Scanned space").font(.subheadline)
+                            if let area = scan.areaSqft {
+                                Text("\(Int(area)) sf\(scan.areaIsEstimate ? " (approx.)" : "") · \(scan.wallCount) walls")
+                                    .font(.caption2).foregroundColor(.secondary)
+                            }
+                        }
+                        Spacer()
+                        if let urlString = scan.modelUrl, let url = URL(string: urlString) {
+                            Button("View 3D") { previewItem = PreviewItem(url: url) }
+                                .font(.caption)
+                                .buttonStyle(.bordered)
                         }
                     }
-                    Spacer()
-                    if let urlString = scan.modelUrl, let url = URL(string: urlString) {
-                        Button("View 3D") { previewItem = PreviewItem(url: url) }
-                            .font(.caption)
-                            .buttonStyle(.bordered)
+
+                    Toggle("Show on client proposal", isOn: Binding(
+                        get: { scan.showToClient },
+                        set: { toggleShowToClient(scan, $0) }
+                    ))
+                    .font(.caption)
+                    .disabled(scanBusyId == scan.id)
+
+                    if let projectName = scan.projectName {
+                        HStack {
+                            Text("Project: \(projectName)").font(.caption2).foregroundColor(.secondary)
+                            Spacer()
+                            Button("Remove") { attachProject(scan, projectId: nil) }
+                                .font(.caption2)
+                                .disabled(scanBusyId == scan.id)
+                        }
+                    } else {
+                        Button("Attach to project") {
+                            pickerScanId = scan.id
+                            showProjectPicker = true
+                        }
+                        .font(.caption)
+                        .disabled(scanBusyId == scan.id)
                     }
                 }
                 .padding(8)
@@ -196,6 +232,34 @@ struct DesignStudioQuoteDetailView: View {
                     .font(.caption)
             }
             .buttonStyle(.bordered)
+        }
+    }
+
+    private func toggleShowToClient(_ scan: RoomScan, _ value: Bool) {
+        guard let index = roomScans.firstIndex(where: { $0.id == scan.id }) else { return }
+        roomScans[index].showToClient = value
+        scanBusyId = scan.id
+        Task {
+            defer { scanBusyId = nil }
+            let _: RoomScanResponse? = try? await APIClient.sendDecoding(
+                "api/design-studio/scans/\(scan.id)", method: "PATCH", body: RoomScanVisibilityPayload(showToClient: value)
+            )
+        }
+    }
+
+    private func attachProject(_ scan: RoomScan, projectId: String?) {
+        guard let index = roomScans.firstIndex(where: { $0.id == scan.id }) else { return }
+        scanBusyId = scan.id
+        Task {
+            defer { scanBusyId = nil }
+            do {
+                let response: RoomScanResponse = try await APIClient.sendDecoding(
+                    "api/design-studio/scans/\(scan.id)", method: "PATCH", body: RoomScanProjectPayload(projectId: projectId)
+                )
+                roomScans[index] = response.scan
+            } catch {
+                // Leave as-is; the row remains tappable to retry.
+            }
         }
     }
 
