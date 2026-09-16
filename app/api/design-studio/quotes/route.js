@@ -52,6 +52,7 @@ export async function POST(request) {
       .insert({
         quote_number: numberRow,
         status: 'draft',
+        client_id: body.clientId || null,
         client_name: body.clientName || null,
         client_email: body.clientEmail || null,
         client_phone: body.clientPhone || null,

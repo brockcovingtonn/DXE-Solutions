@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { C, S } from '@/lib/design-studio/brand';
 import SendProposalEmailModal from './SendProposalEmailModal';
+import SendIntakeEmailModal from './SendIntakeEmailModal';
 
 const FLOW = [
   { status: 'sent', label: 'Mark sent' },
@@ -18,6 +19,7 @@ export default function QuoteActions({ quote, canReprice }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showIntakeModal, setShowIntakeModal] = useState(false);
 
   const shareUrl =
     typeof window !== 'undefined' ? `${window.location.origin}/proposal/${quote.share_token}` : '';
@@ -85,6 +87,15 @@ export default function QuoteActions({ quote, canReprice }) {
         Send proposal
       </button>
       {showEmailModal ? <SendProposalEmailModal quoteId={quote.id} onClose={() => setShowEmailModal(false)} /> : null}
+      <button style={S.btnGhost} onClick={() => setShowIntakeModal(true)} disabled={!quote.client_email}>
+        Request more info
+      </button>
+      {quote.intake_submitted_at ? (
+        <span style={{ fontSize: 12, color: C.muted }}>Intake received {new Date(quote.intake_submitted_at).toLocaleDateString()}</span>
+      ) : quote.intake_requested_at ? (
+        <span style={{ fontSize: 12, color: C.muted }}>Intake requested {new Date(quote.intake_requested_at).toLocaleDateString()}</span>
+      ) : null}
+      {showIntakeModal ? <SendIntakeEmailModal quoteId={quote.id} onClose={() => setShowIntakeModal(false)} /> : null}
       {canReprice ? (
         <Link href={`/design-studio/${quote.id}/edit`} style={{ ...S.btn, textDecoration: 'none' }}>
           Re-price draft

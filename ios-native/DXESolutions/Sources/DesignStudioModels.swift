@@ -166,9 +166,13 @@ struct DesignStudioQuote: Codable, Identifiable {
     var id: String
     var quoteNumber: String
     var status: String
+    var clientId: String?
     var clientName: String?
     var clientEmail: String?
     var clientPhone: String?
+    var intake: IntakeAnswers?
+    var intakeRequestedAt: String?
+    var intakeSubmittedAt: String?
     var projectAddress: String?
     var projectType: String
     var serviceLevel: String
@@ -194,11 +198,14 @@ struct DesignStudioQuote: Codable, Identifiable {
     var updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, status, pricing, total, deposit, complexity
+        case id, status, pricing, total, deposit, complexity, intake
         case quoteNumber = "quote_number"
+        case clientId = "client_id"
         case clientName = "client_name"
         case clientEmail = "client_email"
         case clientPhone = "client_phone"
+        case intakeRequestedAt = "intake_requested_at"
+        case intakeSubmittedAt = "intake_submitted_at"
         case projectAddress = "project_address"
         case projectType = "project_type"
         case serviceLevel = "service_level"
@@ -220,6 +227,34 @@ struct DesignStudioQuote: Codable, Identifiable {
         case updatedAt = "updated_at"
     }
 }
+
+// Mirrors lib/design-studio/intake.js's INTAKE_FIELDS exactly — same field
+// ids, so this decodes/encodes the design_studio_quotes.intake JSONB
+// column directly with no CodingKeys needed. Used both for the client's
+// own submission (web-only, via /intake/[token]) reflected back here, and
+// the staff-fill form in IntakeFormView.swift.
+struct IntakeAnswers: Codable, Equatable {
+    var vision: String = ""
+    var rooms: String = ""
+    var timeline: String = ""
+    var budget: String = ""
+    var style: [String] = []
+    var inspiration: String = ""
+    var keep: String = ""
+    var avoid: String = ""
+    var structural: String = ""
+    var household: String = ""
+    var contact: String = ""
+    var notes: String = ""
+
+    var hasAnyAnswer: Bool {
+        !vision.isEmpty || !rooms.isEmpty || !timeline.isEmpty || !budget.isEmpty || !style.isEmpty
+            || !inspiration.isEmpty || !keep.isEmpty || !avoid.isEmpty || !structural.isEmpty
+            || !household.isEmpty || !contact.isEmpty || !notes.isEmpty
+    }
+}
+
+struct DesignStudioIntakeSavePayload: Encodable { var intake: IntakeAnswers }
 
 struct DesignStudioViewer: Codable {
     var id: String
@@ -353,9 +388,23 @@ struct DesignStudioClient: Codable, Identifiable {
     var id: String
     var name: String
     var email: String?
+    var phone: String?
 }
 
 struct DesignStudioClientListResponse: Decodable { var clients: [DesignStudioClient] }
+
+// Creates a real account (auth user + profiles row), no project — a
+// Design Studio quote precedes the project by design. Field names match
+// the web builder's POST body (JS convention, see the request-payloads
+// note below).
+struct DesignStudioClientCreatePayload: Encodable {
+    var firstName: String
+    var lastName: String
+    var email: String
+    var phone: String
+}
+
+struct DesignStudioClientCreateResponse: Decodable { var client: DesignStudioClient }
 
 struct DesignStudioNewProjectPayload: Encodable {
     var ownerId: String
@@ -479,6 +528,7 @@ struct FloorPlanVisibilityPayload: Encodable { var showToClient: Bool }
 // only the *stored row* is snake_case.
 
 struct DesignStudioQuoteInput: Encodable, Equatable {
+    var clientId: String?
     var clientName: String
     var clientEmail: String
     var clientPhone: String
@@ -496,7 +546,7 @@ struct DesignStudioQuoteInput: Encodable, Equatable {
 
     static var empty: DesignStudioQuoteInput {
         DesignStudioQuoteInput(
-            clientName: "", clientEmail: "", clientPhone: "", projectAddress: "",
+            clientId: nil, clientName: "", clientEmail: "", clientPhone: "", projectAddress: "",
             projectType: "adu", serviceLevel: "design", complexity: "standard", areaSqft: 600,
             rush: false, tradePartner: false, addOns: [:], manualAdjustment: 0, adjustmentNote: "", internalNotes: ""
         )

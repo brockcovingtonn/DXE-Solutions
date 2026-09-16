@@ -5,6 +5,7 @@ import ProposalDocument from '@/components/design-studio/ProposalDocument';
 import QuoteActions from '@/components/design-studio/QuoteActions';
 import ScanManager from '@/components/design-studio/ScanManager';
 import FloorPlanManager from '@/components/design-studio/FloorPlanManager';
+import IntakeSection from '@/components/design-studio/IntakeSection';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
@@ -114,6 +115,11 @@ export default async function QuoteDetailPage({ params }) {
             <section style={S.card}>
               <h2 style={S.h2}>Floor plans</h2>
               <FloorPlanManager quoteId={id} initialPlans={floorPlans} />
+            </section>
+
+            <section style={S.card}>
+              <h2 style={S.h2}>Intake</h2>
+              <IntakeSection quoteId={id} intake={quote.intake} submittedAt={quote.intake_submitted_at} />
             </section>
 
             <section style={S.card}>

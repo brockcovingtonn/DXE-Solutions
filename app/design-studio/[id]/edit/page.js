@@ -20,6 +20,7 @@ export default async function EditQuotePage({ params }) {
   const config = await loadActiveConfig();
 
   const initial = {
+    clientId: quote.client_id || null,
     clientName: quote.client_name || '',
     clientEmail: quote.client_email || '',
     clientPhone: quote.client_phone || '',

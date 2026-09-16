@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { calculateQuote, ADDON_ORDER, EMPTY_INPUT, addOnRate } from '@/lib/design-studio/pricing';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
 import ProposalDocument from './ProposalDocument';
+import ClientPicker from './ClientPicker';
 
 export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
   const router = useRouter();
@@ -98,19 +99,19 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
             {/* 1 — Client */}
             <section style={S.card}>
               <h2 style={S.h2}>1 · Client</h2>
-              <div style={S.grid2}>
-                <div>
-                  <label style={S.label}>Client name</label>
-                  <input style={S.input} value={form.clientName} onChange={set('clientName')} placeholder="Jane Whitfield" />
-                </div>
-                <div>
-                  <label style={S.label}>Email</label>
-                  <input style={S.input} value={form.clientEmail} onChange={set('clientEmail')} placeholder="jane@example.com" />
-                </div>
-                <div>
-                  <label style={S.label}>Phone</label>
-                  <input style={S.input} value={form.clientPhone} onChange={set('clientPhone')} />
-                </div>
+              <ClientPicker
+                client={form.clientId ? { id: form.clientId, name: form.clientName, email: form.clientEmail, phone: form.clientPhone } : null}
+                onChange={(c) =>
+                  setForm((f) => ({
+                    ...f,
+                    clientId: c?.id || null,
+                    clientName: c?.name || '',
+                    clientEmail: c?.email || '',
+                    clientPhone: c?.phone || '',
+                  }))
+                }
+              />
+              <div style={{ ...S.grid2, marginTop: 12 }}>
                 <div>
                   <label style={S.label}>Project address</label>
                   <input style={S.input} value={form.projectAddress} onChange={set('projectAddress')} placeholder="2068 N Beverly Dr" />

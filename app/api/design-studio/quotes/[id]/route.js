@@ -61,6 +61,12 @@ export async function PATCH(request, { params }) {
 
     if (body.internalNotes !== undefined) patch.internal_notes = body.internalNotes;
 
+    // Staff filling out (or correcting) the intake form themselves, e.g.
+    // over the phone — separate from the client's own submission at
+    // /intake/[token], which goes through app/api/intake/[token]/route.js
+    // instead since the client never authenticates.
+    if (body.intake !== undefined) patch.intake = body.intake;
+
     // A full re-price. Only allowed while the quote is still a draft, so a sent
     // proposal can never silently change underneath the client.
     if (body.reprice) {
@@ -72,6 +78,7 @@ export async function PATCH(request, { params }) {
       const config = await loadActiveConfig();
       const recalculated = calculateQuote(body.reprice, config);
       Object.assign(patch, {
+        client_id: body.reprice.clientId || null,
         client_name: body.reprice.clientName || null,
         client_email: body.reprice.clientEmail || null,
         client_phone: body.reprice.clientPhone || null,

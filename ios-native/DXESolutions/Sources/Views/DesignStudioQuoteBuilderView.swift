@@ -11,9 +11,11 @@ struct DesignStudioQuoteBuilderView: View {
     var onSaved: (() -> Void)?
 
     @State private var config: DesignStudioConfig?
+    @State private var clientId: String?
     @State private var clientName = ""
     @State private var clientEmail = ""
     @State private var clientPhone = ""
+    @State private var showClientPicker = false
     @State private var projectAddress = ""
     @State private var projectType = "adu"
     @State private var serviceLevel = "design"
@@ -42,7 +44,7 @@ struct DesignStudioQuoteBuilderView: View {
             if let v = Double(addOnQty[key] ?? ""), v > 0 { addOns[key] = v }
         }
         return DesignStudioQuoteInput(
-            clientName: clientName, clientEmail: clientEmail, clientPhone: clientPhone, projectAddress: projectAddress,
+            clientId: clientId, clientName: clientName, clientEmail: clientEmail, clientPhone: clientPhone, projectAddress: projectAddress,
             projectType: projectType, serviceLevel: serviceLevel, complexity: complexity,
             areaSqft: Double(areaSqftText) ?? 0,
             rush: rush, tradePartner: tradePartner, addOns: addOns,
@@ -60,9 +62,25 @@ struct DesignStudioQuoteBuilderView: View {
                         priceSummary
 
                         sectionHeader("Client")
-                        labeledField("Client name", text: $clientName)
-                        labeledField("Email", text: $clientEmail, keyboard: .emailAddress)
-                        labeledField("Phone", text: $clientPhone, keyboard: .phonePad)
+                        if clientId != nil {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(clientName).font(.subheadline.weight(.semibold))
+                                    Text([clientEmail, clientPhone].filter { !$0.isEmpty }.joined(separator: " · "))
+                                        .font(.caption2).foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Button("Change") { showClientPicker = true }
+                                    .font(.caption)
+                            }
+                        } else {
+                            Button {
+                                showClientPicker = true
+                            } label: {
+                                Label("Select client", systemImage: "person.crop.circle.badge.plus")
+                            }
+                            .buttonStyle(.bordered)
+                        }
                         labeledField("Project address", text: $projectAddress)
 
                         sectionHeader("Project")
@@ -130,6 +148,14 @@ struct DesignStudioQuoteBuilderView: View {
         }
         .task { await load() }
         .onChange(of: currentInput) { _ in schedulePreview() }
+        .sheet(isPresented: $showClientPicker) {
+            ClientPickerView { client in
+                clientId = client.id
+                clientName = client.name
+                clientEmail = client.email ?? ""
+                clientPhone = client.phone ?? ""
+            }
+        }
         .sheet(isPresented: $showScanRoom) {
             RoomScanView(quoteId: existingQuoteId) { scan in
                 if let area = scan.areaSqft {
@@ -257,6 +283,7 @@ struct DesignStudioQuoteBuilderView: View {
             do {
                 let response: DesignStudioQuoteResponse = try await APIClient.get("api/design-studio/quotes/\(id)")
                 let quote = response.quote
+                clientId = quote.clientId
                 clientName = quote.clientName ?? ""
                 clientEmail = quote.clientEmail ?? ""
                 clientPhone = quote.clientPhone ?? ""

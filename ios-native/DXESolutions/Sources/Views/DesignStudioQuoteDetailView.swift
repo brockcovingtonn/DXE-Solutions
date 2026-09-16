@@ -21,6 +21,7 @@ struct DesignStudioQuoteDetailView: View {
     @State private var pickerScanId: String?
     @State private var showProjectPicker = false
     @State private var annotateScan: RoomScan?
+    @State private var showIntakeForm = false
 
     private var canReprice: Bool { quote?.status == "draft" }
 
@@ -39,6 +40,7 @@ struct DesignStudioQuoteDetailView: View {
                         clientSection(quote)
                         scanSection
                         floorPlanSection
+                        intakeSection(quote)
                         priceSection(quote)
                         if let internalInfo = quote.pricing?.internalInfo {
                             internalSection(internalInfo)
@@ -78,6 +80,13 @@ struct DesignStudioQuoteDetailView: View {
         .sheet(item: $annotateScan) { scan in
             RoomScanAnnotateView(scan: scan) { _ in
                 Task { await load() }
+            }
+        }
+        .sheet(isPresented: $showIntakeForm) {
+            if let quote {
+                IntakeFormView(quoteId: quoteId, initialAnswers: quote.intake ?? IntakeAnswers()) { updated in
+                    self.quote = updated
+                }
             }
         }
         .sheet(isPresented: $showProjectPicker) {
@@ -264,6 +273,35 @@ struct DesignStudioQuoteDetailView: View {
             Text("FLOOR PLANS").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
             FloorPlanManagerView(quoteId: quoteId)
         }
+    }
+
+    private func intakeSection(_ quote: DesignStudioQuote) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("INTAKE").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
+                Spacer()
+                if let submittedAt = quote.intakeSubmittedAt {
+                    Text("Received \(shortDate(submittedAt))").font(.caption2).foregroundColor(.secondary)
+                } else if let requestedAt = quote.intakeRequestedAt {
+                    Text("Requested \(shortDate(requestedAt))").font(.caption2).foregroundColor(.secondary)
+                }
+            }
+            Button {
+                showIntakeForm = true
+            } label: {
+                Text((quote.intake?.hasAnyAnswer ?? false) ? "Edit intake answers" : "Fill out intake form").font(.caption)
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+
+    private func shortDate(_ isoString: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        guard let date = formatter.date(from: isoString) ?? ISO8601DateFormatter().date(from: isoString) else { return isoString }
+        let display = DateFormatter()
+        display.dateStyle = .medium
+        return display.string(from: date)
     }
 
     private func toggleShowToClient(_ scan: RoomScan, _ value: Bool) {
