@@ -23,6 +23,7 @@ struct RoomScanView: View {
     @State private var windowCount = 0
     @State private var floorPlanImage: UIImage?
     @State private var modelFileURL: URL?
+    @State private var glbFileURL: URL?
     @State private var isUploading = false
     @State private var errorMessage: String?
 
@@ -192,6 +193,19 @@ struct RoomScanView: View {
         } catch {
             errorMessage = "Could not export the 3D model: \(error.localizedDescription)"
         }
+
+        // A simplified web-renderable model alongside the USDZ — see
+        // RoomScanGLBExporter for why RoomPlan's own export can't be used
+        // for this (USDZ only renders inline in iOS Safari).
+        let glbData = RoomScanGLBExporter.export(room)
+        let glbURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).glb")
+        do {
+            try glbData.write(to: glbURL)
+            glbFileURL = glbURL
+        } catch {
+            glbFileURL = nil
+        }
+
         stage = .reviewing
     }
 
@@ -200,6 +214,8 @@ struct RoomScanView: View {
         floorPlanImage = nil
         if let modelFileURL { try? FileManager.default.removeItem(at: modelFileURL) }
         modelFileURL = nil
+        if let glbFileURL { try? FileManager.default.removeItem(at: glbFileURL) }
+        glbFileURL = nil
     }
 
     private func uploadAndSave() async {
@@ -231,6 +247,13 @@ struct RoomScanView: View {
                 try? FileManager.default.removeItem(at: pngURL)
             }
 
+            if let glbFileURL {
+                try await SupabaseConfig.client.storage.from("design-studio-scans").uploadToSignedURL(
+                    urls.modelGltf.path, token: urls.modelGltf.token, fileURL: glbFileURL,
+                    options: FileOptions(contentType: "model/gltf-binary")
+                )
+            }
+
             let created: RoomScanResponse = try await APIClient.sendDecoding(
                 "api/design-studio/scans", method: "POST",
                 body: RoomScanCreatePayload(
@@ -242,11 +265,13 @@ struct RoomScanView: View {
                     areaIsEstimate: areaIsEstimate,
                     wallCount: wallCount,
                     doorCount: doorCount,
-                    windowCount: windowCount
+                    windowCount: windowCount,
+                    hasGltf: glbFileURL != nil
                 )
             )
 
             try? FileManager.default.removeItem(at: modelFileURL)
+            if let glbFileURL { try? FileManager.default.removeItem(at: glbFileURL) }
             HapticManager.success()
             onComplete(created.scan)
             dismiss()

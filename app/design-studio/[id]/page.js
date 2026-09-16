@@ -4,6 +4,7 @@ import { getStaffUser, supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
 import QuoteActions from '@/components/design-studio/QuoteActions';
 import ScanManager from '@/components/design-studio/ScanManager';
+import FloorPlanManager from '@/components/design-studio/FloorPlanManager';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
@@ -26,10 +27,13 @@ export default async function QuoteDetailPage({ params }) {
 
   const roomScans = await Promise.all(
     (scanRows || []).map(async (scan) => {
-      const [{ data: model }, { data: floorPlan }] = await Promise.all([
+      const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
         db.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
         scan.floor_plan_path
           ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+          : Promise.resolve({ data: null }),
+        scan.model_gltf_path
+          ? db.storage.from('design-studio-scans').createSignedUrl(scan.model_gltf_path, 3600)
           : Promise.resolve({ data: null }),
       ]);
       return {
@@ -42,6 +46,7 @@ export default async function QuoteDetailPage({ params }) {
         windowCount: scan.window_count,
         modelUrl: model?.signedUrl || null,
         floorPlanUrl: floorPlan?.signedUrl || null,
+        modelGltfUrl: modelGltf?.signedUrl || null,
         showToClient: scan.show_to_client,
         project: scan.projects ? { id: scan.projects.id, name: scan.projects.name } : null,
       };
@@ -49,6 +54,24 @@ export default async function QuoteDetailPage({ params }) {
   );
 
   const clientVisibleScans = roomScans.filter((s) => s.showToClient);
+
+  const { data: floorPlanRows } = await db
+    .from('design_studio_floor_plans')
+    .select('*, projects(name)')
+    .eq('quote_id', id)
+    .order('created_at', { ascending: false });
+
+  const floorPlans = await Promise.all(
+    (floorPlanRows || []).map(async (plan) => {
+      const { data } = await db.storage
+        .from('design-studio-scans')
+        .createSignedUrl(plan.file_path, 3600, { download: !plan.is_renderable });
+      const { projects, ...rest } = plan;
+      return { ...rest, project_name: projects?.name || null, file_url: data?.signedUrl || null };
+    })
+  );
+
+  const clientVisibleFloorPlans = floorPlans.filter((f) => f.show_to_client);
 
   const p = quote.pricing || {};
   const internal = p.internal || {};
@@ -77,7 +100,7 @@ export default async function QuoteDetailPage({ params }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 22, alignItems: 'start', marginTop: 18 }}>
           <div>
-            <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} />
+            <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} floorPlans={clientVisibleFloorPlans} />
           </div>
 
           <aside>
@@ -87,6 +110,11 @@ export default async function QuoteDetailPage({ params }) {
                 <ScanManager scans={roomScans} isMaster={user.isMaster} />
               </section>
             ) : null}
+
+            <section style={S.card}>
+              <h2 style={S.h2}>Floor plans</h2>
+              <FloorPlanManager quoteId={id} initialPlans={floorPlans} />
+            </section>
 
             <section style={S.card}>
               <h2 style={S.h2}>Internal breakdown</h2>

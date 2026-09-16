@@ -7,13 +7,22 @@ const URL_TTL = 3600;
 
 async function signScan(db, scan) {
   const { projects, ...rest } = scan;
-  const [{ data: model }, { data: floorPlan }] = await Promise.all([
+  const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
     db.storage.from(BUCKET).createSignedUrl(scan.model_path, URL_TTL),
     scan.floor_plan_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.floor_plan_path, URL_TTL)
       : Promise.resolve({ data: null }),
+    scan.model_gltf_path
+      ? db.storage.from(BUCKET).createSignedUrl(scan.model_gltf_path, URL_TTL)
+      : Promise.resolve({ data: null }),
   ]);
-  return { ...rest, project_name: projects?.name || null, model_url: model?.signedUrl || null, floor_plan_url: floorPlan?.signedUrl || null };
+  return {
+    ...rest,
+    project_name: projects?.name || null,
+    model_url: model?.signedUrl || null,
+    floor_plan_url: floorPlan?.signedUrl || null,
+    model_gltf_url: modelGltf?.signedUrl || null,
+  };
 }
 
 // Registers a scan after the native app has already uploaded its model +
@@ -44,6 +53,7 @@ export async function POST(request) {
         window_count: Number(body.windowCount) || 0,
         model_path: `${body.scanId}/model.usdz`,
         floor_plan_path: `${body.scanId}/floor-plan.png`,
+        model_gltf_path: body.hasGltf ? `${body.scanId}/model.glb` : null,
         created_by: user.id,
         created_by_name: user.name,
       })

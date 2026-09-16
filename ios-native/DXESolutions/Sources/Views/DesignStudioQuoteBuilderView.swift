@@ -184,20 +184,27 @@ struct DesignStudioQuoteBuilderView: View {
 
     private func addOnRow(key: String, def: AddOnDef) -> some View {
         let rate = (serviceLevel == "premium" ? def.premiumRate : nil) ?? def.rate
+        let included = (Double(addOnQty[key] ?? "") ?? 0) > 0
         return HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(def.label).font(.subheadline)
-                Text("\(designStudioCurrency(rate)) / \(def.unit)").font(.caption2).foregroundColor(.secondary)
+            Toggle(isOn: Binding(
+                get: { included },
+                set: { addOnQty[key] = $0 ? "1" : "" }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(def.label).font(.subheadline)
+                    Text("\(designStudioCurrency(rate)) / \(def.unit)").font(.caption2).foregroundColor(.secondary)
+                }
             }
-            Spacer()
-            TextField("0", text: Binding(
-                get: { addOnQty[key] ?? "" },
-                set: { addOnQty[key] = $0 }
-            ))
-            .keyboardType(.numberPad)
-            .multilineTextAlignment(.trailing)
-            .frame(width: 50)
-            .textFieldStyle(.roundedBorder)
+            if included {
+                TextField("1", text: Binding(
+                    get: { addOnQty[key] ?? "" },
+                    set: { addOnQty[key] = $0 }
+                ))
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 50)
+                .textFieldStyle(.roundedBorder)
+            }
         }
     }
 

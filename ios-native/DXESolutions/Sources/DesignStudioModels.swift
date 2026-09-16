@@ -280,6 +280,7 @@ struct RoomScan: Codable, Identifiable {
     var windowCount: Int
     var modelUrl: String?
     var floorPlanUrl: String?
+    var modelGltfUrl: String?
     var createdAt: String?
 
     enum CodingKeys: String, CodingKey {
@@ -296,6 +297,7 @@ struct RoomScan: Codable, Identifiable {
         case windowCount = "window_count"
         case modelUrl = "model_url"
         case floorPlanUrl = "floor_plan_url"
+        case modelGltfUrl = "model_gltf_url"
         case createdAt = "created_at"
     }
 }
@@ -335,6 +337,7 @@ struct RoomScanUploadURLResponse: Decodable {
     var scanId: String
     var model: SignedUpload
     var floorPlan: SignedUpload
+    var modelGltf: SignedUpload
 
     struct SignedUpload: Decodable { var path: String; var token: String }
 }
@@ -349,6 +352,7 @@ struct RoomScanCreatePayload: Encodable {
     var wallCount: Int
     var doorCount: Int
     var windowCount: Int
+    var hasGltf: Bool
 }
 
 struct RoomScanAttachPayload: Encodable { var quoteId: String }

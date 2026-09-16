@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Script from 'next/script';
 import { C, S } from '@/lib/design-studio/brand';
 
 // Per-scan controls on the quote detail page: whether a scan appears on the
@@ -16,6 +17,7 @@ export default function ScanManager({ scans, isMaster }) {
 
   return (
     <>
+      <Script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" strategy="afterInteractive" />
       {rows.map((scan) => (
         <ScanRow key={scan.id} scan={scan} isMaster={isMaster} onUpdate={(patch) => updateRow(scan.id, patch)} />
       ))}
@@ -27,6 +29,7 @@ function ScanRow({ scan, isMaster, onUpdate }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [showPicker, setShowPicker] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
 
   async function toggleShowToClient(checked) {
     setBusy(true);
@@ -93,7 +96,28 @@ function ScanRow({ scan, isMaster, onUpdate }) {
         value={scan.areaSqft ? `${Number(scan.areaSqft).toLocaleString()} sf${scan.areaIsEstimate ? ' (approx.)' : ''}` : '—'}
       />
       <Row label="Walls / doors / windows" value={`${scan.wallCount} / ${scan.doorCount} / ${scan.windowCount}`} />
-      {scan.modelUrl ? (
+      {scan.modelGltfUrl ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowViewer((v) => !v)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...S.small, color: C.clay, fontWeight: 600 }}
+          >
+            {showViewer ? 'Hide 3D model' : 'View 3D model →'}
+          </button>
+          {showViewer ? (
+            <model-viewer
+              src={scan.modelGltfUrl}
+              ios-src={scan.modelUrl || undefined}
+              alt={scan.roomLabel || 'Room scan'}
+              camera-controls
+              auto-rotate
+              ar
+              style={{ width: '100%', height: 240, display: 'block', marginTop: 8, background: C.paper, borderRadius: 8 }}
+            />
+          ) : null}
+        </>
+      ) : scan.modelUrl ? (
         <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}>
           View 3D model →
         </a>

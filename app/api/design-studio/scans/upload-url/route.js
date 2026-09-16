@@ -26,10 +26,19 @@ export async function POST(request) {
       .createSignedUploadUrl(`${scanId}/floor-plan.png`);
     if (floorPlanError) throw floorPlanError;
 
+    // Simplified box-mesh glTF, rendered in-browser via <model-viewer>. The
+    // USDZ above is the AR/Quick-Look source instead — no browser besides
+    // iOS Safari can render USDZ directly.
+    const { data: modelGltfUpload, error: modelGltfError } = await db.storage
+      .from(BUCKET)
+      .createSignedUploadUrl(`${scanId}/model.glb`);
+    if (modelGltfError) throw modelGltfError;
+
     return Response.json({
       scanId,
       model: { path: modelUpload.path, token: modelUpload.token },
       floorPlan: { path: floorPlanUpload.path, token: floorPlanUpload.token },
+      modelGltf: { path: modelGltfUpload.path, token: modelGltfUpload.token },
     });
   } catch (err) {
     return jsonError(err);

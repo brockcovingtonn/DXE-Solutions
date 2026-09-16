@@ -38,17 +38,20 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: scanRows } = await db
     .from('design_studio_room_scans')
-    .select('id, room_label, area_sqft, model_path, floor_plan_path')
+    .select('id, room_label, area_sqft, model_path, floor_plan_path, model_gltf_path')
     .eq('quote_id', quote.id)
     .eq('show_to_client', true)
     .order('created_at', { ascending: false });
 
   const roomScans = await Promise.all(
     (scanRows || []).map(async (scan) => {
-      const [{ data: model }, { data: floorPlan }] = await Promise.all([
+      const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
         db.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
         scan.floor_plan_path
           ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+          : Promise.resolve({ data: null }),
+        scan.model_gltf_path
+          ? db.storage.from('design-studio-scans').createSignedUrl(scan.model_gltf_path, 3600)
           : Promise.resolve({ data: null }),
       ]);
       return {
@@ -57,7 +60,24 @@ export default async function PublicProposalPage({ params }) {
         areaSqft: scan.area_sqft,
         modelUrl: model?.signedUrl || null,
         floorPlanUrl: floorPlan?.signedUrl || null,
+        modelGltfUrl: modelGltf?.signedUrl || null,
       };
+    })
+  );
+
+  const { data: floorPlanRows } = await db
+    .from('design_studio_floor_plans')
+    .select('id, file_name, file_type, is_renderable, file_path')
+    .eq('quote_id', quote.id)
+    .eq('show_to_client', true)
+    .order('created_at', { ascending: false });
+
+  const floorPlans = await Promise.all(
+    (floorPlanRows || []).map(async (plan) => {
+      const { data } = await db.storage
+        .from('design-studio-scans')
+        .createSignedUrl(plan.file_path, 3600, { download: !plan.is_renderable });
+      return { id: plan.id, file_name: plan.file_name, file_type: plan.file_type, file_url: data?.signedUrl || null };
     })
   );
 
@@ -89,7 +109,7 @@ export default async function PublicProposalPage({ params }) {
         </div>
       ) : null}
 
-      <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} />
+      <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} floorPlans={floorPlans} />
 
       <div
         style={{

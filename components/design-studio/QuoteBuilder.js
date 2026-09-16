@@ -26,6 +26,9 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
     const v = Math.max(0, Number(e.target.value) || 0);
     setForm((f) => ({ ...f, addOns: { ...f.addOns, [key]: v } }));
   };
+  const toggleAddOn = (key) => (e) => {
+    setForm((f) => ({ ...f, addOns: { ...f.addOns, [key]: e.target.checked ? 1 : 0 } }));
+  };
 
   async function save() {
     setSaving(true);
@@ -186,16 +189,23 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                 {ADDON_ORDER.filter((k) => config.addOns?.[k]).map((k) => {
                   const def = config.addOns[k];
                   const rate = addOnRate(k, config, quote.inputs.serviceLevel);
+                  const qty = form.addOns?.[k] ?? 0;
+                  const included = qty > 0;
                   return (
                     <div key={k}>
-                      <label style={S.label}>{def.label}</label>
-                      <input
-                        style={S.input}
-                        type="number"
-                        min="0"
-                        value={form.addOns?.[k] ?? 0}
-                        onChange={setAddOn(k)}
-                      />
+                      <label style={{ ...S.label, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <input type="checkbox" checked={included} onChange={toggleAddOn(k)} />
+                        {def.label}
+                      </label>
+                      {included ? (
+                        <input
+                          style={S.input}
+                          type="number"
+                          min="1"
+                          value={qty}
+                          onChange={setAddOn(k)}
+                        />
+                      ) : null}
                       <div style={{ ...S.small, marginTop: 4 }}>{money(rate)} per {def.unit}</div>
                     </div>
                   );
