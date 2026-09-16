@@ -21,6 +21,7 @@ struct RoomScanView: View {
     @State private var wallCount = 0
     @State private var doorCount = 0
     @State private var windowCount = 0
+    @State private var elements: [ScanElement] = []
     @State private var floorPlanImage: UIImage?
     @State private var modelFileURL: URL?
     @State private var glbFileURL: URL?
@@ -184,6 +185,7 @@ struct RoomScanView: View {
         wallCount = room.walls.count
         doorCount = room.doors.count
         windowCount = room.windows.count
+        elements = RoomScanGeometry.extractElements(room)
         floorPlanImage = RoomScanGeometry.renderFloorPlan(room)
 
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).usdz")
@@ -266,7 +268,8 @@ struct RoomScanView: View {
                     wallCount: wallCount,
                     doorCount: doorCount,
                     windowCount: windowCount,
-                    hasGltf: glbFileURL != nil
+                    hasGltf: glbFileURL != nil,
+                    elements: elements
                 )
             )
 

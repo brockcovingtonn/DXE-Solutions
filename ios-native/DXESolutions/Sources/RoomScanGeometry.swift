@@ -1,6 +1,7 @@
 import Foundation
 import RoomPlan
 import UIKit
+import PencilKit
 import simd
 
 // Pure geometry helpers over a finished CapturedRoom: square footage and a
@@ -10,6 +11,27 @@ import simd
 // existed), and there's no built-in 2D render, only the 3D export.
 enum RoomScanGeometry {
     private static let sqMetersToSqFeet: Double = 10.7639
+    private static let metersToFeet: Double = 3.28084
+
+    /// One ScanElement per wall/door/window, in capture order — the
+    /// starting point for the Annotate screen's editable measurement list.
+    /// dimensions.x is the surface's width, dimensions.y its height (see
+    /// endpoints(for:) above for the same convention).
+    static func extractElements(_ room: CapturedRoom) -> [ScanElement] {
+        func elements(_ surfaces: [CapturedRoom.Surface], type: String, prefix: String) -> [ScanElement] {
+            surfaces.enumerated().map { index, surface in
+                ScanElement(
+                    type: type,
+                    label: "\(prefix) \(index + 1)",
+                    lengthFt: Double(surface.dimensions.x) * metersToFeet,
+                    heightFt: Double(surface.dimensions.y) * metersToFeet
+                )
+            }
+        }
+        return elements(room.walls, type: "wall", prefix: "Wall")
+            + elements(room.doors, type: "door", prefix: "Door")
+            + elements(room.windows, type: "window", prefix: "Window")
+    }
 
     /// Square footage, plus whether it's an exact polygon measurement or a
     /// bounding-box approximation (no confident floor surface to measure).
@@ -111,6 +133,59 @@ enum RoomScanGeometry {
                 }
                 path.lineCapStyle = .round
                 path.stroke()
+            }
+        }
+    }
+
+    /// Flattens the PencilKit markup onto the floor plan image for the
+    /// Annotate flow's PDF export. `canvasSize` is the on-screen canvas's
+    /// bounds (points) — its aspect ratio is kept equal to the image's by
+    /// the Annotate view's layout, so scaling the transparent drawing image
+    /// up to `baseImage.size` lines strokes up with what was actually drawn.
+    static func compositeAnnotation(baseImage: UIImage, drawing: PKDrawing, canvasSize: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: baseImage.size)
+        return renderer.image { _ in
+            baseImage.draw(in: CGRect(origin: .zero, size: baseImage.size))
+            guard canvasSize.width > 0, canvasSize.height > 0 else { return }
+            let drawingImage = drawing.image(from: CGRect(origin: .zero, size: canvasSize), scale: 1)
+            drawingImage.draw(in: CGRect(origin: .zero, size: baseImage.size))
+        }
+    }
+
+    /// Page 1: the annotated floor plan. Page 2+: a measurements table, one
+    /// row per detected wall/door/window — the "notes from walking the
+    /// project" the Annotate screen exists for.
+    static func renderAnnotationPDF(image: UIImage, elements: [ScanElement], roomLabel: String?) -> Data {
+        let pageWidth: CGFloat = 612
+        let pageHeight: CGFloat = 792
+        let margin: CGFloat = 36
+        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight))
+        return renderer.pdfData { context in
+            context.beginPage()
+            let title = (roomLabel?.isEmpty == false ? roomLabel! : "Scanned space") as NSString
+            title.draw(at: CGPoint(x: margin, y: margin), withAttributes: [.font: UIFont.boldSystemFont(ofSize: 16)])
+
+            let maxImageRect = CGRect(x: margin, y: margin + 30, width: pageWidth - margin * 2, height: pageHeight - margin * 2 - 30)
+            let imageAspect = image.size.width / max(image.size.height, 1)
+            var drawSize = CGSize(width: maxImageRect.width, height: maxImageRect.width / imageAspect)
+            if drawSize.height > maxImageRect.height {
+                drawSize = CGSize(width: maxImageRect.height * imageAspect, height: maxImageRect.height)
+            }
+            let drawOrigin = CGPoint(x: maxImageRect.midX - drawSize.width / 2, y: maxImageRect.minY)
+            image.draw(in: CGRect(origin: drawOrigin, size: drawSize))
+
+            context.beginPage()
+            ("Measurements" as NSString).draw(at: CGPoint(x: margin, y: margin), withAttributes: [.font: UIFont.boldSystemFont(ofSize: 16)])
+            let bodyFont = UIFont.systemFont(ofSize: 12)
+            var y = margin + 34
+            for element in elements {
+                if y > pageHeight - margin {
+                    context.beginPage()
+                    y = margin
+                }
+                let line = "\(element.label)  —  \(String(format: "%.1f", element.lengthFt)) ft × \(String(format: "%.1f", element.heightFt)) ft" as NSString
+                line.draw(at: CGPoint(x: margin, y: y), withAttributes: [.font: bodyFont])
+                y += 20
             }
         }
     }

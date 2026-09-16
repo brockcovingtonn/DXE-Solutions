@@ -96,6 +96,7 @@
 		BEDD1CD571A0F90138766A05 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A8EDC856961F1CA2AA278E /* Theme.swift */; };
 		C3DCF6B13BD373B35FECAD33 /* AdminPermitsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189BB6966905BD23E7197CAA /* AdminPermitsEditor.swift */; };
 		CA37D0D1C2172E514285498F /* AdminUtilitiesEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */; };
+		CAFD1600F9B17D93126538BB /* RoomScanAnnotateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C5777FE44F9F4A4FE91CE7 /* RoomScanAnnotateView.swift */; };
 		CF773CA0C144624E8F041D2C /* AdminContactDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF69EFFB0186EBEFE075140 /* AdminContactDetailView.swift */; };
 		D030E4B85A7A6DD7CEC5E8B3 /* PermitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69F249416258705800C9407 /* PermitsView.swift */; };
 		D04FBEDD18D7874335CD5877 /* EmployeeMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D267A312C7B0E47FAA424D6 /* EmployeeMoreView.swift */; };
@@ -125,6 +126,7 @@
 		05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackEnabler.swift; sourceTree = "<group>"; };
 		07FE3BBD16E407593CF8C55D /* AdminProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminProjectDetailView.swift; sourceTree = "<group>"; };
 		0932077758FDD662093311B1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		09C5777FE44F9F4A4FE91CE7 /* RoomScanAnnotateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomScanAnnotateView.swift; sourceTree = "<group>"; };
 		0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCalendarEventView.swift; sourceTree = "<group>"; };
 		0A56877301A622C00BF68FC4 /* AdminNewClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminNewClientView.swift; sourceTree = "<group>"; };
 		0D27F88BBEDBCB4B401A85F9 /* AdminClientDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminClientDetailView.swift; sourceTree = "<group>"; };
@@ -341,6 +343,7 @@
 				8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */,
 				B770A62E58C1A60B56DEF8FE /* ReviewView.swift */,
 				EB76E692157FEE6A9DA083FB /* RoleHomeView.swift */,
+				09C5777FE44F9F4A4FE91CE7 /* RoomScanAnnotateView.swift */,
 				C0553A6CD54D1DE302EC8D7A /* RoomScanView.swift */,
 				A716BA4B5FC1BD5641D099FD /* SafariView.swift */,
 				0932077758FDD662093311B1 /* SettingsView.swift */,
@@ -561,6 +564,7 @@
 				3B1634177183D0C2647F56D1 /* QuickLookPreview.swift in Sources */,
 				B6DEEE56D8018C8EA544378A /* ReviewView.swift in Sources */,
 				9C82A5BC619614FDDDB94E1A /* RoleHomeView.swift in Sources */,
+				CAFD1600F9B17D93126538BB /* RoomScanAnnotateView.swift in Sources */,
 				4D37619B32606AEB08440BCF /* RoomScanController.swift in Sources */,
 				789736D6FF12DA3D5983A98B /* RoomScanGLBExporter.swift in Sources */,
 				170979DDF58A111710E5F701 /* RoomScanGeometry.swift in Sources */,

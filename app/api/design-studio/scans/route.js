@@ -7,13 +7,16 @@ const URL_TTL = 3600;
 
 async function signScan(db, scan) {
   const { projects, ...rest } = scan;
-  const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
+  const [{ data: model }, { data: floorPlan }, { data: modelGltf }, { data: annotatedPdf }] = await Promise.all([
     db.storage.from(BUCKET).createSignedUrl(scan.model_path, URL_TTL),
     scan.floor_plan_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.floor_plan_path, URL_TTL)
       : Promise.resolve({ data: null }),
     scan.model_gltf_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.model_gltf_path, URL_TTL)
+      : Promise.resolve({ data: null }),
+    scan.annotated_pdf_path
+      ? db.storage.from(BUCKET).createSignedUrl(scan.annotated_pdf_path, URL_TTL, { download: true })
       : Promise.resolve({ data: null }),
   ]);
   return {
@@ -22,6 +25,7 @@ async function signScan(db, scan) {
     model_url: model?.signedUrl || null,
     floor_plan_url: floorPlan?.signedUrl || null,
     model_gltf_url: modelGltf?.signedUrl || null,
+    annotated_pdf_url: annotatedPdf?.signedUrl || null,
   };
 }
 
@@ -51,6 +55,7 @@ export async function POST(request) {
         wall_count: Number(body.wallCount) || 0,
         door_count: Number(body.doorCount) || 0,
         window_count: Number(body.windowCount) || 0,
+        elements: Array.isArray(body.elements) ? body.elements : [],
         model_path: `${body.scanId}/model.usdz`,
         floor_plan_path: `${body.scanId}/floor-plan.png`,
         model_gltf_path: body.hasGltf ? `${body.scanId}/model.glb` : null,

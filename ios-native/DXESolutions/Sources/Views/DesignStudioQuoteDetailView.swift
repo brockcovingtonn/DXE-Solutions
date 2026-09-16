@@ -20,6 +20,7 @@ struct DesignStudioQuoteDetailView: View {
     @State private var scanBusyId: String?
     @State private var pickerScanId: String?
     @State private var showProjectPicker = false
+    @State private var annotateScan: RoomScan?
 
     private var canReprice: Bool { quote?.status == "draft" }
 
@@ -71,6 +72,11 @@ struct DesignStudioQuoteDetailView: View {
         }
         .sheet(isPresented: $showScanRoom) {
             RoomScanView(quoteId: quoteId) { _ in
+                Task { await load() }
+            }
+        }
+        .sheet(item: $annotateScan) { scan in
+            RoomScanAnnotateView(scan: scan) { _ in
                 Task { await load() }
             }
         }
@@ -199,6 +205,16 @@ struct DesignStudioQuoteDetailView: View {
                             }
                             if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
                                 Button("View 2D") { previewItem = PreviewItem(url: url) }
+                                    .font(.caption)
+                                    .buttonStyle(.bordered)
+                            }
+                            if scan.floorPlanUrl != nil {
+                                Button("Annotate") { annotateScan = scan }
+                                    .font(.caption)
+                                    .buttonStyle(.bordered)
+                            }
+                            if let urlString = scan.annotatedPdfUrl, let url = URL(string: urlString) {
+                                Button("View annotation") { previewItem = PreviewItem(url: url) }
                                     .font(.caption)
                                     .buttonStyle(.bordered)
                             }

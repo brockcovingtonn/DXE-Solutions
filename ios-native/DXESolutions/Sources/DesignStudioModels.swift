@@ -281,6 +281,8 @@ struct RoomScan: Codable, Identifiable {
     var modelUrl: String?
     var floorPlanUrl: String?
     var modelGltfUrl: String?
+    var elements: [ScanElement]
+    var annotatedPdfUrl: String?
     var createdAt: String?
 
     enum CodingKeys: String, CodingKey {
@@ -298,7 +300,43 @@ struct RoomScan: Codable, Identifiable {
         case modelUrl = "model_url"
         case floorPlanUrl = "floor_plan_url"
         case modelGltfUrl = "model_gltf_url"
+        case elements
+        case annotatedPdfUrl = "annotated_pdf_url"
         case createdAt = "created_at"
+    }
+}
+
+// One detected wall/door/window, captured at scan time with RoomPlan's
+// measured dimensions and editable later in the "Annotate" flow when a
+// tape-measure correction is needed while walking the project.
+struct ScanElement: Codable, Identifiable, Equatable {
+    var id: String
+    var type: String // "wall" | "door" | "window"
+    var label: String
+    var lengthFt: Double
+    var heightFt: Double
+
+    enum CodingKeys: String, CodingKey {
+        case id, type, label
+        case lengthFt = "length_ft"
+        case heightFt = "height_ft"
+    }
+
+    init(id: String = UUID().uuidString, type: String, label: String, lengthFt: Double, heightFt: Double) {
+        self.id = id
+        self.type = type
+        self.label = label
+        self.lengthFt = lengthFt
+        self.heightFt = heightFt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
+        type = try container.decode(String.self, forKey: .type)
+        label = try container.decode(String.self, forKey: .label)
+        lengthFt = try container.decode(Double.self, forKey: .lengthFt)
+        heightFt = try container.decode(Double.self, forKey: .heightFt)
     }
 }
 
@@ -353,10 +391,23 @@ struct RoomScanCreatePayload: Encodable {
     var doorCount: Int
     var windowCount: Int
     var hasGltf: Bool
+    var elements: [ScanElement]
 }
 
 struct RoomScanAttachPayload: Encodable { var quoteId: String }
 struct RoomScanVisibilityPayload: Encodable { var showToClient: Bool }
+
+// Signed upload slot for the annotated PDF, minted against an existing
+// scan id — see api/design-studio/scans/[id]/annotation-upload-url.
+struct RoomScanAnnotationUploadURLResponse: Decodable { var path: String; var token: String }
+
+// Sent after the annotated PDF is uploaded straight to Storage: replaces
+// the scan's measurement elements with whatever was edited in the
+// Annotate screen and flips annotated_pdf_path on.
+struct RoomScanAnnotationSavePayload: Encodable {
+    var elements: [ScanElement]
+    var hasAnnotatedPdf: Bool
+}
 
 // projectId: nil means "detach" and must reach the server as an explicit
 // JSON null, not an omitted key — Swift's synthesized Encodable silently
