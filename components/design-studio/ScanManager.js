@@ -30,6 +30,7 @@ function ScanRow({ scan, isMaster, onUpdate }) {
   const [error, setError] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
+  const [show2D, setShow2D] = useState(false);
 
   async function toggleShowToClient(checked) {
     setBusy(true);
@@ -96,8 +97,23 @@ function ScanRow({ scan, isMaster, onUpdate }) {
         value={scan.areaSqft ? `${Number(scan.areaSqft).toLocaleString()} sf${scan.areaIsEstimate ? ' (approx.)' : ''}` : '—'}
       />
       <Row label="Walls / doors / windows" value={`${scan.wallCount} / ${scan.doorCount} / ${scan.windowCount}`} />
+      {scan.floorPlanUrl ? (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShow2D((v) => !v)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...S.small, color: C.clay, fontWeight: 600 }}
+          >
+            {show2D ? 'Hide 2D floor plan' : 'View 2D floor plan →'}
+          </button>
+          {show2D ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} style={{ width: '100%', display: 'block', marginTop: 8, borderRadius: 8, border: `1px solid ${C.line}` }} />
+          ) : null}
+        </div>
+      ) : null}
       {scan.modelGltfUrl ? (
-        <>
+        <div style={{ marginTop: 6 }}>
           <button
             type="button"
             onClick={() => setShowViewer((v) => !v)}
@@ -116,9 +132,9 @@ function ScanRow({ scan, isMaster, onUpdate }) {
               style={{ width: '100%', height: 240, display: 'block', marginTop: 8, background: C.paper, borderRadius: 8 }}
             />
           ) : null}
-        </>
+        </div>
       ) : scan.modelUrl ? (
-        <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}>
+        <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none', marginTop: 6, display: 'inline-block' }}>
           View 3D model →
         </a>
       ) : null}

@@ -372,6 +372,55 @@ struct RoomScanProjectPayload: Encodable {
     }
 }
 
+// MARK: - Floor plans (manually uploaded PDF/image/CAD)
+// No capture step, unlike room scans — just a file staff already has.
+
+struct FloorPlan: Codable, Identifiable {
+    var id: String
+    var quoteId: String?
+    var projectId: String?
+    var projectName: String?
+    var fileName: String
+    var fileType: String
+    var isRenderable: Bool
+    var showToClient: Bool
+    var fileUrl: String?
+    var createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case quoteId = "quote_id"
+        case projectId = "project_id"
+        case projectName = "project_name"
+        case fileName = "file_name"
+        case fileType = "file_type"
+        case isRenderable = "is_renderable"
+        case showToClient = "show_to_client"
+        case fileUrl = "file_url"
+        case createdAt = "created_at"
+    }
+}
+
+struct FloorPlanResponse: Decodable { var floorPlan: FloorPlan }
+struct FloorPlanListResponse: Decodable { var floorPlans: [FloorPlan] }
+
+struct FloorPlanUploadURLResponse: Decodable {
+    var id: String
+    var fileName: String
+    var path: String
+    var token: String
+}
+
+struct FloorPlanCreatePayload: Encodable {
+    var id: String
+    var path: String
+    var fileName: String
+    var quoteId: String?
+    var showToClient: Bool
+}
+
+struct FloorPlanVisibilityPayload: Encodable { var showToClient: Bool }
+
 // MARK: - Request payloads
 // Sent to the same api/design-studio routes the web builder posts to.
 // Property names are deliberately camelCase with no CodingKeys override —
@@ -411,7 +460,7 @@ struct DesignStudioConfigSavePayload: Encodable { var config: DesignStudioConfig
 // MARK: - Display helpers
 
 let designStudioProjectTypeLabels: [String: String] = [
-    "kitchen": "Kitchen / Single Room",
+    "kitchen": "Single Room",
     "adu": "ADU / Garage Conversion",
     "partial": "Partial Home / Multi-Room",
     "fullhouse": "Full House",

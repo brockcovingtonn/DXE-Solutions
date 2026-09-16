@@ -1,4 +1,5 @@
 import Script from 'next/script';
+import RoomScanCard from './RoomScanCard';
 import { BRAND, SCOPE_NOTE, TERMS_NOTE, C, money } from '@/lib/design-studio/brand';
 
 /**
@@ -131,35 +132,7 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
           <div style={sectionTitle}>{roomScans.length > 1 ? '3D room scans' : '3D room scan'}</div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(roomScans.length, 2)}, 1fr)`, gap: 14 }}>
             {roomScans.map((scan) => (
-              <div key={scan.id} style={{ background: C.sand, borderRadius: 8, overflow: 'hidden' }}>
-                {scan.modelGltfUrl ? (
-                  <model-viewer
-                    src={scan.modelGltfUrl}
-                    ios-src={scan.modelUrl || undefined}
-                    alt={scan.roomLabel || 'Room scan'}
-                    camera-controls
-                    auto-rotate
-                    ar
-                    style={{ width: '100%', height: 220, display: 'block', '--poster-color': 'transparent' }}
-                  />
-                ) : scan.floorPlanUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} style={{ width: '100%', display: 'block' }} />
-                ) : null}
-                <div style={{ padding: '10px 14px' }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 600 }}>{scan.roomLabel || 'Scanned space'}</div>
-                  {scan.areaSqft ? (
-                    <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>
-                      Measured {Number(scan.areaSqft).toLocaleString()} sf via LiDAR scan
-                    </div>
-                  ) : null}
-                  {!scan.modelGltfUrl && scan.modelUrl ? (
-                    <a href={scan.modelUrl} rel="ar" style={{ display: 'inline-block', marginTop: 8, fontSize: 12.5, fontWeight: 600, color: C.clay, textDecoration: 'none' }}>
-                      View in 3D / AR →
-                    </a>
-                  ) : null}
-                </div>
-              </div>
+              <RoomScanCard key={scan.id} scan={scan} />
             ))}
           </div>
         </>

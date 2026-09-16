@@ -70,6 +70,7 @@
 		8C9760E31198CF86EEA7C59F /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8724BE8656A8DDAFCCB47E06 /* MessageBubble.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
 		93DE9C8DCDA83707611E2F61 /* AdminChatThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */; };
+		94D80F77040EEABCF5AA3C97 /* FloorPlanManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830CE59E405BCD0A23E414B9 /* FloorPlanManagerView.swift */; };
 		98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */; };
 		9A09140E82A13FF7A2DE1C08 /* DesignStudioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E82BA96E5597864CE11FE8 /* DesignStudioModels.swift */; };
 		9C6121BC348829DDFBD187BB /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1A4EBD323FAB55FA541F50 /* WeatherService.swift */; };
@@ -171,6 +172,7 @@
 		6DFC15BCE90ADFCB1C631FFF /* DesignStudioListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignStudioListView.swift; sourceTree = "<group>"; };
 		6FC99BEBEFE366DE169506F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
+		830CE59E405BCD0A23E414B9 /* FloorPlanManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloorPlanManagerView.swift; sourceTree = "<group>"; };
 		8724BE8656A8DDAFCCB47E06 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		89590ACB4A9EC0AA22C0D491 /* AdminUtilitiesEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminUtilitiesEditor.swift; sourceTree = "<group>"; };
 		8A0498D175DC06205DE4B09A /* QuickLookPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookPreview.swift; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 				A3DAF59845636FE1DC7A7524 /* EmployeeTabView.swift */,
 				1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */,
 				8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */,
+				830CE59E405BCD0A23E414B9 /* FloorPlanManagerView.swift */,
 				04F9EF72B3FBC9E198275DC9 /* GeneratePaymentScheduleView.swift */,
 				3C5522EE9C4C62DBD0CECE97 /* GoogleCalendarConnection.swift */,
 				4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */,
@@ -537,6 +540,7 @@
 				29FA845817332605DA7CC999 /* EmployeeTabView.swift in Sources */,
 				98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */,
 				6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */,
+				94D80F77040EEABCF5AA3C97 /* FloorPlanManagerView.swift in Sources */,
 				2908BFE4CD899EA40C54F946 /* GeneratePaymentScheduleView.swift in Sources */,
 				248E586CD76A0579A7F6186C /* GoogleCalendarConnection.swift in Sources */,
 				361AFD8C4DD4B42339834058 /* HapticManager.swift in Sources */,

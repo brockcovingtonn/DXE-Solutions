@@ -37,6 +37,7 @@ struct DesignStudioQuoteDetailView: View {
                         }
                         clientSection(quote)
                         scanSection
+                        floorPlanSection
                         priceSection(quote)
                         if let internalInfo = quote.pricing?.internalInfo {
                             internalSection(internalInfo)
@@ -190,10 +191,17 @@ struct DesignStudioQuoteDetailView: View {
                             }
                         }
                         Spacer()
-                        if let urlString = scan.modelUrl, let url = URL(string: urlString) {
-                            Button("View 3D") { previewItem = PreviewItem(url: url) }
-                                .font(.caption)
-                                .buttonStyle(.bordered)
+                        VStack(spacing: 6) {
+                            if let urlString = scan.modelUrl, let url = URL(string: urlString) {
+                                Button("View 3D") { previewItem = PreviewItem(url: url) }
+                                    .font(.caption)
+                                    .buttonStyle(.bordered)
+                            }
+                            if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
+                                Button("View 2D") { previewItem = PreviewItem(url: url) }
+                                    .font(.caption)
+                                    .buttonStyle(.bordered)
+                            }
                         }
                     }
 
@@ -232,6 +240,13 @@ struct DesignStudioQuoteDetailView: View {
                     .font(.caption)
             }
             .buttonStyle(.bordered)
+        }
+    }
+
+    private var floorPlanSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("FLOOR PLANS").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
+            FloorPlanManagerView(quoteId: quoteId)
         }
     }
 
