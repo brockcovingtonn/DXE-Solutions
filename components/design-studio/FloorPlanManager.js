@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { C, S } from '@/lib/design-studio/brand';
+import ImageLightbox from './ImageLightbox';
 
 const BUCKET = 'design-studio-scans';
 
@@ -89,6 +90,7 @@ function FloorPlanRow({ plan, onUpdate, onRemove }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   async function toggleShowToClient(checked) {
     setBusy(true);
@@ -149,10 +151,17 @@ function FloorPlanRow({ plan, onUpdate, onRemove }) {
         plan.file_type === 'pdf' ? (
           <iframe src={plan.file_url} title={plan.file_name} style={{ width: '100%', height: 320, border: `1px solid ${C.line}`, borderRadius: 6, marginTop: 8 }} />
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={plan.file_url} alt={plan.file_name} style={{ width: '100%', borderRadius: 6, marginTop: 8 }} />
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            style={{ display: 'block', width: '100%', padding: 0, border: 'none', borderRadius: 6, marginTop: 8, cursor: 'zoom-in', background: 'none' }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={plan.file_url} alt={plan.file_name} style={{ width: '100%', borderRadius: 6 }} />
+          </button>
         )
       ) : null}
+      {lightboxOpen ? <ImageLightbox src={plan.file_url} alt={plan.file_name} onClose={() => setLightboxOpen(false)} /> : null}
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: 13, cursor: 'pointer' }}>
         <input type="checkbox" checked={plan.show_to_client} disabled={busy} onChange={(e) => toggleShowToClient(e.target.checked)} />

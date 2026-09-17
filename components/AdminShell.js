@@ -155,6 +155,12 @@ export default function AdminShell({ profile, currentUserId, chatThreads, assist
 
           <div className={styles.sidebarSectionLabel}>Account</div>
           <SidebarLink
+            href="/admin/site-settings"
+            icon="ti-adjustments"
+            label="Site Settings"
+            active={pathname === '/admin/site-settings'}
+          />
+          <SidebarLink
             href="/portal/settings"
             icon="ti-settings"
             label="Account Settings"

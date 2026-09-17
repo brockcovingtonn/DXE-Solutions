@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Script from 'next/script';
 import { C, S } from '@/lib/design-studio/brand';
+import ImageLightbox from './ImageLightbox';
 
 // Per-scan controls on the quote detail page: whether a scan appears on the
 // client's proposal (off by default — a scan can come out messy and staff
@@ -31,6 +32,7 @@ function ScanRow({ scan, isMaster, onUpdate }) {
   const [showPicker, setShowPicker] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
   const [show2D, setShow2D] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   async function toggleShowToClient(checked) {
     setBusy(true);
@@ -107,8 +109,17 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             {show2D ? 'Hide 2D floor plan' : 'View 2D floor plan →'}
           </button>
           {show2D ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} style={{ width: '100%', display: 'block', marginTop: 8, borderRadius: 8, border: `1px solid ${C.line}` }} />
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              style={{ display: 'block', width: '100%', padding: 0, border: `1px solid ${C.line}`, borderRadius: 8, marginTop: 8, cursor: 'zoom-in', background: 'none' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} style={{ width: '100%', display: 'block', borderRadius: 8 }} />
+            </button>
+          ) : null}
+          {lightboxOpen ? (
+            <ImageLightbox src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} onClose={() => setLightboxOpen(false)} />
           ) : null}
         </div>
       ) : null}

@@ -54,7 +54,7 @@ export default async function DesignStudioDashboard() {
               <Link href="/design-studio/rates" style={{ ...S.btnGhost, textDecoration: 'none' }}>Rate card</Link>
             ) : null}
             <SendIntakeFormButton />
-            <Link href="/design-studio/leads" className="ds-link" style={{ ...S.small, textDecoration: 'none', color: C.muted }}>
+            <Link href="/design-studio/leads" style={{ ...S.btnGhost, textDecoration: 'none' }}>
               Pending leads{pendingLeadCount ? ` (${pendingLeadCount})` : ''}
             </Link>
             <Link href="/design-studio/new" style={{ ...S.btn, textDecoration: 'none' }}>New quote</Link>

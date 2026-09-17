@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { PROJECT_TYPES } from '@/lib/constants';
 import styles from './page.module.css';
 
-const initialForm = { name: '', contact: '', projectType: '', details: '', hearAbout: '', referralName: '' };
+const initialForm = { name: '', phone: '', email: '', projectType: '', details: '', hearAbout: '', referralName: '' };
 const BOOKING_URL = process.env.NEXT_PUBLIC_GOOGLE_BOOKING_URL;
 
 const HEAR_ABOUT_OPTIONS = [
@@ -16,10 +16,11 @@ const HEAR_ABOUT_OPTIONS = [
   'Other',
 ];
 
-export default function HeroForm() {
+export default function HeroForm({ googleBookingEnabled = true }) {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
   const [showBooking, setShowBooking] = useState(false);
+  const bookingActive = BOOKING_URL && googleBookingEnabled;
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -28,10 +29,13 @@ export default function HeroForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (!form.phone.trim() && !form.email.trim()) {
+      setStatus('invalid');
+      return;
+    }
     setStatus('sending');
 
-    const contact = form.contact.trim();
-    const isEmail = contact.includes('@');
     const [firstName, ...rest] = form.name.trim().split(/\s+/);
 
     try {
@@ -41,8 +45,8 @@ export default function HeroForm() {
         body: JSON.stringify({
           firstName: firstName || form.name.trim(),
           lastName: rest.join(' '),
-          email: isEmail ? contact : '',
-          phone: isEmail ? '' : contact,
+          email: form.email.trim(),
+          phone: form.phone.trim(),
           projectType: form.projectType,
           details: form.details,
           hearAbout: form.hearAbout,
@@ -54,7 +58,7 @@ export default function HeroForm() {
 
       setStatus('success');
       setForm(initialForm);
-      if (BOOKING_URL) setShowBooking(true);
+      if (bookingActive) setShowBooking(true);
     } catch (err) {
       setStatus('error');
     }
@@ -70,7 +74,7 @@ export default function HeroForm() {
             Dixie reviews every submission personally and will follow up with your next
             three steps, usually within 1–2 business days.
           </p>
-          {BOOKING_URL && (
+          {bookingActive && (
             <button type="button" className="btn-gold" onClick={() => setShowBooking(true)}>
               Book your call now
             </button>
@@ -97,15 +101,25 @@ export default function HeroForm() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="contact">Phone or email</label>
+              <label htmlFor="phone">Phone</label>
               <input
-                id="contact"
-                name="contact"
-                type="text"
-                placeholder="Best way to reach you"
-                value={form.contact}
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="(555) 555-5555"
+                value={form.phone}
                 onChange={handleChange}
-                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
               />
             </div>
             <div className="form-group">
@@ -161,6 +175,9 @@ export default function HeroForm() {
               />
             </div>
 
+            {status === 'invalid' && (
+              <p className={styles.formError}>Please provide a phone number or an email address.</p>
+            )}
             {status === 'error' && (
               <p className={styles.formError}>
                 Something went wrong. Please try again, or email Dixie directly.
@@ -181,7 +198,7 @@ export default function HeroForm() {
         </>
       )}
 
-      {showBooking && BOOKING_URL && (
+      {showBooking && bookingActive && (
         <div className={styles.bookingOverlay} onClick={() => setShowBooking(false)}>
           <div className={styles.bookingCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.bookingHeader}>

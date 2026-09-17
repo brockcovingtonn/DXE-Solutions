@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Footer from '@/components/Footer';
 import StarRating from '@/components/StarRating';
 import { createClient } from '@/lib/supabase-server';
+import { getSiteSettings } from '@/lib/site-settings';
 import HomeNav from './HomeNav';
 import HeroForm from './HeroForm';
 import FaqAccordion from './FaqAccordion';
@@ -9,6 +10,7 @@ import styles from './page.module.css';
 
 export default async function HomePage() {
   const supabase = createClient();
+  const { googleBookingEnabled } = await getSiteSettings();
   const { data: reviews } = await supabase
     .from('reviews')
     .select('*')
@@ -76,7 +78,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <HeroForm />
+            <HeroForm googleBookingEnabled={googleBookingEnabled} />
           </div>
         </section>
 
