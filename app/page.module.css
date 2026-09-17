@@ -688,6 +688,22 @@
   font-size: 1rem;
 }
 
+.portalMobile {
+  position: absolute;
+  right: -3rem;
+  bottom: -3.5rem;
+  width: 32%;
+  min-width: 130px;
+  max-width: 210px;
+  filter: drop-shadow(0 20px 32px rgba(44, 62, 80, 0.28));
+}
+
+.portalMobile img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* HOW IT WORKS */
 .stepsSection {
   position: relative;
@@ -893,6 +909,10 @@
   .servicesGrid {
     gap: 1px;
   }
+  .portalMobile {
+    right: -1rem;
+    bottom: -2rem;
+  }
 }
 
 @media (max-width: 600px) {
@@ -901,5 +921,11 @@
   }
   .heroFeatures {
     gap: 1.5rem;
+  }
+  .portalMobile {
+    right: 0.5rem;
+    bottom: -1.5rem;
+    width: 30%;
+    min-width: 96px;
   }
 }

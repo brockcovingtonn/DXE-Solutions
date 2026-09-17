@@ -215,14 +215,15 @@ export default async function HomePage() {
             <div className={styles.portalGrid}>
               <div className={styles.portalText}>
                 <div className="section-header">
-                  <div className="section-eyebrow">Client Portal</div>
+                  <div className="section-eyebrow">Client Portal &amp; App</div>
                   <h2 className="display" style={{ color: 'var(--navy)' }}>
                     Your project, always in view.
                   </h2>
                 </div>
                 <p className={styles.portalLead}>
-                  Every DXE Solutions client gets a private portal — not just status updates, but
-                  the whole picture: organized, live, and always current.
+                  Every DXE Solutions client gets a private portal — on the web and as a native
+                  app for iPhone and iPad — not just status updates, but the whole picture:
+                  organized, live, and always current, wherever you are.
                 </p>
                 <ul className={styles.portalFeatures}>
                   {PORTAL_FEATURES.map((f) => (
@@ -240,6 +241,13 @@ export default async function HomePage() {
                     src="/images/portal-preview.svg"
                     alt="A preview of the DXE Solutions client portal showing a project's status, phase progress, and team"
                     className={styles.portalScreenshot}
+                  />
+                </div>
+                <div className={styles.portalMobile}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/portal-preview-mobile.svg"
+                    alt="A preview of the DXE Solutions mobile app showing a project's status and recent activity"
                   />
                 </div>
                 <div className={styles.portalBadge}>
@@ -415,6 +423,7 @@ const PORTAL_FEATURES = [
   'Notes and updates from Dixie',
   'Upload your own files securely',
   'Manage multiple projects in one account',
+  'Free iOS app — the same portal, in your pocket',
 ];
 
 const PHOTO_TILES = [
