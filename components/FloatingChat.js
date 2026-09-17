@@ -12,6 +12,7 @@ export default function FloatingChat({ currentUserId, threads }) {
   const [threadData, setThreadData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [readKeys, setReadKeys] = useState(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
 
   // threads is server-computed; ChatBox triggers a router.refresh() once
   // the thread is marked read, so drop the optimistic override once that
@@ -26,6 +27,9 @@ export default function FloatingChat({ currentUserId, threads }) {
   }
 
   const activeThread = threads.find((t) => t.key === activeKey);
+  const visibleThreads = searchQuery.trim()
+    ? threads.filter((t) => `${t.label} ${t.sublabel || ''}`.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+    : threads;
   const totalUnread = threads.reduce((sum, t) => sum + (readKeys.has(t.key) ? 0 : t.unread || 0), 0);
 
   useEffect(() => {
@@ -158,11 +162,33 @@ export default function FloatingChat({ currentUserId, threads }) {
 
           <div style={{ flex: 1, overflow: 'hidden', padding: activeThread ? '0.85rem' : '0', display: 'flex', flexDirection: 'column' }}>
             {!activeThread ? (
-              <div style={{ overflowY: 'auto', flex: 1 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                {threads.length > 1 && (
+                  <div style={{ padding: '0.6rem 0.8rem', borderBottom: '1px solid rgba(var(--border-rgb),0.08)', flexShrink: 0 }}>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search conversations…"
+                      style={{
+                        width: '100%',
+                        fontSize: '0.82rem',
+                        padding: '0.45rem 0.7rem',
+                        border: '1px solid rgba(var(--border-rgb),0.18)',
+                        borderRadius: '6px',
+                        background: 'var(--white)',
+                        color: 'var(--navy)',
+                      }}
+                    />
+                  </div>
+                )}
+                <div style={{ overflowY: 'auto', flex: 1 }}>
                 {threads.length === 0 ? (
                   <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', padding: '1rem' }}>No conversations yet.</p>
+                ) : visibleThreads.length === 0 ? (
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)', padding: '1rem' }}>No conversations match "{searchQuery}".</p>
                 ) : (
-                  threads.map((t) => (
+                  visibleThreads.map((t) => (
                     <button
                       key={t.key}
                       type="button"
@@ -206,6 +232,7 @@ export default function FloatingChat({ currentUserId, threads }) {
                     </button>
                   ))
                 )}
+                </div>
               </div>
             ) : loading ? (
               <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>Loading...</p>

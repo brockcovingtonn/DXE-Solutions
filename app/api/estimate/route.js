@@ -52,6 +52,25 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
     }
 
+    // Best-effort persistence — the admin's already been notified above,
+    // which is the critical path. Every submission lands here regardless
+    // of project type, so staff can review it later from Contacts (unlike
+    // design_studio_leads, which is transient and Design-Studio-only).
+    try {
+      await supabaseAdmin().from('estimate_requests').insert({
+        first_name: firstName,
+        last_name: lastName || null,
+        email: email || null,
+        phone: phone || null,
+        project_type: projectType,
+        details: details || null,
+        hear_about: hearAbout || null,
+        referral_name: referralName || null,
+      });
+    } catch (persistError) {
+      console.error('Estimate request persistence error:', persistError);
+    }
+
     // Best-effort: the admin's already been notified above, which is the
     // critical path — a hiccup here shouldn't fail the whole submission.
     if (email) {

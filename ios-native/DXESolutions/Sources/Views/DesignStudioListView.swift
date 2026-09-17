@@ -75,6 +75,7 @@ struct DesignStudioListView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Design Studio")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -114,7 +115,7 @@ struct DesignStudioListView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -156,7 +157,7 @@ struct DesignStudioListView: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 

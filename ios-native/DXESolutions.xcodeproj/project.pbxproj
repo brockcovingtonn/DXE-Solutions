@@ -116,6 +116,7 @@
 		E82CBE1915F36EA5B6DAA474 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF996A2C152BC4D722EB35B0 /* CameraCapture.swift */; };
 		EE44949AF66C0CD5E33C0D39 /* EmployeeSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1968E713938BB8924E79B45B /* EmployeeSearchView.swift */; };
 		F33221E84A5FADD5B1DD3A0C /* ClientSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39D2B414F43A21A3A06B4C6 /* ClientSearchView.swift */; };
+		F73191F07F5EF863E91673B1 /* PreviewDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A0369F5004F7B785241D19 /* PreviewDownload.swift */; };
 		F98777AEA3C2C439C2CBEF06 /* AdminEmployeeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAFCD69927F0BD8B5B63307E /* AdminEmployeeListView.swift */; };
 		FAA623A0418EB5A76F5FE8C0 /* AddCalendarEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A074509C2FD4910002A0F33 /* AddCalendarEventView.swift */; };
 		FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB20E7318CADD0178C309DEB /* ProjectContactsView.swift */; };
@@ -147,6 +148,7 @@
 		1FE5A372DFE173B50FEB1987 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		23318D848D19D0A00E2C60CB /* AdminMilestonesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMilestonesListView.swift; sourceTree = "<group>"; };
+		24A0369F5004F7B785241D19 /* PreviewDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDownload.swift; sourceTree = "<group>"; };
 		2691E764F6EAD131CC41E1E8 /* SendIntakeFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendIntakeFormView.swift; sourceTree = "<group>"; };
 		2953CB626BF873B468477CA2 /* AdminTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTabView.swift; sourceTree = "<group>"; };
 		2A0D8F73809963CECEDE2423 /* ProposalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProposalsView.swift; sourceTree = "<group>"; };
@@ -389,6 +391,7 @@
 				045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */,
 				1FE5A372DFE173B50FEB1987 /* Models.swift */,
 				D1532E0CE857EE7B9CD4A00D /* OfflineCache.swift */,
+				24A0369F5004F7B785241D19 /* PreviewDownload.swift */,
 				D9BBA2CF598E593A97854EA8 /* PushNotificationManager.swift */,
 				CFE0F60E4E0CA2484A1FCEEA /* RoomScanController.swift */,
 				1A131A2DD5559AB14CD076D2 /* RoomScanGeometry.swift */,
@@ -566,6 +569,7 @@
 				AEF3DA24FB4B9E0749330FCE /* OfflineCache.swift in Sources */,
 				D030E4B85A7A6DD7CEC5E8B3 /* PermitsView.swift in Sources */,
 				5138C8DE451F6BB995F4C778 /* PhotosView.swift in Sources */,
+				F73191F07F5EF863E91673B1 /* PreviewDownload.swift in Sources */,
 				FDB4D8CBC75322E968C76117 /* ProjectContactsView.swift in Sources */,
 				303BAC9A0B5F16185811D398 /* ProjectListView.swift in Sources */,
 				BB2396FE76196F2E6C6D5CCA /* ProjectOverviewView.swift in Sources */,

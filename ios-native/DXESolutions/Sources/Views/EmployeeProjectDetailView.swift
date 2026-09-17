@@ -8,6 +8,9 @@ struct EmployeeProjectDetailView: View {
     @State private var actionItems: [ActionItem] = []
     @State private var isLoading = true
     @State private var busyItemId: String?
+    @State private var annotatedScans: [RoomScan] = []
+    @State private var previewItem: PreviewItem?
+    @State private var previewLoading = false
 
     var body: some View {
         ScrollView {
@@ -22,6 +25,7 @@ struct EmployeeProjectDetailView: View {
                     if !phases.isEmpty { phasesSection }
                     if !milestones.isEmpty { milestonesSection }
                     if !actionItems.isEmpty { actionItemsSection }
+                    if !annotatedScans.isEmpty { annotationsSection }
                     detailsSection
                 }
             }
@@ -29,7 +33,49 @@ struct EmployeeProjectDetailView: View {
         }
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $previewItem) { item in
+            QuickLookPreview(url: item.url)
+        }
         .task { await loadData() }
+    }
+
+    // MARK: - Design Studio annotations
+
+    private var annotationsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("Room Scan Annotations").font(.headline).foregroundColor(Theme.navy)
+                Spacer()
+            }
+            Theme.goldRule()
+            ForEach(annotatedScans) { scan in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(scan.roomLabel?.isEmpty == false ? scan.roomLabel! : "Scanned space").font(.subheadline)
+                        if let area = scan.areaSqft {
+                            Text("\(Int(area)) sf").font(.caption2).foregroundColor(.secondary)
+                        }
+                    }
+                    Spacer()
+                    Button {
+                        Task { await viewAnnotation(scan) }
+                    } label: {
+                        if previewLoading { ProgressView() } else { Text("View").font(.caption) }
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(previewLoading)
+                }
+                .padding(10)
+                .background(Theme.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+        }
+    }
+
+    private func viewAnnotation(_ scan: RoomScan) async {
+        previewLoading = true
+        defer { previewLoading = false }
+        previewItem = await PreviewDownload.fetch(urlString: scan.annotatedPdfUrl, filename: "\(scan.id)-annotated.pdf")
     }
 
     // MARK: - Quick actions
@@ -224,6 +270,9 @@ struct EmployeeProjectDetailView: View {
         phases = await phasesTask
         milestones = await milestonesTask
         actionItems = await actionItemsTask
+        if let response: RoomScanListResponse = try? await APIClient.get("api/design-studio/scans?projectId=\(project.id)") {
+            annotatedScans = response.scans.filter { $0.annotatedPdfUrl != nil }
+        }
         isLoading = false
     }
 

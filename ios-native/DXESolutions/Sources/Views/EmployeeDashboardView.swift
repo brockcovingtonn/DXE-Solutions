@@ -64,6 +64,7 @@ struct EmployeeDashboardView: View {
                 }
                 .padding()
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("My Projects")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -137,7 +138,7 @@ struct EmployeeDashboardView: View {
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 56)
-            .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))
+            .background(isSelected ? Theme.navy : Theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
@@ -195,7 +196,7 @@ struct EmployeeDashboardView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
@@ -262,7 +263,7 @@ struct EmployeeDashboardView: View {
                     }
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Theme.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -339,7 +340,7 @@ struct EmployeeDashboardView: View {
                 }
             }
             .padding()
-            .background(isDone ? Color(.tertiarySystemBackground) : Color(.secondarySystemBackground))
+            .background(isDone ? Theme.screenBackground : Theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
@@ -411,7 +412,7 @@ struct EmployeeDashboardView: View {
             .padding(.top, 6)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 

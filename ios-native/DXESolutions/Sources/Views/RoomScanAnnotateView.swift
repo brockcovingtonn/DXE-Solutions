@@ -18,6 +18,15 @@ struct RoomScanAnnotateView: View {
     @State private var elements: [ScanElement]
     @StateObject private var canvasHolder = CanvasHolder()
 
+    // Pinch-zoom/rotate is a viewing aid for drawing precise detail while
+    // walking a project — purely a SwiftUI-level transform on the display,
+    // not a change to PencilKit's own coordinate space, so it needs no
+    // changes to compositeAnnotation()/save() below.
+    @GestureState private var gestureScale: CGFloat = 1
+    @GestureState private var gestureRotation: Angle = .zero
+    @State private var committedScale: CGFloat = 1
+    @State private var committedRotation: Angle = .zero
+
     init(scan: RoomScan, onSaved: @escaping (RoomScan) -> Void) {
         self.scan = scan
         self.onSaved = onSaved
@@ -30,8 +39,13 @@ struct RoomScanAnnotateView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     canvasArea
 
-                    Button("Clear markup") { canvasHolder.canvasView.drawing = PKDrawing() }
-                        .font(.caption)
+                    HStack(spacing: 16) {
+                        Button("Clear markup") { canvasHolder.canvasView.drawing = PKDrawing() }
+                        Button("Reset view") {
+                            withAnimation { committedScale = 1; committedRotation = .zero }
+                        }
+                    }
+                    .font(.caption)
 
                     if !elements.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
@@ -79,8 +93,21 @@ struct RoomScanAnnotateView: View {
                 PencilCanvasRepresentable(canvasHolder: canvasHolder)
             }
             .aspectRatio(floorPlanImage.size.width / max(floorPlanImage.size.height, 1), contentMode: .fit)
+            .scaleEffect(committedScale * gestureScale)
+            .rotationEffect(committedRotation + gestureRotation)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.separator)))
+            .clipped()
+            .gesture(
+                MagnificationGesture()
+                    .updating($gestureScale) { value, state, _ in state = value }
+                    .onEnded { value in committedScale = max(1, min(committedScale * value, 5)) }
+                    .simultaneously(
+                        with: RotationGesture()
+                            .updating($gestureRotation) { value, state, _ in state = value }
+                            .onEnded { value in committedRotation += value }
+                    )
+            )
         } else if isLoadingImage {
             ProgressView().frame(maxWidth: .infinity, minHeight: 240)
         } else {

@@ -30,10 +30,16 @@ export default async function ContactsPage({ searchParams }) {
 
       <div className={adminStyles.actionsRow} style={{ justifyContent: 'space-between' }}>
         <ContactCategoryFilter current={categoryFilter} />
-        <Link href="/admin/contacts/new" className="btn-navy">
-          <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
-          New Contact
-        </Link>
+        <div style={{ display: 'flex', gap: '0.6rem' }}>
+          <Link href="/admin/contacts/inquiries" className="btn-outline">
+            <i className="ti ti-inbox" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
+            Website Inquiries
+          </Link>
+          <Link href="/admin/contacts/new" className="btn-navy">
+            <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i>
+            New Contact
+          </Link>
+        </div>
       </div>
 
       <div className={styles.fullWidthCard}>

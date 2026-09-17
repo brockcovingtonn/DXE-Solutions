@@ -369,6 +369,7 @@ struct RoomScan: Codable, Identifiable {
     var floorPlanUrl: String?
     var modelGltfUrl: String?
     var elements: [ScanElement]
+    var objects: [RoomObject]
     var annotatedPdfUrl: String?
     var createdAt: String?
 
@@ -388,6 +389,7 @@ struct RoomScan: Codable, Identifiable {
         case floorPlanUrl = "floor_plan_url"
         case modelGltfUrl = "model_gltf_url"
         case elements
+        case objects
         case annotatedPdfUrl = "annotated_pdf_url"
         case createdAt = "created_at"
     }
@@ -402,19 +404,38 @@ struct ScanElement: Codable, Identifiable, Equatable {
     var label: String
     var lengthFt: Double
     var heightFt: Double
+    // Top-down position (meters, room-space), captured alongside the
+    // dimensions above so a future floor-plan editor can reconstruct and
+    // move this element without needing to re-scan. Not surfaced in any
+    // UI yet — just persisted while it's available.
+    var startX: Double
+    var startZ: Double
+    var endX: Double
+    var endZ: Double
 
     enum CodingKeys: String, CodingKey {
         case id, type, label
         case lengthFt = "length_ft"
         case heightFt = "height_ft"
+        case startX = "start_x"
+        case startZ = "start_z"
+        case endX = "end_x"
+        case endZ = "end_z"
     }
 
-    init(id: String = UUID().uuidString, type: String, label: String, lengthFt: Double, heightFt: Double) {
+    init(
+        id: String = UUID().uuidString, type: String, label: String, lengthFt: Double, heightFt: Double,
+        startX: Double = 0, startZ: Double = 0, endX: Double = 0, endZ: Double = 0
+    ) {
         self.id = id
         self.type = type
         self.label = label
         self.lengthFt = lengthFt
         self.heightFt = heightFt
+        self.startX = startX
+        self.startZ = startZ
+        self.endX = endX
+        self.endZ = endZ
     }
 
     init(from decoder: Decoder) throws {
@@ -424,6 +445,60 @@ struct ScanElement: Codable, Identifiable, Equatable {
         label = try container.decode(String.self, forKey: .label)
         lengthFt = try container.decode(Double.self, forKey: .lengthFt)
         heightFt = try container.decode(Double.self, forKey: .heightFt)
+        startX = try container.decodeIfPresent(Double.self, forKey: .startX) ?? 0
+        startZ = try container.decodeIfPresent(Double.self, forKey: .startZ) ?? 0
+        endX = try container.decodeIfPresent(Double.self, forKey: .endX) ?? 0
+        endZ = try container.decodeIfPresent(Double.self, forKey: .endZ) ?? 0
+    }
+}
+
+// One detected piece of furniture/fixture (table, sofa, storage, etc.) from
+// RoomPlan's room.objects — captured now so a future asset-library editor
+// has real position data to place/replace items against, without needing a
+// re-scan. Not drawn anywhere but the 2D floor plan yet.
+struct RoomObject: Codable, Identifiable, Equatable {
+    var id: String
+    var category: String
+    var label: String
+    var centerX: Double
+    var centerZ: Double
+    var widthMeters: Double
+    var depthMeters: Double
+    var rotationRadians: Double
+
+    enum CodingKeys: String, CodingKey {
+        case id, category, label
+        case centerX = "center_x"
+        case centerZ = "center_z"
+        case widthMeters = "width_m"
+        case depthMeters = "depth_m"
+        case rotationRadians = "rotation_radians"
+    }
+
+    init(
+        id: String = UUID().uuidString, category: String, label: String,
+        centerX: Double, centerZ: Double, widthMeters: Double, depthMeters: Double, rotationRadians: Double
+    ) {
+        self.id = id
+        self.category = category
+        self.label = label
+        self.centerX = centerX
+        self.centerZ = centerZ
+        self.widthMeters = widthMeters
+        self.depthMeters = depthMeters
+        self.rotationRadians = rotationRadians
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
+        category = try container.decodeIfPresent(String.self, forKey: .category) ?? "storage"
+        label = try container.decodeIfPresent(String.self, forKey: .label) ?? "Object"
+        centerX = try container.decodeIfPresent(Double.self, forKey: .centerX) ?? 0
+        centerZ = try container.decodeIfPresent(Double.self, forKey: .centerZ) ?? 0
+        widthMeters = try container.decodeIfPresent(Double.self, forKey: .widthMeters) ?? 0
+        depthMeters = try container.decodeIfPresent(Double.self, forKey: .depthMeters) ?? 0
+        rotationRadians = try container.decodeIfPresent(Double.self, forKey: .rotationRadians) ?? 0
     }
 }
 
@@ -493,6 +568,7 @@ struct RoomScanCreatePayload: Encodable {
     var windowCount: Int
     var hasGltf: Bool
     var elements: [ScanElement]
+    var objects: [RoomObject]
 }
 
 struct RoomScanAttachPayload: Encodable { var quoteId: String }

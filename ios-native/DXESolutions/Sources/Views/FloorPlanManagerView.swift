@@ -125,6 +125,8 @@ private struct FloorPlanRow: View {
     var onPreview: (PreviewItem) -> Void
     var onRemove: () -> Void
 
+    @State private var previewLoading = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -133,9 +135,21 @@ private struct FloorPlanRow: View {
                 Text(plan.fileType.uppercased()).font(.caption2).foregroundColor(.secondary)
             }
 
-            if plan.isRenderable, let urlString = plan.fileUrl, let url = URL(string: urlString) {
-                Button("Preview →") { onPreview(PreviewItem(url: url)) }
+            if plan.isRenderable, plan.fileUrl != nil {
+                HStack(spacing: 6) {
+                    Button("Preview →") {
+                        Task {
+                            previewLoading = true
+                            defer { previewLoading = false }
+                            if let item = await PreviewDownload.fetch(urlString: plan.fileUrl, filename: "\(plan.id)-\(plan.fileName)") {
+                                onPreview(item)
+                            }
+                        }
+                    }
                     .font(.caption)
+                    .disabled(previewLoading)
+                    if previewLoading { ProgressView().scaleEffect(0.6) }
+                }
             } else if let urlString = plan.fileUrl, let url = URL(string: urlString) {
                 Link("Download →", destination: url)
                     .font(.caption)

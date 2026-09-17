@@ -20,17 +20,88 @@ enum RoomScanGeometry {
     static func extractElements(_ room: CapturedRoom) -> [ScanElement] {
         func elements(_ surfaces: [CapturedRoom.Surface], type: String, prefix: String) -> [ScanElement] {
             surfaces.enumerated().map { index, surface in
-                ScanElement(
+                let (start, end) = endpoints(for: surface)
+                return ScanElement(
                     type: type,
                     label: "\(prefix) \(index + 1)",
                     lengthFt: Double(surface.dimensions.x) * metersToFeet,
-                    heightFt: Double(surface.dimensions.y) * metersToFeet
+                    heightFt: Double(surface.dimensions.y) * metersToFeet,
+                    startX: Double(start.x), startZ: Double(start.y),
+                    endX: Double(end.x), endZ: Double(end.y)
                 )
             }
         }
         return elements(room.walls, type: "wall", prefix: "Wall")
             + elements(room.doors, type: "door", prefix: "Door")
             + elements(room.windows, type: "window", prefix: "Window")
+    }
+
+    /// Furniture/fixtures RoomPlan's on-device classifier detected —
+    /// already produced for every scan and already used for the 3D GLB
+    /// export (RoomScanGLBExporter), just not previously persisted or
+    /// drawn on the 2D plan. No dedicated "island"/"cabinet" category
+    /// exists in RoomPlan; those get classified generically as `.storage`
+    /// if picked up at all.
+    static func extractObjects(_ room: CapturedRoom) -> [RoomObject] {
+        var countsByCategory: [String: Int] = [:]
+        return room.objects.map { object in
+            let label = categoryLabel(object.category)
+            countsByCategory[label, default: 0] += 1
+            let t = object.transform
+            let xAxis = SIMD3<Float>(t.columns.0.x, t.columns.0.y, t.columns.0.z)
+            let rotation = atan2(Double(xAxis.z), Double(xAxis.x))
+            return RoomObject(
+                category: categoryKey(object.category),
+                label: "\(label) \(countsByCategory[label] ?? 1)",
+                centerX: Double(t.columns.3.x), centerZ: Double(t.columns.3.z),
+                widthMeters: Double(object.dimensions.x), depthMeters: Double(object.dimensions.z),
+                rotationRadians: rotation
+            )
+        }
+    }
+
+    private static func categoryKey(_ category: CapturedRoom.Object.Category) -> String {
+        switch category {
+        case .storage: return "storage"
+        case .refrigerator: return "refrigerator"
+        case .stove: return "stove"
+        case .bed: return "bed"
+        case .sink: return "sink"
+        case .washerDryer: return "washerDryer"
+        case .toilet: return "toilet"
+        case .bathtub: return "bathtub"
+        case .oven: return "oven"
+        case .dishwasher: return "dishwasher"
+        case .table: return "table"
+        case .sofa: return "sofa"
+        case .chair: return "chair"
+        case .fireplace: return "fireplace"
+        case .television: return "television"
+        case .stairs: return "stairs"
+        @unknown default: return "storage"
+        }
+    }
+
+    private static func categoryLabel(_ category: CapturedRoom.Object.Category) -> String {
+        switch category {
+        case .storage: return "Storage"
+        case .refrigerator: return "Refrigerator"
+        case .stove: return "Stove"
+        case .bed: return "Bed"
+        case .sink: return "Sink"
+        case .washerDryer: return "Washer/Dryer"
+        case .toilet: return "Toilet"
+        case .bathtub: return "Bathtub"
+        case .oven: return "Oven"
+        case .dishwasher: return "Dishwasher"
+        case .table: return "Table"
+        case .sofa: return "Sofa"
+        case .chair: return "Chair"
+        case .fireplace: return "Fireplace"
+        case .television: return "Television"
+        case .stairs: return "Stairs"
+        @unknown default: return "Object"
+        }
     }
 
     /// Square footage, plus whether it's an exact polygon measurement or a
@@ -133,6 +204,41 @@ enum RoomScanGeometry {
                 }
                 path.lineCapStyle = .round
                 path.stroke()
+            }
+
+            // Furniture/fixtures RoomPlan detected — muted labeled boxes so
+            // they read as supporting detail, not as precise as the walls.
+            for object in extractObjects(room) {
+                let halfW = CGFloat(object.widthMeters) / 2
+                let halfD = CGFloat(object.depthMeters) / 2
+                let cos = Foundation.cos(object.rotationRadians)
+                let sin = Foundation.sin(object.rotationRadians)
+                let localCorners: [(CGFloat, CGFloat)] = [(-halfW, -halfD), (halfW, -halfD), (halfW, halfD), (-halfW, halfD)]
+                let corners = localCorners.map { lx, lz -> CGPoint in
+                    let worldX = object.centerX + Double(lx) * cos - Double(lz) * sin
+                    let worldZ = object.centerZ + Double(lx) * sin + Double(lz) * cos
+                    return point(SIMD2(Float(worldX), Float(worldZ)))
+                }
+                let boxPath = UIBezierPath()
+                boxPath.move(to: corners[0])
+                for corner in corners.dropFirst() { boxPath.addLine(to: corner) }
+                boxPath.close()
+                UIColor(red: 0.788, green: 0.659, blue: 0.341, alpha: 0.18).setFill()
+                UIColor(red: 0.788, green: 0.659, blue: 0.341, alpha: 0.8).setStroke()
+                boxPath.lineWidth = 1.5
+                boxPath.fill()
+                boxPath.stroke()
+
+                let center = corners.reduce(CGPoint.zero) { CGPoint(x: $0.x + $1.x / 4, y: $0.y + $1.y / 4) }
+                let labelAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 10, weight: .medium),
+                    .foregroundColor: UIColor(red: 0.173, green: 0.243, blue: 0.314, alpha: 1),
+                ]
+                let labelSize = object.label.size(withAttributes: labelAttrs)
+                (object.label as NSString).draw(
+                    at: CGPoint(x: center.x - labelSize.width / 2, y: center.y - labelSize.height / 2),
+                    withAttributes: labelAttrs
+                )
             }
         }
     }

@@ -62,6 +62,7 @@ export async function PATCH(request, { params }) {
     if (body.showToClient !== undefined) patch.show_to_client = Boolean(body.showToClient);
     if (body.projectId !== undefined) patch.project_id = body.projectId;
     if (body.elements !== undefined) patch.elements = Array.isArray(body.elements) ? body.elements : [];
+    if (body.objects !== undefined) patch.objects = Array.isArray(body.objects) ? body.objects : [];
     if (body.hasAnnotatedPdf !== undefined) patch.annotated_pdf_path = body.hasAnnotatedPdf ? `${id}/annotated.pdf` : null;
 
     const { data, error } = await db

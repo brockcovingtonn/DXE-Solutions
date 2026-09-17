@@ -56,6 +56,7 @@ export async function POST(request) {
         door_count: Number(body.doorCount) || 0,
         window_count: Number(body.windowCount) || 0,
         elements: Array.isArray(body.elements) ? body.elements : [],
+        objects: Array.isArray(body.objects) ? body.objects : [],
         model_path: `${body.scanId}/model.usdz`,
         floor_plan_path: `${body.scanId}/floor-plan.png`,
         model_gltf_path: body.hasGltf ? `${body.scanId}/model.glb` : null,

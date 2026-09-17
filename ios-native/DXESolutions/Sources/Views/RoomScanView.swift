@@ -22,6 +22,7 @@ struct RoomScanView: View {
     @State private var doorCount = 0
     @State private var windowCount = 0
     @State private var elements: [ScanElement] = []
+    @State private var objects: [RoomObject] = []
     @State private var floorPlanImage: UIImage?
     @State private var modelFileURL: URL?
     @State private var glbFileURL: URL?
@@ -73,6 +74,16 @@ struct RoomScanView: View {
         ZStack(alignment: .bottom) {
             RoomCaptureRepresentable(controller: controller)
                 .ignoresSafeArea()
+
+            if !controller.isProcessing {
+                Text("For best results, scan slowly and capture all sides of large furniture and cabinetry in good lighting.")
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 10))
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
 
             if controller.isProcessing {
                 ProgressView("Processing scan…")
@@ -186,6 +197,7 @@ struct RoomScanView: View {
         doorCount = room.doors.count
         windowCount = room.windows.count
         elements = RoomScanGeometry.extractElements(room)
+        objects = RoomScanGeometry.extractObjects(room)
         floorPlanImage = RoomScanGeometry.renderFloorPlan(room)
 
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).usdz")
@@ -269,7 +281,8 @@ struct RoomScanView: View {
                     doorCount: doorCount,
                     windowCount: windowCount,
                     hasGltf: glbFileURL != nil,
-                    elements: elements
+                    elements: elements,
+                    objects: objects
                 )
             )
 

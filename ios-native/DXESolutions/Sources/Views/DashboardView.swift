@@ -58,6 +58,7 @@ struct DashboardView: View {
                 }
                 .padding()
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("Dashboard")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -121,7 +122,7 @@ struct DashboardView: View {
                     }
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Theme.cardBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -193,7 +194,7 @@ struct DashboardView: View {
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 56)
-            .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))
+            .background(isSelected ? Theme.navy : Theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
@@ -253,7 +254,7 @@ struct DashboardView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 

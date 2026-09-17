@@ -29,6 +29,7 @@ struct ProjectOverviewView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadData() }
@@ -72,7 +73,7 @@ struct ProjectOverviewView: View {
                     )
                 }
                 .padding()
-                .background(Theme.cream)
+                .background(Theme.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
@@ -168,7 +169,7 @@ struct ProjectOverviewView: View {
         .foregroundColor(Theme.navy)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(Theme.cream)
+        .background(Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 

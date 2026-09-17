@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Script from 'next/script';
 import { C, S } from '@/lib/design-studio/brand';
 import ImageLightbox from './ImageLightbox';
+import ModelLightbox from './ModelLightbox';
 
 // Per-scan controls on the quote detail page: whether a scan appears on the
 // client's proposal (off by default — a scan can come out messy and staff
@@ -127,26 +128,28 @@ function ScanRow({ scan, isMaster, onUpdate }) {
         <div style={{ marginTop: 6 }}>
           <button
             type="button"
-            onClick={() => setShowViewer((v) => !v)}
+            onClick={() => setShowViewer(true)}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...S.small, color: C.clay, fontWeight: 600 }}
           >
-            {showViewer ? 'Hide 3D model' : 'View 3D model →'}
+            View 3D model →
           </button>
           {showViewer ? (
-            <model-viewer
-              src={scan.modelGltfUrl}
-              ios-src={scan.modelUrl || undefined}
+            <ModelLightbox
+              modelGltfUrl={scan.modelGltfUrl}
+              modelUrl={scan.modelUrl}
               alt={scan.roomLabel || 'Room scan'}
-              camera-controls
-              auto-rotate
-              ar
-              style={{ width: '100%', height: 240, display: 'block', marginTop: 8, background: C.paper, borderRadius: 8 }}
+              onClose={() => setShowViewer(false)}
             />
           ) : null}
         </div>
       ) : scan.modelUrl ? (
-        <a href={scan.modelUrl} rel="ar" style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none', marginTop: 6, display: 'inline-block' }}>
-          View 3D model →
+        <a
+          href={scan.modelUrl}
+          target="_blank"
+          rel="noopener noreferrer ar"
+          style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none', marginTop: 6, display: 'inline-block' }}
+        >
+          Download 3D file (USDZ) →
         </a>
       ) : null}
 

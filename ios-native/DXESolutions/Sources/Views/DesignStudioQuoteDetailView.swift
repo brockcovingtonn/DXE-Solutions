@@ -22,6 +22,7 @@ struct DesignStudioQuoteDetailView: View {
     @State private var showProjectPicker = false
     @State private var annotateScan: RoomScan?
     @State private var showIntakeForm = false
+    @State private var previewLoading = false
 
     private var canReprice: Bool { quote?.status == "draft" }
 
@@ -207,25 +208,37 @@ struct DesignStudioQuoteDetailView: View {
                         }
                         Spacer()
                         VStack(spacing: 6) {
-                            if let urlString = scan.modelUrl, let url = URL(string: urlString) {
-                                Button("View 3D") { previewItem = PreviewItem(url: url) }
-                                    .font(.caption)
-                                    .buttonStyle(.bordered)
+                            if scan.modelUrl != nil {
+                                Button("View 3D") {
+                                    Task { await loadPreview(scan.modelUrl, filename: "\(scan.id)-model.usdz") }
+                                }
+                                .font(.caption)
+                                .buttonStyle(.bordered)
+                                .disabled(previewLoading)
                             }
-                            if let urlString = scan.floorPlanUrl, let url = URL(string: urlString) {
-                                Button("View 2D") { previewItem = PreviewItem(url: url) }
-                                    .font(.caption)
-                                    .buttonStyle(.bordered)
+                            if scan.floorPlanUrl != nil {
+                                Button("View 2D") {
+                                    Task { await loadPreview(scan.floorPlanUrl, filename: "\(scan.id)-floor-plan.png") }
+                                }
+                                .font(.caption)
+                                .buttonStyle(.bordered)
+                                .disabled(previewLoading)
                             }
                             if scan.floorPlanUrl != nil {
                                 Button("Annotate") { annotateScan = scan }
                                     .font(.caption)
                                     .buttonStyle(.bordered)
                             }
-                            if let urlString = scan.annotatedPdfUrl, let url = URL(string: urlString) {
-                                Button("View annotation") { previewItem = PreviewItem(url: url) }
-                                    .font(.caption)
-                                    .buttonStyle(.bordered)
+                            if scan.annotatedPdfUrl != nil {
+                                Button("View annotation") {
+                                    Task { await loadPreview(scan.annotatedPdfUrl, filename: "\(scan.id)-annotated.pdf") }
+                                }
+                                .font(.caption)
+                                .buttonStyle(.bordered)
+                                .disabled(previewLoading)
+                            }
+                            if previewLoading {
+                                ProgressView().scaleEffect(0.7)
                             }
                         }
                     }
@@ -302,6 +315,12 @@ struct DesignStudioQuoteDetailView: View {
         let display = DateFormatter()
         display.dateStyle = .medium
         return display.string(from: date)
+    }
+
+    private func loadPreview(_ urlString: String?, filename: String) async {
+        previewLoading = true
+        defer { previewLoading = false }
+        previewItem = await PreviewDownload.fetch(urlString: urlString, filename: filename)
     }
 
     private func toggleShowToClient(_ scan: RoomScan, _ value: Bool) {
