@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Script from 'next/script';
 import { C, S } from '@/lib/design-studio/brand';
 import ModelLightbox from './ModelLightbox';
@@ -110,6 +111,10 @@ function ScanRow({ scan, isMaster, onUpdate }) {
           >
             {show2D ? 'Hide 2D floor plan' : 'View 2D floor plan →'}
           </button>
+          {' · '}
+          <Link href={`/design-studio/scans/${scan.id}/edit`} style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}>
+            Edit floor plan →
+          </Link>
           {show2D ? (
             <button
               type="button"

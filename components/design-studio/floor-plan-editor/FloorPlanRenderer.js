@@ -4,20 +4,21 @@ import { computeFitTransform, worldToScreen } from '@/lib/design-studio/floor-pl
 import { symbolForObject } from '@/lib/design-studio/furniture-symbols';
 import { C } from '@/lib/design-studio/brand';
 
-const WALL_COLOR = '#2C3E50';
-const DOOR_COLOR = '#C9A857';
-const WINDOW_COLOR = 'rgba(62, 84, 104, 0.55)';
-const FURNITURE_STROKE = 'rgba(201, 168, 87, 0.85)';
-const FURNITURE_FILL = 'rgba(201, 168, 87, 0.16)';
+export const WALL_COLOR = '#2C3E50';
+export const DOOR_COLOR = '#C9A857';
+export const WINDOW_COLOR = 'rgba(62, 84, 104, 0.55)';
+export const FURNITURE_STROKE = 'rgba(201, 168, 87, 0.85)';
+export const FURNITURE_FILL = 'rgba(201, 168, 87, 0.16)';
+export const SELECTED_COLOR = '#A9793A';
 
-function elementEndpoints(el) {
+export function elementEndpoints(el) {
   return {
     start: { x: el.startX ?? el.start_x ?? 0, z: el.startZ ?? el.start_z ?? 0 },
     end: { x: el.endX ?? el.end_x ?? 0, z: el.endZ ?? el.end_z ?? 0 },
   };
 }
 
-function DimensionChip({ a, b, lengthFt }) {
+export function DimensionChip({ a, b, lengthFt }) {
   const midX = (a.x + b.x) / 2;
   const midY = (a.y + b.y) / 2;
   let angle = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
@@ -71,7 +72,7 @@ function FurniturePart({ part, halfWPx, halfDPx }) {
   }
 }
 
-function FurnitureItem({ object, transform }) {
+export function FurnitureItem({ object, transform }) {
   const symbol = symbolForObject(object);
   if (!symbol) return null;
   const widthM = object.widthMeters ?? object.width_m ?? symbol.defaultWidthM;
