@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { C, S } from '@/lib/design-studio/brand';
-import { distanceFt } from '@/lib/design-studio/floor-plan-geometry';
+import { distanceFt, defaultHeightFt } from '@/lib/design-studio/floor-plan-geometry';
+import { paletteCategory } from '@/lib/design-studio/furniture-symbols';
 import FloorPlanCanvas from './FloorPlanCanvas';
+import FurniturePalette from './FurniturePalette';
 
 function fieldPoint(obj, xKeys, zKeys) {
   const x = xKeys.reduce((v, k) => (v !== undefined ? v : obj[k]), undefined) ?? 0;
@@ -12,10 +14,22 @@ function fieldPoint(obj, xKeys, zKeys) {
   return { x, z };
 }
 
+function newId() {
+  return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+const modeButtonStyle = (active) => ({
+  ...S.btnGhost,
+  background: active ? C.ink : 'transparent',
+  color: active ? '#fff' : C.ink,
+  borderColor: active ? C.ink : C.line,
+});
+
 /**
- * Full-page floor-plan editor (Phase B): select + drag existing walls/
- * doors/windows and furniture, delete, save. Drawing new walls and
- * placing new furniture from a palette is Phase C, not here yet.
+ * Full-page floor-plan editor: select/drag/reshape/delete existing walls,
+ * doors, windows and furniture (Phase B), plus draw brand-new wall
+ * segments with corner/grid snapping and place new furniture from a
+ * palette (Phase C).
  */
 export default function FloorPlanEditor({ scan, quoteNumber }) {
   const [elements, setElements] = useState(scan.elements);
@@ -23,6 +37,10 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
   const [frozenElements, setFrozenElements] = useState(scan.elements);
   const [frozenObjects, setFrozenObjects] = useState(scan.objects);
   const [selectedId, setSelectedId] = useState(null);
+  const [mode, setMode] = useState('select'); // 'select' | 'draw-wall' | 'place-furniture'
+  const [draftWallStart, setDraftWallStart] = useState(null);
+  const [armedCategory, setArmedCategory] = useState(null);
+  const [snapGridEnabled, setSnapGridEnabled] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -56,6 +74,21 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [dirty]);
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === 'Escape' && draftWallStart) setDraftWallStart(null);
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [draftWallStart]);
+
+  function refitSoon() {
+    setTimeout(() => {
+      setFrozenElements(elementsRef.current);
+      setFrozenObjects(objectsRef.current);
+    }, 0);
+  }
 
   function handleDragElementBody(id, startX, startZ, endX, endZ) {
     setElements((prev) => prev.map((el) => (el.id === id ? { ...el, start_x: startX, start_z: startZ, end_x: endX, end_z: endZ } : el)));
@@ -106,12 +139,7 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
     setSelectedId(null);
     setDirty(true);
     setSaved(false);
-    // Deletion changes the bounding box — refit on the next tick, once
-    // elements/objects state has actually updated.
-    setTimeout(() => {
-      setFrozenElements(elementsRef.current);
-      setFrozenObjects(objectsRef.current);
-    }, 0);
+    refitSoon();
   }
 
   function handleDiscard() {
@@ -120,6 +148,9 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
     setFrozenElements(scan.elements);
     setFrozenObjects(scan.objects);
     setSelectedId(null);
+    setMode('select');
+    setDraftWallStart(null);
+    setArmedCategory(null);
     setDirty(false);
     setSaved(false);
     setError('');
@@ -147,12 +178,86 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
     }
   }
 
+  function enterSelectMode() {
+    setMode('select');
+    setDraftWallStart(null);
+    setArmedCategory(null);
+  }
+
+  function enterDrawWallMode() {
+    setMode('draw-wall');
+    setSelectedId(null);
+    setDraftWallStart(null);
+    setArmedCategory(null);
+  }
+
+  function handleArmFurniture(key) {
+    if (!key) {
+      enterSelectMode();
+      return;
+    }
+    setMode('place-furniture');
+    setSelectedId(null);
+    setDraftWallStart(null);
+    setArmedCategory(key);
+  }
+
+  function commitWall(start, end) {
+    const lengthFt = distanceFt(start.x, start.z, end.x, end.z);
+    if (lengthFt < 0.1) return; // ignore an accidental double-click on the same spot
+    const wallCount = elementsRef.current.filter((el) => el.type === 'wall').length;
+    const newWall = {
+      id: newId(),
+      type: 'wall',
+      label: `Wall ${wallCount + 1}`,
+      length_ft: lengthFt,
+      height_ft: defaultHeightFt(elementsRef.current),
+      start_x: start.x, start_z: start.z, end_x: end.x, end_z: end.z,
+    };
+    setElements((prev) => [...prev, newWall]);
+    setDirty(true);
+    setSaved(false);
+    refitSoon();
+  }
+
+  function placeFurniture(categoryKey, point) {
+    const cat = paletteCategory(categoryKey);
+    if (!cat) return;
+    const writeCategory = cat.writeCategory || cat.key;
+    const count = objectsRef.current.filter((o) => o.category === writeCategory).length + 1;
+    const newObj = {
+      id: newId(),
+      category: writeCategory,
+      label: `${cat.placedLabel || cat.label} ${count}`,
+      center_x: point.x, center_z: point.z,
+      width_m: cat.defaultWidthM, depth_m: cat.defaultDepthM,
+      rotation_radians: 0,
+    };
+    setObjects((prev) => [...prev, newObj]);
+    setDirty(true);
+    setSaved(false);
+    refitSoon();
+  }
+
+  function handleCanvasClick(point) {
+    if (mode === 'draw-wall') {
+      if (!draftWallStart) {
+        setDraftWallStart(point);
+      } else {
+        commitWall(draftWallStart, point);
+        setDraftWallStart(point); // stay armed to chain the next connected segment
+      }
+    } else if (mode === 'place-furniture' && armedCategory) {
+      placeFurniture(armedCategory, point);
+    }
+  }
+
   const selectedElement = selectedId?.startsWith('element:') ? elements.find((el) => el.id === selectedId.slice('element:'.length)) : null;
   const selectedFurniture = selectedId?.startsWith('furniture:') ? objects.find((obj) => obj.id === selectedId.slice('furniture:'.length)) : null;
 
   return (
     <div style={{ ...S.page, padding: '24px 20px 32px', minHeight: 'calc(100vh - 60px)' }}>
-      <div style={{ ...S.shell, maxWidth: 1200 }}>
+      <div style={{ ...S.shell, maxWidth: 1400 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <Link href={`/design-studio/${scan.quoteId}`} style={{ fontSize: 12.5, color: C.clay, textDecoration: 'none', fontWeight: 600 }}>
@@ -174,7 +279,23 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
 
         {error ? <p style={{ ...S.small, color: '#B42318', marginBottom: 12 }}>{error}</p> : null}
 
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
+          <button type="button" style={modeButtonStyle(mode === 'select')} onClick={enterSelectMode}>
+            Select
+          </button>
+          <button type="button" style={modeButtonStyle(mode === 'draw-wall')} onClick={enterDrawWallMode}>
+            Draw wall
+          </button>
+          {mode === 'draw-wall' && draftWallStart ? (
+            <button type="button" style={S.btnGhost} onClick={() => setDraftWallStart(null)}>
+              Cancel wall (Esc)
+            </button>
+          ) : null}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: C.inkSoft }}>
+            <input type="checkbox" checked={snapGridEnabled} onChange={(e) => setSnapGridEnabled(e.target.checked)} />
+            Snap to 0.5ft grid
+          </label>
+          <span style={{ width: 1, height: 20, background: C.line }} />
           <button type="button" style={S.btnGhost} onClick={handleFitToView}>
             Fit to view
           </button>
@@ -189,29 +310,41 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
           {selectedFurniture ? <span style={S.small}>{selectedFurniture.label}</span> : null}
         </div>
 
-        <div
-          ref={containerRef}
-          style={{ width: '100%', height: '65vh', minHeight: 420, border: `1px solid ${C.line}`, borderRadius: 8, background: '#fff', overflow: 'hidden' }}
-        >
-          {size.width > 0 && size.height > 0 ? (
-            <FloorPlanCanvas
-              elements={elements}
-              objects={objects}
-              frozenElements={frozenElements}
-              frozenObjects={frozenObjects}
-              width={size.width}
-              height={size.height}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onDragElementBody={handleDragElementBody}
-              onDragEndpoint={handleDragEndpoint}
-              onDragFurniture={handleDragFurniture}
-              onDragEnd={handleDragEnd}
-            />
-          ) : null}
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div
+            ref={containerRef}
+            style={{ flex: 1, height: '65vh', minHeight: 420, border: `1px solid ${C.line}`, borderRadius: 8, background: '#fff', overflow: 'hidden' }}
+          >
+            {size.width > 0 && size.height > 0 ? (
+              <FloorPlanCanvas
+                elements={elements}
+                objects={objects}
+                frozenElements={frozenElements}
+                frozenObjects={frozenObjects}
+                width={size.width}
+                height={size.height}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onDragElementBody={handleDragElementBody}
+                onDragEndpoint={handleDragEndpoint}
+                onDragFurniture={handleDragFurniture}
+                onDragEnd={handleDragEnd}
+                mode={mode}
+                draftWallStart={draftWallStart}
+                snapGridEnabled={snapGridEnabled}
+                onCanvasClick={handleCanvasClick}
+              />
+            ) : null}
+          </div>
+          <FurniturePalette armedKey={armedCategory} onArm={handleArmFurniture} />
         </div>
+
         <p style={{ ...S.small, marginTop: 10 }}>
-          Drag a wall/door/window to move it, or select it and drag an endpoint to reshape it. Drag furniture to move it. Adding new walls or furniture is coming soon.
+          {mode === 'select'
+            ? 'Drag a wall/door/window to move it, or select it and drag an endpoint to reshape it. Drag furniture to move it.'
+            : mode === 'draw-wall'
+            ? 'Click to place the first point, click again to draw a wall to it — keeps drawing a connected run until you switch tools or press Esc.'
+            : 'Click anywhere on the plan to place another one, or pick a different item.'}
         </p>
       </div>
     </div>
