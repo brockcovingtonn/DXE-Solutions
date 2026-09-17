@@ -54,6 +54,7 @@ struct CoverSheetView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Cover Sheet")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -78,7 +79,7 @@ struct CoverSheetView: View {
                 .foregroundColor(.secondary)
             Text(sheetProject?.name ?? project.name)
                 .font(.title2.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             Text(sheetProject?.address ?? "Address not on file")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -137,8 +138,7 @@ struct CoverSheetView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(10)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     }
                 }
             }
@@ -175,8 +175,7 @@ struct CoverSheetView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(10)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     }
                 }
             }
@@ -198,8 +197,7 @@ struct CoverSheetView: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding(10)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     }
                 }
             }

@@ -162,7 +162,6 @@ private struct FloorPlanRow: View {
                 .font(.caption2)
         }
         .padding(8)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 }

@@ -24,6 +24,7 @@ struct AdminReviewsListView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Client Reviews")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -45,7 +46,7 @@ struct AdminReviewsListView: View {
                     starRow(review.rating)
                     Text([review.clientName, review.projects?.name].compactMap { $0 }.joined(separator: " — "))
                         .font(.subheadline.weight(.medium))
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                     if let type = review.projectType {
                         Text(type).font(.caption2).foregroundColor(.secondary)
                     }
@@ -74,7 +75,7 @@ struct AdminReviewsListView: View {
             }
         }
         .padding()
-        .background(review.featured ? Theme.cream : Color(.secondarySystemBackground))
+        .background(review.featured ? Theme.cream : Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 

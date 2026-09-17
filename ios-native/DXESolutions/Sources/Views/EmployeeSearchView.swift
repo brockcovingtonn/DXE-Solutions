@@ -109,6 +109,9 @@ struct EmployeeSearchView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .searchable(text: $query, prompt: "Your projects, documents, contacts")
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)

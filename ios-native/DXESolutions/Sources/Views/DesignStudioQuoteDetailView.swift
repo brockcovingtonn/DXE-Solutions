@@ -59,6 +59,7 @@ struct DesignStudioQuoteDetailView: View {
                 Text(errorMessage ?? "Quote not found.").foregroundColor(.secondary).padding()
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(quote?.quoteNumber ?? "Quote")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $pushToDraftEdit) {
@@ -105,7 +106,7 @@ struct DesignStudioQuoteDetailView: View {
             Text(quote.clientName?.isEmpty == false ? quote.clientName! : "No client name")
                 .font(.subheadline).foregroundColor(.secondary)
             HStack {
-                Text(designStudioCurrency(quote.total)).font(.title.weight(.bold)).foregroundColor(Theme.navy)
+                Text(designStudioCurrency(quote.total)).font(.title.weight(.bold)).foregroundColor(Theme.textPrimary)
                 Spacer()
                 Text(quote.status.capitalized)
                     .font(.caption.weight(.semibold))
@@ -180,8 +181,7 @@ struct DesignStudioQuoteDetailView: View {
                 .font(.caption).foregroundColor(.secondary)
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var scanSection: some View {
@@ -268,8 +268,7 @@ struct DesignStudioQuoteDetailView: View {
                     }
                 }
                 .padding(8)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
             }
             Button {
                 showScanRoom = true
@@ -369,8 +368,7 @@ struct DesignStudioQuoteDetailView: View {
                     priceRow("Total", designStudioCurrency(pricing.total), bold: true)
                 }
                 .padding(10)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
             }
         }
     }
@@ -381,7 +379,7 @@ struct DesignStudioQuoteDetailView: View {
             Spacer()
             Text(value).font(bold ? .subheadline.weight(.semibold) : .caption)
         }
-        .foregroundColor(bold ? Theme.navy : .primary)
+        .foregroundColor(bold ? Theme.textPrimary : .primary)
     }
 
     private func internalSection(_ internalInfo: InternalBreakdown) -> some View {

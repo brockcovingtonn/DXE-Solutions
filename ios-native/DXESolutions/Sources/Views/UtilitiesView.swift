@@ -51,6 +51,7 @@ struct UtilitiesView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Utilities")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadUtilities() }
@@ -63,7 +64,7 @@ struct UtilitiesView: View {
                     .foregroundColor(Theme.gold)
                 Text(utilityLabels[utility.utilityType] ?? utility.utilityType.capitalized)
                     .font(.headline)
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
             }
 
             if hasContactInfo(utility) {
@@ -81,8 +82,7 @@ struct UtilitiesView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func hasContactInfo(_ utility: ProjectUtility) -> Bool {
@@ -115,8 +115,7 @@ struct UtilitiesView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func fieldColumn(_ label: String, _ value: String?) -> some View {

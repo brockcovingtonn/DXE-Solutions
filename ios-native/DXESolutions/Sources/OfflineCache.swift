@@ -45,8 +45,7 @@ struct OfflineBanner: View {
         .foregroundColor(.secondary)
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func relativeSyncText(_ date: Date) -> String {

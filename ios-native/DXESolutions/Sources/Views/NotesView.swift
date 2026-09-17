@@ -33,6 +33,7 @@ struct NotesView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Notes & Updates")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadNotes() }
@@ -53,25 +54,25 @@ struct NotesView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
         .overlay(alignment: .leading) {
             Rectangle()
                 .fill(note.authorRole == "client" ? Color.secondary : Theme.gold)
                 .frame(width: 3)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.cardBorder, lineWidth: 1))
     }
 
     private var composer: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Add a Note")
                 .font(.subheadline.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             TextEditor(text: $draft)
                 .frame(minHeight: 90)
                 .padding(6)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
             if let errorMessage {
                 Text(errorMessage).font(.caption).foregroundColor(.red)
             }

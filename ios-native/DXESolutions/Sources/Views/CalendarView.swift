@@ -51,6 +51,7 @@ struct CalendarView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Calendar")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -99,7 +100,7 @@ struct CalendarView: View {
                 Image(systemName: "chevron.right")
             }
         }
-        .foregroundColor(Theme.navy)
+        .foregroundColor(Theme.textPrimary)
     }
 
     private var monthTitle: String {
@@ -263,8 +264,7 @@ struct CalendarView: View {
             .padding(.vertical, 8)
             .padding(.horizontal, 10)
         }
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func typeIcon(_ type: String?) -> String {

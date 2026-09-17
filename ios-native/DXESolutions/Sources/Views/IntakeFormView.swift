@@ -71,6 +71,9 @@ struct IntakeFormView: View {
                     Text(errorMessage).foregroundColor(.red).font(.caption)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("Intake Form")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -137,7 +140,7 @@ private struct FlowLayoutChips: View {
                         .font(.caption)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))
+                        .background(isSelected ? Theme.navy : Theme.cardBackground)
                         .foregroundColor(isSelected ? .white : .primary)
                         .clipShape(Capsule())
                 }

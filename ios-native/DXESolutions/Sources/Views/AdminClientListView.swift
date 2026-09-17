@@ -79,6 +79,7 @@ struct AdminClientListView: View {
                     .searchable(text: $searchText, prompt: "Search clients")
                 }
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("Clients")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -104,7 +105,7 @@ struct AdminClientListView: View {
     private func row(_ client: ClientProfile) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                Text(client.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                Text(client.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
                 if let count = unreadByDm[client.id], count > 0 {
                     unreadBadge(count)
                 }
@@ -125,7 +126,7 @@ struct AdminClientListView: View {
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 3)
                                     .background(Theme.cream)
-                                    .foregroundColor(Theme.navy)
+                                    .foregroundColor(Theme.textPrimary)
                                     .clipShape(Capsule())
                                 if let count = unreadByProject[project.id], count > 0 {
                                     unreadBadge(count)

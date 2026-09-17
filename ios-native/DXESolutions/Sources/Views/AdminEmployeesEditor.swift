@@ -47,8 +47,7 @@ struct AdminEmployeesEditor: View {
                     }
                     .buttonStyle(.plain)
                     .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
 
                 if let message {

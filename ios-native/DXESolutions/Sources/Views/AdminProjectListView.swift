@@ -50,6 +50,9 @@ struct AdminProjectListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Theme.screenBackground.ignoresSafeArea())
+                    .listRowBackground(Theme.cardBackground)
                     .searchable(text: $searchText, prompt: "Search projects")
                 }
             }
@@ -71,7 +74,7 @@ struct AdminProjectListView: View {
     private func row(_ project: AdminProjectListItem) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
-                Text(project.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                Text(project.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
                 if let count = unreadByProject[project.id], count > 0 {
                     Text("\(count)")
                         .font(.caption2.weight(.bold))

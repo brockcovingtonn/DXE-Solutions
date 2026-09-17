@@ -74,6 +74,7 @@ struct AdminNewClientView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("New Client & Project")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showCreatedProject) {

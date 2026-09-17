@@ -122,7 +122,7 @@ struct AdminChatThreadView: View {
                 } label: {
                     Image(systemName: "paperclip")
                         .font(.system(size: 20))
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                         .padding(.bottom, 6)
                 }
                 .disabled(isSending)
@@ -135,12 +135,13 @@ struct AdminChatThreadView: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 30))
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                 }
                 .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSending)
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .enableSwipeBack()
@@ -210,7 +211,7 @@ struct AdminChatThreadView: View {
             .padding(.horizontal)
             .padding(.vertical, 10)
         }
-        .background(Color(.secondarySystemBackground))
+        .background(Theme.cardBackground)
     }
 
     // MARK: - Data loading

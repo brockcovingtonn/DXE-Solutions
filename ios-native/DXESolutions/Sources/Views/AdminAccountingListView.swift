@@ -94,7 +94,7 @@ struct AdminAccountingListView: View {
                         filters
 
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("All Entries (\(filtered.count))").font(.headline).foregroundColor(Theme.navy)
+                            Text("All Entries (\(filtered.count))").font(.headline).foregroundColor(Theme.textPrimary)
                             if filtered.isEmpty {
                                 Text("No entries match this filter.").font(.subheadline).foregroundColor(.secondary)
                             } else {
@@ -108,6 +108,7 @@ struct AdminAccountingListView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Accounting")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -129,15 +130,14 @@ struct AdminAccountingListView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var upcomingPaymentsSection: some View {
         Group {
             if !upcomingPayments.isEmpty {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Upcoming Payments").font(.headline).foregroundColor(Theme.navy)
+                    Text("Upcoming Payments").font(.headline).foregroundColor(Theme.textPrimary)
                     Text("Scheduled milestones grouped by month, so you can estimate expected income.")
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -151,7 +151,7 @@ struct AdminAccountingListView: View {
                                 Spacer()
                                 Text(currency(group.items.reduce(0) { $0 + $1.amount }) + " expected")
                                     .font(.caption.weight(.semibold))
-                                    .foregroundColor(Theme.navy)
+                                    .foregroundColor(Theme.textPrimary)
                             }
                             ForEach(group.items) { item in
                                 upcomingRow(item)
@@ -182,7 +182,7 @@ struct AdminAccountingListView: View {
                 }
             }
             Spacer()
-            Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
             if confirmBusyId == item.id {
                 ProgressView()
             } else {
@@ -196,8 +196,7 @@ struct AdminAccountingListView: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var filters: some View {
@@ -225,7 +224,7 @@ struct AdminAccountingListView: View {
                 .padding(.horizontal, 6)
                 .padding(.vertical, 3)
                 .background(item.kind == "receipt" ? Color.blue.opacity(0.12) : Theme.gold.opacity(0.18))
-                .foregroundColor(item.kind == "receipt" ? .blue : Theme.navy)
+                .foregroundColor(item.kind == "receipt" ? .blue : Theme.textPrimary)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
 
             VStack(alignment: .leading, spacing: 3) {
@@ -235,7 +234,7 @@ struct AdminAccountingListView: View {
 
             Spacer()
 
-            Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            Text(currency(item.amount)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
 
             if item.kind == "invoice" {
                 if busyId == item.id {
@@ -252,8 +251,7 @@ struct AdminAccountingListView: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func subtitle(_ item: AdminInvoiceItem) -> String {

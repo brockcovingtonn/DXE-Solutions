@@ -54,6 +54,7 @@ struct AdminDashboardView: View {
                 }
                 .padding()
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("Dashboard")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -103,12 +104,11 @@ struct AdminDashboardView: View {
                 .foregroundColor(.secondary)
             Text(value)
                 .font(.title2.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     // MARK: - Week
@@ -125,7 +125,7 @@ struct AdminDashboardView: View {
                 CalendarView(project: nil)
             } label: {
                 HStack {
-                    Text("This Week").font(.headline).foregroundColor(Theme.navy)
+                    Text("This Week").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View Month").font(.caption.weight(.semibold))
                 }
@@ -160,8 +160,7 @@ struct AdminDashboardView: View {
                         }
                     }
                     .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
             }
         }
@@ -192,7 +191,7 @@ struct AdminDashboardView: View {
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 56)
-            .background(isSelected ? Theme.navy : Color(.secondarySystemBackground))
+            .background(isSelected ? Theme.navy : Theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
@@ -223,7 +222,7 @@ struct AdminDashboardView: View {
                 AdminActivityListView()
             } label: {
                 HStack {
-                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View All").font(.caption.weight(.semibold))
                 }
@@ -245,7 +244,7 @@ struct AdminDashboardView: View {
                 AdminMilestonesListView()
             } label: {
                 HStack {
-                    Text("Upcoming Milestones").font(.headline).foregroundColor(Theme.navy)
+                    Text("Upcoming Milestones").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View All").font(.caption.weight(.semibold))
                 }
@@ -290,8 +289,7 @@ struct AdminDashboardView: View {
         }
         .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func iconName(for type: String) -> String {
@@ -312,7 +310,7 @@ struct AdminDashboardView: View {
                 AdminUtilitiesListView()
             } label: {
                 HStack {
-                    Text("Utilities Needing Attention").font(.headline).foregroundColor(Theme.navy)
+                    Text("Utilities Needing Attention").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View All").font(.caption.weight(.semibold))
                 }

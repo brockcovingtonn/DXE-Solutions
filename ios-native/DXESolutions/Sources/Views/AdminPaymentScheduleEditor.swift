@@ -59,7 +59,7 @@ struct AdminPaymentScheduleEditor: View {
             Spacer()
             Text(currency(item.amount))
                 .font(.subheadline.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             if busyId == item.id {
                 ProgressView()
@@ -82,8 +82,7 @@ struct AdminPaymentScheduleEditor: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func subtitle(_ item: PaymentScheduleItem) -> String {
@@ -113,7 +112,7 @@ struct AdminPaymentScheduleEditor: View {
 
     private var newForm: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("New Milestone").font(.caption.weight(.semibold)).foregroundColor(Theme.navy)
+            Text("New Milestone").font(.caption.weight(.semibold)).foregroundColor(Theme.textPrimary)
             TextField("Description", text: $newDescription).textFieldStyle(.roundedBorder)
             TextField("Amount", text: $newAmount).textFieldStyle(.roundedBorder).keyboardType(.decimalPad)
             TextField("Percent of total (optional)", text: $newPercent).textFieldStyle(.roundedBorder).keyboardType(.decimalPad)

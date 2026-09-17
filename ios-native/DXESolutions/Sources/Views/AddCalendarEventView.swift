@@ -216,6 +216,9 @@ struct AddCalendarEventView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle(existingEvent == nil ? "New Calendar Item" : "Edit Calendar Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

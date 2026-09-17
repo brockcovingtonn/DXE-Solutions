@@ -52,6 +52,9 @@ struct AdminMoreView: View {
                     Label("Account Settings", systemImage: "gearshape")
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("More")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

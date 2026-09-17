@@ -56,7 +56,7 @@ struct DesignStudioListView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(viewer?.isMaster == true ? "All quotes (\(quotes.count))" : "My quotes (\(quotes.count))")
                                 .font(.headline)
-                                .foregroundColor(Theme.navy)
+                                .foregroundColor(Theme.textPrimary)
                             if quotes.isEmpty {
                                 Text("No quotes yet. Start with a new quote.").font(.subheadline).foregroundColor(.secondary)
                             } else {
@@ -110,19 +110,18 @@ struct DesignStudioListView: View {
     private func statCard(_ label: String, _ value: String, sub: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label.uppercased()).font(.caption2.weight(.semibold)).foregroundColor(.secondary)
-            Text(value).font(.title3.weight(.bold)).foregroundColor(Theme.navy)
+            Text(value).font(.title3.weight(.bold)).foregroundColor(Theme.textPrimary)
             Text(sub).font(.caption2).foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func row(_ quote: DesignStudioQuote) -> some View {
         HStack(alignment: .top, spacing: 10) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(quote.quoteNumber).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                Text(quote.quoteNumber).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
                 HStack(spacing: 6) {
                     Text(quote.clientName?.isEmpty == false ? quote.clientName! : "No client name yet")
                         .font(.caption)
@@ -146,7 +145,7 @@ struct DesignStudioListView: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 4) {
-                Text(designStudioCurrency(quote.total)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                Text(designStudioCurrency(quote.total)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
                 Text(quote.status.capitalized)
                     .font(.caption2.weight(.semibold))
                     .padding(.horizontal, 8)
@@ -157,8 +156,7 @@ struct DesignStudioListView: View {
             }
         }
         .padding(10)
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func load() async {

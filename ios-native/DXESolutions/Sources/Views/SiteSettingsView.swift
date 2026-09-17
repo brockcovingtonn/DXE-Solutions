@@ -60,6 +60,9 @@ struct SiteSettingsView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Theme.screenBackground.ignoresSafeArea())
+        .listRowBackground(Theme.cardBackground)
         .navigationTitle("Site Settings")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

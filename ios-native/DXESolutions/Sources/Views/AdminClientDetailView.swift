@@ -82,6 +82,7 @@ struct AdminClientDetailView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(client.map { [$0.firstName, $0.lastName].compactMap { $0 }.joined(separator: " ") } ?? "Client")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -130,7 +131,7 @@ struct AdminClientDetailView: View {
                         } label: {
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(project.name).font(.subheadline.weight(.medium)).foregroundColor(Theme.navy)
+                                    Text(project.name).font(.subheadline.weight(.medium)).foregroundColor(Theme.textPrimary)
                                     if let type = project.projectType {
                                         Text(type).font(.caption2).foregroundColor(.secondary)
                                     }
@@ -139,8 +140,7 @@ struct AdminClientDetailView: View {
                                 Text(project.status.capitalized).font(.caption2.weight(.semibold)).foregroundColor(Theme.gold)
                             }
                             .padding(10)
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .dxeCard()
                         }
                         .buttonStyle(.plain)
                     }
@@ -188,12 +188,11 @@ struct AdminClientDetailView: View {
 
     private func sectionCard<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(title).font(.headline).foregroundColor(Theme.navy)
+            Text(title).font(.headline).foregroundColor(Theme.textPrimary)
             content()
         }
         .padding()
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func labeledField(_ label: String, text: Binding<String>, keyboard: UIKeyboardType = .default) -> some View {

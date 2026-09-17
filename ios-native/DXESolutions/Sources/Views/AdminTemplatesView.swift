@@ -31,6 +31,7 @@ struct AdminTemplatesView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Templates")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -43,7 +44,7 @@ struct AdminTemplatesView: View {
 
     private var uploadSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Add a Template").font(.headline).foregroundColor(Theme.navy)
+            Text("Add a Template").font(.headline).foregroundColor(Theme.textPrimary)
             TextField("Template name", text: $newName).textFieldStyle(.roundedBorder)
             TextField("Category (optional)", text: $newCategory).textFieldStyle(.roundedBorder)
             TextField("Description (optional)", text: $newDescription, axis: .vertical)
@@ -68,13 +69,12 @@ struct AdminTemplatesView: View {
                 .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private var listSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("All Templates (\(templates.count))").font(.headline).foregroundColor(Theme.navy)
+            Text("All Templates (\(templates.count))").font(.headline).foregroundColor(Theme.textPrimary)
 
             if isLoading {
                 ProgressView()
@@ -139,8 +139,7 @@ struct AdminTemplatesView: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func binding(for templateId: String) -> Binding<String> {

@@ -73,8 +73,7 @@ struct ProjectOverviewView: View {
                     )
                 }
                 .padding()
-                .background(Theme.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .dxeCard(cornerRadius: 10)
             }
         }
     }
@@ -84,7 +83,7 @@ struct ProjectOverviewView: View {
             Image(systemName: done ? "checkmark.circle.fill" : "circle")
                 .foregroundColor(done ? .green : Theme.gold)
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.subheadline.weight(.medium)).foregroundColor(Theme.navy)
+                Text(title).font(.subheadline.weight(.medium)).foregroundColor(Theme.textPrimary)
                 if let subtitle {
                     Text(subtitle).font(.caption).foregroundColor(.secondary)
                 }
@@ -166,11 +165,10 @@ struct ProjectOverviewView: View {
             Image(systemName: icon).font(.title2)
             Text(label).font(.caption)
         }
-        .foregroundColor(Theme.navy)
+        .foregroundColor(Theme.textPrimary)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private var header: some View {
@@ -189,7 +187,7 @@ struct ProjectOverviewView: View {
                 Spacer()
                 Text(project.status.capitalized)
                     .font(.caption.weight(.semibold))
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
             }
         }
     }

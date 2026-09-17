@@ -21,6 +21,9 @@ struct AdminUtilitiesListView: View {
                     row(entry)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Theme.screenBackground.ignoresSafeArea())
+                .listRowBackground(Theme.cardBackground)
             }
         }
         .navigationTitle("Utilities Needing Attention")

@@ -137,6 +137,7 @@ struct DesignStudioQuoteBuilderView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(existingQuoteId == nil ? "New Quote" : "Re-price Draft")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -182,7 +183,7 @@ struct DesignStudioQuoteBuilderView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text("TOTAL").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
-                    Text(designStudioCurrency(preview?.total)).font(.title2.weight(.bold)).foregroundColor(Theme.navy)
+                    Text(designStudioCurrency(preview?.total)).font(.title2.weight(.bold)).foregroundColor(Theme.textPrimary)
                 }
                 Spacer()
                 VStack(alignment: .trailing) {
@@ -204,8 +205,7 @@ struct DesignStudioQuoteBuilderView: View {
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func addOnRow(key: String, def: AddOnDef) -> some View {
@@ -235,7 +235,7 @@ struct DesignStudioQuoteBuilderView: View {
     }
 
     private func sectionHeader(_ title: String) -> some View {
-        Text(title.uppercased()).font(.caption.weight(.bold)).foregroundColor(Theme.navy).padding(.top, 6)
+        Text(title.uppercased()).font(.caption.weight(.bold)).foregroundColor(Theme.textPrimary).padding(.top, 6)
     }
 
     private func labeledField(_ label: String, text: Binding<String>, keyboard: UIKeyboardType = .default) -> some View {

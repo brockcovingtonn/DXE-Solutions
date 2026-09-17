@@ -36,6 +36,7 @@ struct ContentView: View {
                 LoginView(namespace: logoNamespace)
             }
         }
+        .tint(Theme.gold)
         .animation(.easeInOut(duration: 0.7), value: showSplash)
         .task {
             try? await Task.sleep(nanoseconds: UInt64(minimumSplashDuration * 1_000_000_000))

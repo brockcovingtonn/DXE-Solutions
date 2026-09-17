@@ -71,6 +71,7 @@ struct RoomScanAnnotateView: View {
                 }
                 .padding()
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("Annotate")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

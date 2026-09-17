@@ -60,6 +60,7 @@ struct AdminEmployeeDetailView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(employee.map { [$0.firstName, $0.lastName].compactMap { $0 }.joined(separator: " ") } ?? "Employee")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -84,8 +85,7 @@ struct AdminEmployeeDetailView: View {
                         .foregroundColor(.secondary)
                         .padding(14)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     Text("This is their login email and can't be changed here.")
                         .font(.caption2)
                         .foregroundColor(.secondary)
@@ -147,8 +147,7 @@ struct AdminEmployeeDetailView: View {
                         }
                         .buttonStyle(.plain)
                         .padding(10)
-                        .background(Color(.secondarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     }
 
                     if let assignmentsMessage {
@@ -172,12 +171,11 @@ struct AdminEmployeeDetailView: View {
 
     private func sectionCard<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(title).font(.headline).foregroundColor(Theme.navy)
+            Text(title).font(.headline).foregroundColor(Theme.textPrimary)
             content()
         }
         .padding()
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func labeledField(_ label: String, text: Binding<String>, keyboard: UIKeyboardType = .default) -> some View {

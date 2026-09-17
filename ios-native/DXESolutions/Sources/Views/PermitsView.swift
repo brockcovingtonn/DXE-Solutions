@@ -40,6 +40,7 @@ struct PermitsView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Permits")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadPermits() }
@@ -49,7 +50,7 @@ struct PermitsView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(permit.permitType)
                 .font(.subheadline.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             let columns = [GridItem(.flexible()), GridItem(.flexible())]
             LazyVGrid(columns: columns, alignment: .leading, spacing: 10) {
@@ -61,8 +62,7 @@ struct PermitsView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func field(_ label: String, _ value: String?) -> some View {

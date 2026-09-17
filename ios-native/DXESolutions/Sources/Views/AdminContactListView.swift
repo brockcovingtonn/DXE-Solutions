@@ -70,7 +70,7 @@ struct AdminContactListView: View {
                         }
                         .padding(.horizontal)
                         .padding(.vertical, 8)
-                        .background(Color(.secondarySystemBackground))
+                        .background(Theme.cardBackground)
                     }
 
                     List(filteredContacts, selection: $selection) { contact in
@@ -81,6 +81,9 @@ struct AdminContactListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Theme.screenBackground.ignoresSafeArea())
+                    .listRowBackground(Theme.cardBackground)
                     .searchable(text: $searchText, prompt: "Search contacts")
                 }
             }
@@ -106,7 +109,7 @@ struct AdminContactListView: View {
 
     private func row(_ contact: Contact) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(contact.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            Text(contact.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
             Text([contact.trade, contact.company].compactMap { $0 }.joined(separator: " · "))
                 .font(.caption)
                 .foregroundColor(.secondary)

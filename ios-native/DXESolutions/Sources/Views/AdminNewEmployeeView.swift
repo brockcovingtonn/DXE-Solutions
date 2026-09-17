@@ -36,6 +36,7 @@ struct AdminNewEmployeeView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("New Employee")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $showCreatedEmployee) {

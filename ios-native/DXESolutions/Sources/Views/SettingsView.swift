@@ -44,6 +44,7 @@ struct SettingsView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Account Settings")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -203,8 +204,7 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.tertiarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
             }
 
             field("Phone Number", text: $phone, keyboard: .phonePad)
@@ -283,8 +283,7 @@ struct SettingsView: View {
             TextField(label, text: text)
                 .keyboardType(keyboard)
                 .padding(14)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -296,8 +295,7 @@ struct SettingsView: View {
                 .foregroundColor(.secondary)
             SecureField(label, text: text)
                 .padding(14)
-                .background(Color(.secondarySystemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
         }
     }
 

@@ -56,6 +56,9 @@ struct DocumentsView: View {
                     }
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Theme.screenBackground.ignoresSafeArea())
+                .listRowBackground(Theme.cardBackground)
                 .safeAreaInset(edge: .bottom) {
                     uploadControls
                         .padding()
@@ -125,7 +128,7 @@ struct DocumentsView: View {
     private func row(for doc: ProjectDocument) -> some View {
         HStack {
             Image(systemName: icon(for: doc.fileType))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 4) {
                 Text(doc.fileName)

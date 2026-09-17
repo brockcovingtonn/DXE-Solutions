@@ -60,6 +60,7 @@ struct SignaturePadView: View {
                 Spacer()
             }
             .padding()
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

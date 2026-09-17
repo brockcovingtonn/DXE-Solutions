@@ -38,7 +38,7 @@ struct EmployeeDashboardView: View {
                         HStack {
                             Text("This Week")
                                 .font(.headline)
-                                .foregroundColor(Theme.navy)
+                                .foregroundColor(Theme.textPrimary)
                             Spacer()
                             NavigationLink {
                                 CalendarView(project: nil)
@@ -149,7 +149,7 @@ struct EmployeeDashboardView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Text(selectedDateTitle)
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {
                 HStack(spacing: 6) {
@@ -196,8 +196,7 @@ struct EmployeeDashboardView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func eventsOn(_ day: Date) -> [CalendarEvent] {
@@ -240,7 +239,7 @@ struct EmployeeDashboardView: View {
                 EmployeeActivityListView()
             } label: {
                 HStack {
-                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View All").font(.caption.weight(.semibold))
                 }
@@ -263,8 +262,7 @@ struct EmployeeDashboardView: View {
                     }
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
             }
         }
@@ -300,7 +298,7 @@ struct EmployeeDashboardView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("My Action Items")
                 .font(.headline)
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             if actionItems.isEmpty {
                 Text("You have no action items assigned right now.")
@@ -360,7 +358,7 @@ struct EmployeeDashboardView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Assigned Projects")
                 .font(.headline)
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             if projects.isEmpty {
                 Text("You haven't been assigned to any projects yet.")
@@ -382,7 +380,7 @@ struct EmployeeDashboardView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(project.name)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                     if let address = project.address {
                         Text(address).font(.caption).foregroundColor(.secondary)
                     }
@@ -407,13 +405,12 @@ struct EmployeeDashboardView: View {
                     Text("Cover Sheet")
                 }
                 .font(.caption.weight(.medium))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             }
             .padding(.top, 6)
         }
         .padding()
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     // MARK: - Data

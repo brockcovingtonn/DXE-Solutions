@@ -31,6 +31,7 @@ struct EmployeeProjectDetailView: View {
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(project.name)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $previewItem) { item in
@@ -44,7 +45,7 @@ struct EmployeeProjectDetailView: View {
     private var annotationsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("Room Scan Annotations").font(.headline).foregroundColor(Theme.navy)
+                Text("Room Scan Annotations").font(.headline).foregroundColor(Theme.textPrimary)
                 Spacer()
             }
             Theme.goldRule()
@@ -66,8 +67,7 @@ struct EmployeeProjectDetailView: View {
                     .disabled(previewLoading)
                 }
                 .padding(10)
-                .background(Theme.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .dxeCard()
             }
         }
     }
@@ -127,7 +127,7 @@ struct EmployeeProjectDetailView: View {
             Image(systemName: icon).font(.title2)
             Text(label).font(.caption)
         }
-        .foregroundColor(Theme.navy)
+        .foregroundColor(Theme.textPrimary)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
         .background(Theme.cream)
@@ -152,7 +152,7 @@ struct EmployeeProjectDetailView: View {
                 Spacer()
                 Text(project.status.capitalized)
                     .font(.caption.weight(.semibold))
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
             }
         }
     }

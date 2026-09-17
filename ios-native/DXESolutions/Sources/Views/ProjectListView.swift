@@ -67,6 +67,9 @@ struct ProjectListView: View {
                 ProjectRow(project: project).tag(project)
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
         } else {
             List(projects) { project in
                 NavigationLink(value: project) {
@@ -74,6 +77,9 @@ struct ProjectListView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
         }
     }
 

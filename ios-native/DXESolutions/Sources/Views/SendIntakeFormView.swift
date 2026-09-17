@@ -38,6 +38,9 @@ struct SendIntakeFormView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("Send Intake Form")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

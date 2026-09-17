@@ -60,6 +60,7 @@ struct ProposalsView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Proposals")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -81,7 +82,7 @@ struct ProposalsView: View {
     private func row(_ proposal: Proposal) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: "doc.text.fill")
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             VStack(alignment: .leading, spacing: 3) {
                 Text(proposal.title).font(.subheadline.weight(.medium)).foregroundColor(.primary)
                 Text(subtitle(proposal)).font(.caption).foregroundColor(.secondary)
@@ -95,12 +96,11 @@ struct ProposalsView: View {
             if openingId == proposal.id {
                 ProgressView()
             } else {
-                Text(currency(proposal.total)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+                Text(currency(proposal.total)).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func subtitle(_ proposal: Proposal) -> String {

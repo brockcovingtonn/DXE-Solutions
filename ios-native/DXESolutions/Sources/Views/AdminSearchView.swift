@@ -145,6 +145,9 @@ struct AdminSearchView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .searchable(text: $query, prompt: "Clients, projects, contacts, documents")
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)

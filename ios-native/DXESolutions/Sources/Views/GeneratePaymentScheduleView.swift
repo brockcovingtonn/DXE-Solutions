@@ -103,6 +103,9 @@ struct GeneratePaymentScheduleView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("Generate Payment Schedule")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

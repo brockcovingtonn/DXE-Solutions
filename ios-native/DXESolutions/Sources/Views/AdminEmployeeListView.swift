@@ -60,9 +60,13 @@ struct AdminEmployeeListView: View {
                     }
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Theme.screenBackground.ignoresSafeArea())
+                .listRowBackground(Theme.cardBackground)
                 .searchable(text: $searchText, prompt: "Search employees")
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Employees")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -80,7 +84,7 @@ struct AdminEmployeeListView: View {
 
     private func row(_ employee: EmployeeProfile) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(employee.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            Text(employee.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
             if let email = employee.email {
                 Text(email).font(.caption).foregroundColor(.secondary)
             }
@@ -96,7 +100,7 @@ struct AdminEmployeeListView: View {
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(Theme.cream)
-                                .foregroundColor(Theme.navy)
+                                .foregroundColor(Theme.textPrimary)
                                 .clipShape(Capsule())
                         }
                     }

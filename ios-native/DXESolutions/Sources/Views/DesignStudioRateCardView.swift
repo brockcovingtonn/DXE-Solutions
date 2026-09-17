@@ -138,6 +138,9 @@ struct DesignStudioRateCardView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Theme.screenBackground.ignoresSafeArea())
+        .listRowBackground(Theme.cardBackground)
         .navigationTitle("Rate Card")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

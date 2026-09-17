@@ -19,7 +19,7 @@ struct BiometricLockView: View {
 
             Text("DXE Solutions")
                 .font(.title2.weight(.semibold))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             Text("Unlock with \(biometricType.label) to continue")
                 .font(.subheadline)
@@ -60,7 +60,7 @@ struct BiometricLockView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
+        .background(Theme.screenBackground.ignoresSafeArea())
         .task { await attemptUnlock() }
     }
 

@@ -42,8 +42,7 @@ struct ReviewView: View {
                             TextEditor(text: $reviewText)
                                 .frame(minHeight: 130)
                                 .padding(6)
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .dxeCard()
                         }
 
                         if let message {
@@ -88,6 +87,7 @@ struct ReviewView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Leave a Review")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadReview() }
@@ -103,7 +103,7 @@ struct ReviewView: View {
         HStack(spacing: 12) {
             Text("Glad you enjoyed working with us — mind sharing this on Google too?")
                 .font(.caption)
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             Spacer()
             Link(destination: url) {
                 Text("Leave a Google Review")
@@ -111,8 +111,7 @@ struct ReviewView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var starPicker: some View {

@@ -47,6 +47,7 @@ struct PhotosView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Photos")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadPhotos() }

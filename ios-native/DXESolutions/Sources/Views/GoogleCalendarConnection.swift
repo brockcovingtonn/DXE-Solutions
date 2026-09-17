@@ -115,8 +115,7 @@ struct GoogleCalendarConnection: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
         .task { await model.loadStatus() }
         .alert("Google Calendar", isPresented: Binding(get: { model.message != nil }, set: { if !$0 { model.message = nil } })) {
             Button("OK", role: .cancel) {}

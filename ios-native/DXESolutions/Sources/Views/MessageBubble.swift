@@ -27,7 +27,7 @@ struct MessageBubble: View {
                     Text(message.body)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(isMine ? Theme.navy : Color(.secondarySystemBackground))
+                        .background(isMine ? Theme.navy : Theme.cardBackground)
                         .foregroundColor(isMine ? .white : .primary)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
@@ -69,7 +69,7 @@ struct MessageBubble: View {
             .font(.caption)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(isMine ? Theme.navy.opacity(0.85) : Color(.secondarySystemBackground))
+            .background(isMine ? Theme.navy.opacity(0.85) : Theme.cardBackground)
             .foregroundColor(isMine ? .white : .primary)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }

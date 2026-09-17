@@ -89,13 +89,12 @@ struct AdminActionItemsEditor: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var newItemForm: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("New Action Item").font(.caption.weight(.semibold)).foregroundColor(Theme.navy)
+            Text("New Action Item").font(.caption.weight(.semibold)).foregroundColor(Theme.textPrimary)
             TextField("Title", text: $newTitle).textFieldStyle(.roundedBorder)
             TextField("Description (optional)", text: $newDescription).textFieldStyle(.roundedBorder)
             Picker("Assign to", selection: $newAssignedTo) {

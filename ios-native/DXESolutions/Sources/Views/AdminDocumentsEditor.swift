@@ -109,8 +109,7 @@ struct AdminDocumentsEditor: View {
             .disabled(isBulkWorking)
         }
         .padding(8)
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func row(_ doc: ProjectDocument) -> some View {
@@ -154,8 +153,7 @@ struct AdminDocumentsEditor: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func load() async {

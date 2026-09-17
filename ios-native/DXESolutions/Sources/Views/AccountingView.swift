@@ -43,6 +43,7 @@ struct AccountingView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Accounting")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadInvoices() }
@@ -78,7 +79,7 @@ struct AccountingView: View {
                 .foregroundColor(balanceDue > 0 ? .red : Color(red: 0.02, green: 0.37, blue: 0.28))
         }
         .padding()
-        .background(balanceDue > 0 ? Color.red.opacity(0.08) : Color(.secondarySystemBackground))
+        .background(balanceDue > 0 ? Color.red.opacity(0.08) : Theme.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -93,7 +94,7 @@ struct AccountingView: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
                         .background(item.kind == "receipt" ? Color.blue.opacity(0.12) : Theme.gold.opacity(0.18))
-                        .foregroundColor(item.kind == "receipt" ? .blue : Theme.navy)
+                        .foregroundColor(item.kind == "receipt" ? .blue : Theme.textPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -112,7 +113,7 @@ struct AccountingView: View {
                     } else {
                         Text(currency(item.amount))
                             .font(.subheadline.weight(.semibold))
-                            .foregroundColor(Theme.navy)
+                            .foregroundColor(Theme.textPrimary)
                     }
                 }
             }
@@ -137,8 +138,7 @@ struct AccountingView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func isPayable(_ item: Invoice) -> Bool {

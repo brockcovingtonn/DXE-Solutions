@@ -57,6 +57,7 @@ struct EmployeeTrainingView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Training")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadSteps() }
@@ -71,7 +72,7 @@ struct EmployeeTrainingView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(step.title)
                     .font(.subheadline.weight(.medium))
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
                 if let description = step.description, !description.isEmpty {
                     Text(description)
                         .font(.caption)

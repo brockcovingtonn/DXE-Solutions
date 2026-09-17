@@ -90,6 +90,9 @@ struct AdminChatListView: View {
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Theme.screenBackground.ignoresSafeArea())
+                    .listRowBackground(Theme.cardBackground)
                 }
             }
             .navigationTitle("Chat")

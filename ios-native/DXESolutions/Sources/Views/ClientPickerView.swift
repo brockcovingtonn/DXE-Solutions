@@ -36,6 +36,9 @@ struct ClientPickerView: View {
             }
             .searchable(text: $query, prompt: "Search clients")
             .onChange(of: query) { _ in scheduleSearch() }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("Select Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -96,6 +99,9 @@ struct NewClientView: View {
                     Text(errorMessage).foregroundColor(.red).font(.caption)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("New Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -96,8 +96,7 @@ struct AdminContactDetailView: View {
                                     }
                                     .buttonStyle(.plain)
                                     .padding(10)
-                                    .background(Color(.secondarySystemBackground))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .dxeCard()
                                 }
                             }
                         }
@@ -135,6 +134,7 @@ struct AdminContactDetailView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(contactId == nil ? "New Contact" : "Edit Contact")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }

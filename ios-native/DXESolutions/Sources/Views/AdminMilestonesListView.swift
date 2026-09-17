@@ -16,6 +16,9 @@ struct AdminMilestonesListView: View {
                     row(item)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Theme.screenBackground.ignoresSafeArea())
+                .listRowBackground(Theme.cardBackground)
             }
         }
         .navigationTitle("Upcoming Milestones")

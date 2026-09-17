@@ -40,6 +40,7 @@ struct RoomScanView: View {
                 case .reviewing: reviewView
                 }
             }
+            .background(Theme.screenBackground.ignoresSafeArea())
             .navigationTitle("Scan Room")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -180,13 +181,12 @@ struct RoomScanView: View {
 
     private func statPill(_ label: String, _ value: Int) -> some View {
         VStack {
-            Text("\(value)").font(.title3.weight(.bold)).foregroundColor(Theme.navy)
+            Text("\(value)").font(.title3.weight(.bold)).foregroundColor(Theme.textPrimary)
             Text(label).font(.caption2).foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func processCapturedRoom(_ room: CapturedRoom) {

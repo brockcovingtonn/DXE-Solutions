@@ -94,6 +94,7 @@ struct AdminProjectDetailView: View {
                 }
             }
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle(project?.name ?? "Project")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
@@ -104,7 +105,7 @@ struct AdminProjectDetailView: View {
             if let owner = project?.profiles {
                 Text([owner.firstName, owner.lastName].compactMap { $0 }.joined(separator: " "))
                     .font(.subheadline.weight(.medium))
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
                 if let email = owner.email {
                     Text(email).font(.caption).foregroundColor(.secondary)
                 }
@@ -230,7 +231,7 @@ struct AdminProjectDetailView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
             }
         }
     }
@@ -264,8 +265,7 @@ struct AdminProjectDetailView: View {
                         }
                     }
                     .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
 
                 Button {
@@ -337,8 +337,7 @@ struct AdminProjectDetailView: View {
                             .lineLimit(2...4)
                     }
                     .padding(10)
-                    .background(Color(.secondarySystemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
 
                 Button {
@@ -389,12 +388,11 @@ struct AdminProjectDetailView: View {
 
     private func sectionCard<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(title).font(.headline).foregroundColor(Theme.navy)
+            Text(title).font(.headline).foregroundColor(Theme.textPrimary)
             content()
         }
         .padding()
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func labeledField(_ label: String, text: Binding<String>) -> some View {

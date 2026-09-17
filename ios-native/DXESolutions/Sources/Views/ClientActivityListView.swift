@@ -27,6 +27,9 @@ struct ClientActivityListView: View {
                     .padding(.vertical, 4)
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Theme.screenBackground.ignoresSafeArea())
+                .listRowBackground(Theme.cardBackground)
             }
         }
         .navigationTitle("All Activity")

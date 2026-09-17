@@ -95,12 +95,13 @@ struct AssistantView: View {
                 } label: {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 30))
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                 }
                 .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSending)
             }
             .padding()
         }
+        .background(Theme.screenBackground.ignoresSafeArea())
         .navigationTitle("Assistant")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -123,7 +124,7 @@ struct AssistantView: View {
             Text(turn.text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(isMine ? Theme.navy : Color(.secondarySystemBackground))
+                .background(isMine ? Theme.navy : Theme.cardBackground)
                 .foregroundColor(isMine ? .white : .primary)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             if !isMine { Spacer(minLength: 40) }

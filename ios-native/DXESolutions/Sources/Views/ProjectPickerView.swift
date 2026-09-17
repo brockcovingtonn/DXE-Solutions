@@ -40,6 +40,9 @@ struct ProjectPickerView: View {
             .searchable(text: $query, prompt: "Search projects")
             .onChange(of: query) { _ in scheduleSearch() }
             .task { await search() }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("Attach to Project")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -123,6 +126,9 @@ struct NewProjectView: View {
                     Text(errorMessage).foregroundColor(.red).font(.caption)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.screenBackground.ignoresSafeArea())
+            .listRowBackground(Theme.cardBackground)
             .navigationTitle("New Project")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

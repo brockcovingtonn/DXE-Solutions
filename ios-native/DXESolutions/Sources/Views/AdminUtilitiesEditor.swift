@@ -61,7 +61,7 @@ struct AdminUtilitiesEditor: View {
             Toggle(isOn: utility.enabled) {
                 Text(types.first { $0.value == utility.wrappedValue.utilityType }?.label ?? utility.wrappedValue.utilityType)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundColor(Theme.navy)
+                    .foregroundColor(Theme.textPrimary)
             }
             .tint(Theme.gold)
 
@@ -91,8 +91,7 @@ struct AdminUtilitiesEditor: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .dxeCard(cornerRadius: 10)
     }
 
     private func entryRow(_ entry: AdminUtilityEntryDetail) -> some View {
@@ -123,8 +122,7 @@ struct AdminUtilitiesEditor: View {
             }
         }
         .padding(8)
-        .background(Color(.tertiarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .dxeCard(cornerRadius: 6)
     }
 
     private func binding(for type: String, in dict: Binding<[String: String]>) -> Binding<String> {

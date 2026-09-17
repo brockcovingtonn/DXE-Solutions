@@ -47,8 +47,7 @@ struct AdminPhotosEditor: View {
                             .disabled(isBulkDeleting)
                         }
                         .padding(8)
-                        .background(Color(.tertiarySystemBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .dxeCard()
                     }
 
                     LazyVGrid(columns: columns, spacing: 8) {

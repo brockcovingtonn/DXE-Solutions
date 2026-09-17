@@ -103,8 +103,7 @@ struct AdminProposalsEditor: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private func statusLabel(_ status: String) -> String {

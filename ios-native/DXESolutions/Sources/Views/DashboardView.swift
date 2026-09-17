@@ -34,7 +34,7 @@ struct DashboardView: View {
                         HStack {
                             Text("This Week")
                                 .font(.headline)
-                                .foregroundColor(Theme.navy)
+                                .foregroundColor(Theme.textPrimary)
                             Spacer()
                             NavigationLink {
                                 CalendarView(project: nil)
@@ -99,7 +99,7 @@ struct DashboardView: View {
                 ClientActivityListView()
             } label: {
                 HStack {
-                    Text("Recent Activity").font(.headline).foregroundColor(Theme.navy)
+                    Text("Recent Activity").font(.headline).foregroundColor(Theme.textPrimary)
                     Spacer()
                     Text("View All").font(.caption.weight(.semibold))
                 }
@@ -122,8 +122,7 @@ struct DashboardView: View {
                     }
                     .padding(10)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .dxeCard()
                 }
             }
         }
@@ -207,7 +206,7 @@ struct DashboardView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Text(selectedDateTitle)
                 .font(.subheadline.weight(.medium))
-                .foregroundColor(Theme.navy)
+                .foregroundColor(Theme.textPrimary)
 
             if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {
                 HStack(spacing: 6) {
@@ -254,8 +253,7 @@ struct DashboardView: View {
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
-        .background(Theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     // MARK: - Data

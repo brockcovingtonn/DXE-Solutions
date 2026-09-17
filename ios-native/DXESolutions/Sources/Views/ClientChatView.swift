@@ -47,7 +47,7 @@ struct ClientChatView: View {
                             Image(systemName: "chevron.down")
                                 .font(.caption2)
                         }
-                        .foregroundColor(Theme.navy)
+                        .foregroundColor(Theme.textPrimary)
                     }
                 }
             }

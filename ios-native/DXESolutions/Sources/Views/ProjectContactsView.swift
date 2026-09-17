@@ -64,6 +64,9 @@ struct ProjectContactsView: View {
                         contactRow(contact)
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .background(Theme.screenBackground.ignoresSafeArea())
+                    .listRowBackground(Theme.cardBackground)
                     .searchable(text: $searchText, prompt: "Search contacts")
                 }
             }
@@ -75,7 +78,7 @@ struct ProjectContactsView: View {
 
     private func contactRow(_ contact: Contact) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(contact.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
+            Text(contact.name).font(.subheadline.weight(.semibold)).foregroundColor(Theme.textPrimary)
             if let trade = contact.trade {
                 Text([trade, contact.company].compactMap { $0 }.joined(separator: " · "))
                     .font(.caption)

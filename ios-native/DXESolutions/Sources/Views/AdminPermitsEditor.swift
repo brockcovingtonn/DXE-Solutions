@@ -70,13 +70,12 @@ struct AdminPermitsEditor: View {
             }
         }
         .padding(10)
-        .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .dxeCard()
     }
 
     private var newForm: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("New Permit").font(.caption.weight(.semibold)).foregroundColor(Theme.navy)
+            Text("New Permit").font(.caption.weight(.semibold)).foregroundColor(Theme.textPrimary)
             TextField("Permit type", text: $newType).textFieldStyle(.roundedBorder)
             TextField("Permit number (optional)", text: $newNumber).textFieldStyle(.roundedBorder)
             TextField("Agency (optional)", text: $newAgency).textFieldStyle(.roundedBorder)
