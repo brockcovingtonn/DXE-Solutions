@@ -54,6 +54,8 @@ export default function FloorPlanCanvas({
   onDragEndpoint,
   onDragFurniture,
   onDragEnd,
+  onDragStart,
+  onDeleteSelected,
   mode = 'select',
   draftWallStart,
   snapGridEnabled,
@@ -99,6 +101,10 @@ export default function FloorPlanCanvas({
 
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== e.pointerId) return;
+    if (!drag.snapshotPushed) {
+      drag.snapshotPushed = true;
+      onDragStart?.();
+    }
     const screen = pointerToScreen(e);
     const world = screenToWorld(transform, screen.x, screen.y);
     const dx = world.x - drag.startWorld.x;
@@ -159,6 +165,28 @@ export default function FloorPlanCanvas({
 
   const draftScreenStart = draftWallStart ? worldToScreen(transform, draftWallStart.x, draftWallStart.z) : null;
   const hoverScreen = hoverWorld ? worldToScreen(transform, hoverWorld.x, hoverWorld.z) : null;
+
+  // A small floating "x" right on the selected item, so deleting it
+  // doesn't require reaching for the "Delete selected" toolbar button.
+  let deleteButtonPos = null;
+  if (mode === 'select' && selectedId) {
+    if (selectedId.startsWith('element:')) {
+      const el = elements.find((e) => `element:${e.id}` === selectedId);
+      if (el) {
+        const { start, end } = elementEndpoints(el);
+        const a = worldToScreen(transform, start.x, start.z);
+        const b = worldToScreen(transform, end.x, end.z);
+        deleteButtonPos = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 22 };
+      }
+    } else if (selectedId.startsWith('furniture:')) {
+      const obj = objects.find((o) => `furniture:${o.id}` === selectedId);
+      if (obj) {
+        const center = worldToScreen(transform, obj.centerX ?? obj.center_x ?? 0, obj.centerZ ?? obj.center_z ?? 0);
+        const halfDPx = ((obj.depthMeters ?? obj.depth_m ?? 0) / 2) * transform.scale;
+        deleteButtonPos = { x: center.x, y: center.y - halfDPx - 16 };
+      }
+    }
+  }
 
   return (
     <svg
@@ -240,6 +268,21 @@ export default function FloorPlanCanvas({
           <circle cx={draftScreenStart.x} cy={draftScreenStart.y} r={5} fill={SELECTED_COLOR} stroke="#fff" strokeWidth={1.5} />
           {hoverScreen ? <circle cx={hoverScreen.x} cy={hoverScreen.y} r={5} fill={SELECTED_COLOR} stroke="#fff" strokeWidth={1.5} /> : null}
         </>
+      ) : null}
+
+      {deleteButtonPos ? (
+        <g
+          transform={`translate(${deleteButtonPos.x} ${deleteButtonPos.y})`}
+          style={{ cursor: 'pointer' }}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            onDeleteSelected?.();
+          }}
+        >
+          <circle r={12} fill={SELECTED_COLOR} stroke="#fff" strokeWidth={1.5} />
+          <line x1={-4} y1={-4} x2={4} y2={4} stroke="#fff" strokeWidth={1.8} strokeLinecap="round" />
+          <line x1={-4} y1={4} x2={4} y2={-4} stroke="#fff" strokeWidth={1.8} strokeLinecap="round" />
+        </g>
       ) : null}
     </svg>
   );

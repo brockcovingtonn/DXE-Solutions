@@ -155,58 +155,42 @@ enum RoomScanGeometry {
 
     /// A simple top-down line drawing: walls in ink, doors and windows
     /// picked out in the accent color, scaled and centered to fill the
-    /// canvas. Good enough as a proposal visual — not a CAD export.
+    /// canvas. Good enough as a proposal visual — not a CAD export. Kept
+    /// only for the capture-time upload and the download/print path; live
+    /// viewing/editing uses FloorPlanCanvasView instead.
     static func renderFloorPlan(_ room: CapturedRoom, size: CGSize = CGSize(width: 900, height: 900)) -> UIImage {
-        struct Segment { let a: SIMD2<Float>; let b: SIMD2<Float>; let kind: Kind; let lengthFt: Double }
-        enum Kind { case wall, door, window }
+        renderFloorPlan(elements: extractElements(room), objects: extractObjects(room), size: size)
+    }
 
-        func makeSegments(_ surfaces: [CapturedRoom.Surface], kind: Kind) -> [Segment] {
-            surfaces.map { surface in
-                let (a, b) = endpoints(for: surface)
-                return Segment(a: a, b: b, kind: kind, lengthFt: Double(surface.dimensions.x) * metersToFeet)
-            }
-        }
-        var segments: [Segment] = makeSegments(room.walls, kind: .wall)
-        segments += makeSegments(room.doors, kind: .door)
-        segments += makeSegments(room.windows, kind: .window)
-
+    /// Renders from already-extracted elements/objects, using the shared
+    /// FloorPlanTransform — the exact same fit-to-canvas math the live
+    /// Canvas view/editor uses, so the flattened PNG and the live view
+    /// can't visually drift apart.
+    static func renderFloorPlan(elements: [ScanElement], objects: [RoomObject], size: CGSize = CGSize(width: 900, height: 900)) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { ctx in
             UIColor.white.setFill()
             ctx.fill(CGRect(origin: .zero, size: size))
 
-            guard !segments.isEmpty else { return }
+            guard !elements.isEmpty else { return }
+            let transform = FloorPlanTransform.fit(elements: elements, objects: objects, size: size, margin: 60)
 
-            let margin: CGFloat = 60
-            let allPoints = segments.flatMap { [$0.a, $0.b] }
-            let minX = CGFloat(allPoints.map(\.x).min() ?? 0)
-            let maxX = CGFloat(allPoints.map(\.x).max() ?? 1)
-            let minY = CGFloat(allPoints.map(\.y).min() ?? 0)
-            let maxY = CGFloat(allPoints.map(\.y).max() ?? 1)
-            let spanX = max(maxX - minX, 0.1)
-            let spanY = max(maxY - minY, 0.1)
-            let scale = min((size.width - margin * 2) / spanX, (size.height - margin * 2) / spanY)
-            let offsetX = (size.width - spanX * scale) / 2
-            let offsetY = (size.height - spanY * scale) / 2
-
-            func point(_ p: SIMD2<Float>) -> CGPoint {
-                CGPoint(x: (CGFloat(p.x) - minX) * scale + offsetX, y: (CGFloat(p.y) - minY) * scale + offsetY)
-            }
-
-            for segment in segments {
+            for element in elements {
+                let a = transform.worldToScreen(element.startX, element.startZ)
+                let b = transform.worldToScreen(element.endX, element.endZ)
                 let path = UIBezierPath()
-                path.move(to: point(segment.a))
-                path.addLine(to: point(segment.b))
-                switch segment.kind {
-                case .wall:
-                    UIColor(red: 0.173, green: 0.243, blue: 0.314, alpha: 1).setStroke() // navy-dark
-                    path.lineWidth = 5
-                case .door:
+                path.move(to: a)
+                path.addLine(to: b)
+                switch element.type {
+                case "door":
                     UIColor(red: 0.788, green: 0.659, blue: 0.341, alpha: 1).setStroke() // gold
                     path.lineWidth = 4
-                case .window:
+                case "window":
                     UIColor(red: 0.243, green: 0.329, blue: 0.408, alpha: 0.6).setStroke() // navy, translucent
                     path.lineWidth = 4
+                default:
+                    UIColor(red: 0.173, green: 0.243, blue: 0.314, alpha: 1).setStroke() // navy-dark
+                    path.lineWidth = 5
                 }
                 path.lineCapStyle = .round
                 path.stroke()
@@ -214,16 +198,16 @@ enum RoomScanGeometry {
 
             // Dimension labels — like a real floor plan/CAD drawing, not
             // just a line diagram. Rotated to sit flush along each segment.
-            for segment in segments {
-                let a = point(segment.a)
-                let b = point(segment.b)
+            for element in elements {
+                let a = transform.worldToScreen(element.startX, element.startZ)
+                let b = transform.worldToScreen(element.endX, element.endZ)
                 let midpoint = CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
                 var angle = atan2(b.y - a.y, b.x - a.x)
                 // Keep text upright — flip a near-vertical-reading label
                 // rather than rendering it upside down.
                 if angle > .pi / 2 || angle < -.pi / 2 { angle += .pi }
 
-                let text = String(format: "%.1f ft", segment.lengthFt) as NSString
+                let text = String(format: "%.1f ft", element.lengthFt) as NSString
                 let attrs: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 11, weight: .semibold),
                     .foregroundColor: UIColor(red: 0.173, green: 0.243, blue: 0.314, alpha: 1),
@@ -240,19 +224,10 @@ enum RoomScanGeometry {
                 ctx.cgContext.restoreGState()
             }
 
-            // Furniture/fixtures RoomPlan detected — muted labeled boxes so
-            // they read as supporting detail, not as precise as the walls.
-            for object in extractObjects(room) {
-                let halfW = CGFloat(object.widthMeters) / 2
-                let halfD = CGFloat(object.depthMeters) / 2
-                let cos = Foundation.cos(object.rotationRadians)
-                let sin = Foundation.sin(object.rotationRadians)
-                let localCorners: [(CGFloat, CGFloat)] = [(-halfW, -halfD), (halfW, -halfD), (halfW, halfD), (-halfW, halfD)]
-                let corners = localCorners.map { lx, lz -> CGPoint in
-                    let worldX = object.centerX + Double(lx) * cos - Double(lz) * sin
-                    let worldZ = object.centerZ + Double(lx) * sin + Double(lz) * cos
-                    return point(SIMD2(Float(worldX), Float(worldZ)))
-                }
+            // Furniture/fixtures — muted labeled boxes so they read as
+            // supporting detail, not as precise as the walls.
+            for object in objects {
+                let corners = FloorPlanTransform.furnitureCorners(object).map { transform.worldToScreen(Double($0.x), Double($0.y)) }
                 let boxPath = UIBezierPath()
                 boxPath.move(to: corners[0])
                 for corner in corners.dropFirst() { boxPath.addLine(to: corner) }

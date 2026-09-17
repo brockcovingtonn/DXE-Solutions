@@ -46,12 +46,56 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [size, setSize] = useState({ width: 0, height: 0 });
+  const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
 
   const containerRef = useRef(null);
   const elementsRef = useRef(elements);
   const objectsRef = useRef(objects);
   elementsRef.current = elements;
   objectsRef.current = objects;
+
+  const MAX_UNDO_DEPTH = 50;
+
+  function pushUndoSnapshot() {
+    setUndoStack((prev) => {
+      const next = [...prev, { elements: elementsRef.current, objects: objectsRef.current }];
+      return next.length > MAX_UNDO_DEPTH ? next.slice(next.length - MAX_UNDO_DEPTH) : next;
+    });
+    setRedoStack([]);
+  }
+
+  function undo() {
+    setUndoStack((prev) => {
+      if (!prev.length) return prev;
+      const last = prev[prev.length - 1];
+      setRedoStack((redo) => [...redo, { elements: elementsRef.current, objects: objectsRef.current }]);
+      setElements(last.elements);
+      setObjects(last.objects);
+      setFrozenElements(last.elements);
+      setFrozenObjects(last.objects);
+      setSelectedId(null);
+      setDirty(true);
+      setSaved(false);
+      return prev.slice(0, -1);
+    });
+  }
+
+  function redo() {
+    setRedoStack((prev) => {
+      if (!prev.length) return prev;
+      const next = prev[prev.length - 1];
+      setUndoStack((undo) => [...undo, { elements: elementsRef.current, objects: objectsRef.current }]);
+      setElements(next.elements);
+      setObjects(next.objects);
+      setFrozenElements(next.elements);
+      setFrozenObjects(next.objects);
+      setSelectedId(null);
+      setDirty(true);
+      setSaved(false);
+      return prev.slice(0, -1);
+    });
+  }
 
   useEffect(() => {
     const el = containerRef.current;
@@ -129,6 +173,7 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
 
   function handleDeleteSelected() {
     if (!selectedId) return;
+    pushUndoSnapshot();
     if (selectedId.startsWith('element:')) {
       const id = selectedId.slice('element:'.length);
       setElements((prev) => prev.filter((el) => el.id !== id));
@@ -205,6 +250,7 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
   function commitWall(start, end) {
     const lengthFt = distanceFt(start.x, start.z, end.x, end.z);
     if (lengthFt < 0.1) return; // ignore an accidental double-click on the same spot
+    pushUndoSnapshot();
     const wallCount = elementsRef.current.filter((el) => el.type === 'wall').length;
     const newWall = {
       id: newId(),
@@ -223,6 +269,7 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
   function placeFurniture(categoryKey, point) {
     const cat = paletteCategory(categoryKey);
     if (!cat) return;
+    pushUndoSnapshot();
     const writeCategory = cat.writeCategory || cat.key;
     const count = objectsRef.current.filter((o) => o.category === writeCategory).length + 1;
     const newObj = {
@@ -237,6 +284,14 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
     setDirty(true);
     setSaved(false);
     refitSoon();
+    // Return to select mode and select the new item rather than staying
+    // armed indefinitely — placing one at a time is clearer, and Delete
+    // is immediately available if it's wrong (confirmed via native
+    // testing: staying armed read as "stuck," not as a deliberate
+    // multi-place mode).
+    setSelectedId(`furniture:${newObj.id}`);
+    setMode('select');
+    setArmedCategory(null);
   }
 
   function handleCanvasClick(point) {
@@ -286,6 +341,12 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
           <button type="button" style={modeButtonStyle(mode === 'draw-wall')} onClick={enterDrawWallMode}>
             Draw wall
           </button>
+          <button type="button" style={{ ...S.btnGhost, opacity: undoStack.length ? 1 : 0.4 }} onClick={undo} disabled={!undoStack.length} title="Undo">
+            ↶ Undo
+          </button>
+          <button type="button" style={{ ...S.btnGhost, opacity: redoStack.length ? 1 : 0.4 }} onClick={redo} disabled={!redoStack.length} title="Redo">
+            ↷ Redo
+          </button>
           {mode === 'draw-wall' && draftWallStart ? (
             <button type="button" style={S.btnGhost} onClick={() => setDraftWallStart(null)}>
               Cancel wall (Esc)
@@ -329,6 +390,8 @@ export default function FloorPlanEditor({ scan, quoteNumber }) {
                 onDragEndpoint={handleDragEndpoint}
                 onDragFurniture={handleDragFurniture}
                 onDragEnd={handleDragEnd}
+                onDragStart={pushUndoSnapshot}
+                onDeleteSelected={handleDeleteSelected}
                 mode={mode}
                 draftWallStart={draftWallStart}
                 snapGridEnabled={snapGridEnabled}

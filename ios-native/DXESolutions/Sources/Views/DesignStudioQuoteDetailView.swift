@@ -21,6 +21,7 @@ struct DesignStudioQuoteDetailView: View {
     @State private var pickerScanId: String?
     @State private var showProjectPicker = false
     @State private var annotateScan: RoomScan?
+    @State private var editScan: RoomScan?
     @State private var showIntakeForm = false
     @State private var previewLoading = false
 
@@ -81,6 +82,11 @@ struct DesignStudioQuoteDetailView: View {
         }
         .sheet(item: $annotateScan) { scan in
             RoomScanAnnotateView(scan: scan) { _ in
+                Task { await load() }
+            }
+        }
+        .sheet(item: $editScan) { scan in
+            RoomScanEditorView(scan: scan) { _ in
                 Task { await load() }
             }
         }
@@ -224,6 +230,10 @@ struct DesignStudioQuoteDetailView: View {
                                 .buttonStyle(.bordered)
                                 .disabled(previewLoading)
                             }
+                            Button("Edit") { editScan = scan }
+                                .font(.caption)
+                                .buttonStyle(.borderedProminent)
+                                .tint(Theme.gold)
                             if scan.floorPlanUrl != nil {
                                 Button("Annotate") { annotateScan = scan }
                                     .font(.caption)

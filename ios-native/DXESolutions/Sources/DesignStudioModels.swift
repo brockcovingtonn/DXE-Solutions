@@ -586,6 +586,16 @@ struct RoomScanAnnotationSavePayload: Encodable {
     var hasAnnotatedPdf: Bool
 }
 
+// Sent by the floor-plan editor (RoomScanEditorView) — a separate payload
+// from RoomScanAnnotationSavePayload since the two are conceptually
+// different operations (this never touches annotated_pdf_path, that
+// always accompanies a fresh PDF upload) even though both PATCH the same
+// endpoint, which already accepts elements/objects independently.
+struct RoomScanEditPayload: Encodable {
+    var elements: [ScanElement]
+    var objects: [RoomObject]
+}
+
 // projectId: nil means "detach" and must reach the server as an explicit
 // JSON null, not an omitted key — Swift's synthesized Encodable silently
 // drops nil optionals instead, which the API reads as "no change".
