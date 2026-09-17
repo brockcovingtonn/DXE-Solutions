@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { C } from '@/lib/design-studio/brand';
 import ModelLightbox from './ModelLightbox';
+import FloorPlanView from './floor-plan-editor/FloorPlanView';
 
 // A room scan on the client-facing proposal: the 2D floor plan and a small
 // interactive 3D view shown side by side (not a toggle) — kept modest in
@@ -13,20 +14,16 @@ import ModelLightbox from './ModelLightbox';
 export default function RoomScanCard({ scan }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const hasArOnly = Boolean(!scan.modelGltfUrl && scan.modelUrl);
-  const hasBoth = Boolean((scan.modelGltfUrl || hasArOnly) && scan.floorPlanUrl);
+  const hasFloorPlan = Boolean(scan.elements?.length || scan.objects?.length || scan.floorPlanUrl);
+  const hasBoth = Boolean((scan.modelGltfUrl || hasArOnly) && hasFloorPlan);
 
   return (
     <div style={{ background: C.sand, borderRadius: 8, overflow: 'hidden' }}>
-      {scan.floorPlanUrl || scan.modelGltfUrl || hasArOnly ? (
+      {hasFloorPlan || scan.modelGltfUrl || hasArOnly ? (
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {scan.floorPlanUrl ? (
-            <div style={{ flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={scan.floorPlanUrl}
-                alt={scan.roomLabel || 'Floor plan'}
-                style={{ width: '100%', height: 180, objectFit: 'contain', background: '#fff', display: 'block' }}
-              />
+          {hasFloorPlan ? (
+            <div style={{ flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150, height: 180, background: '#fff' }}>
+              <FloorPlanView elements={scan.elements} objects={scan.objects} fallbackImageUrl={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} />
             </div>
           ) : null}
           {hasArOnly ? (

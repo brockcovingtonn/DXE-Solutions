@@ -38,7 +38,7 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: scanRows } = await db
     .from('design_studio_room_scans')
-    .select('id, room_label, area_sqft, model_path, floor_plan_path, model_gltf_path')
+    .select('id, room_label, area_sqft, model_path, floor_plan_path, model_gltf_path, elements, objects')
     .eq('quote_id', quote.id)
     .eq('show_to_client', true)
     .order('created_at', { ascending: false });
@@ -61,6 +61,8 @@ export default async function PublicProposalPage({ params }) {
         modelUrl: model?.signedUrl || null,
         floorPlanUrl: floorPlan?.signedUrl || null,
         modelGltfUrl: modelGltf?.signedUrl || null,
+        elements: scan.elements || [],
+        objects: scan.objects || [],
       };
     })
   );

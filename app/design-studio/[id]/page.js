@@ -52,6 +52,8 @@ export default async function QuoteDetailPage({ params }) {
         floorPlanUrl: floorPlan?.signedUrl || null,
         floorPlanDownloadUrl: floorPlanDownload?.signedUrl || null,
         modelGltfUrl: modelGltf?.signedUrl || null,
+        elements: scan.elements || [],
+        objects: scan.objects || [],
         showToClient: scan.show_to_client,
         project: scan.projects ? { id: scan.projects.id, name: scan.projects.name } : null,
       };

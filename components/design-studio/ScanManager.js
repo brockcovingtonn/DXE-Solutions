@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Script from 'next/script';
 import { C, S } from '@/lib/design-studio/brand';
-import ImageLightbox from './ImageLightbox';
 import ModelLightbox from './ModelLightbox';
+import FloorPlanView from './floor-plan-editor/FloorPlanView';
+import FloorPlanLightbox from './floor-plan-editor/FloorPlanLightbox';
 
 // Per-scan controls on the quote detail page: whether a scan appears on the
 // client's proposal (off by default — a scan can come out messy and staff
@@ -100,7 +101,7 @@ function ScanRow({ scan, isMaster, onUpdate }) {
         value={scan.areaSqft ? `${Number(scan.areaSqft).toLocaleString()} sf${scan.areaIsEstimate ? ' (approx.)' : ''}` : '—'}
       />
       <Row label="Walls / doors / windows" value={`${scan.wallCount} / ${scan.doorCount} / ${scan.windowCount}`} />
-      {scan.floorPlanUrl ? (
+      {(scan.elements?.length || scan.objects?.length || scan.floorPlanUrl) ? (
         <div>
           <button
             type="button"
@@ -113,15 +114,16 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             <button
               type="button"
               onClick={() => setLightboxOpen(true)}
-              style={{ display: 'block', width: '100%', padding: 0, border: `1px solid ${C.line}`, borderRadius: 8, marginTop: 8, cursor: 'zoom-in', background: 'none' }}
+              style={{ display: 'block', width: '100%', aspectRatio: '1 / 1', padding: 0, border: `1px solid ${C.line}`, borderRadius: 8, marginTop: 8, cursor: 'zoom-in', background: '#fff' }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} style={{ width: '100%', display: 'block', borderRadius: 8 }} />
+              <FloorPlanView elements={scan.elements} objects={scan.objects} fallbackImageUrl={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} />
             </button>
           ) : null}
           {lightboxOpen ? (
-            <ImageLightbox
-              src={scan.floorPlanUrl}
+            <FloorPlanLightbox
+              elements={scan.elements}
+              objects={scan.objects}
+              fallbackImageUrl={scan.floorPlanUrl}
               alt={scan.roomLabel || 'Floor plan'}
               downloadUrl={scan.floorPlanDownloadUrl}
               onClose={() => setLightboxOpen(false)}
