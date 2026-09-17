@@ -42,6 +42,11 @@ struct AdminMoreView: View {
                     Label("Assistant", systemImage: "sparkles")
                 }
                 NavigationLink {
+                    SiteSettingsView()
+                } label: {
+                    Label("Site Settings", systemImage: "slider.horizontal.3")
+                }
+                NavigationLink {
                     SettingsView()
                 } label: {
                     Label("Account Settings", systemImage: "gearshape")

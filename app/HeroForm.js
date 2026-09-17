@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { PROJECT_TYPES } from '@/lib/constants';
+import BookingSlotPicker from '@/components/BookingSlotPicker';
 import styles from './page.module.css';
 
 const initialForm = { name: '', phone: '', email: '', projectType: '', details: '', hearAbout: '', referralName: '' };
-const BOOKING_URL = process.env.NEXT_PUBLIC_GOOGLE_BOOKING_URL;
 
 const HEAR_ABOUT_OPTIONS = [
   'Google or web search',
@@ -19,8 +19,7 @@ const HEAR_ABOUT_OPTIONS = [
 export default function HeroForm({ googleBookingEnabled = true }) {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
-  const [showBooking, setShowBooking] = useState(false);
-  const bookingActive = BOOKING_URL && googleBookingEnabled;
+  const [estimateRequestId, setEstimateRequestId] = useState(null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -53,12 +52,13 @@ export default function HeroForm({ googleBookingEnabled = true }) {
           referralName: form.hearAbout === 'Referral' ? form.referralName.trim() : '',
         }),
       });
+      const data = await res.json();
 
       if (!res.ok) throw new Error('Request failed');
 
       setStatus('success');
       setForm(initialForm);
-      if (bookingActive) setShowBooking(true);
+      setEstimateRequestId(data.estimateRequestId || null);
     } catch (err) {
       setStatus('error');
     }
@@ -74,11 +74,7 @@ export default function HeroForm({ googleBookingEnabled = true }) {
             Dixie reviews every submission personally and will follow up with your next
             three steps, usually within 1–2 business days.
           </p>
-          {bookingActive && (
-            <button type="button" className="btn-gold" onClick={() => setShowBooking(true)}>
-              Book your call now
-            </button>
-          )}
+          {googleBookingEnabled && estimateRequestId ? <BookingSlotPicker estimateRequestId={estimateRequestId} /> : null}
         </div>
       ) : (
         <>
@@ -196,31 +192,6 @@ export default function HeroForm({ googleBookingEnabled = true }) {
             directly.
           </p>
         </>
-      )}
-
-      {showBooking && bookingActive && (
-        <div className={styles.bookingOverlay} onClick={() => setShowBooking(false)}>
-          <div className={styles.bookingCard} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.bookingHeader}>
-              <h3 className="display">Book your 15-minute call</h3>
-              <button
-                type="button"
-                className={styles.bookingClose}
-                onClick={() => setShowBooking(false)}
-                aria-label="Close"
-              >
-                <i className="ti ti-x" aria-hidden="true"></i>
-              </button>
-            </div>
-            <iframe
-              src={BOOKING_URL}
-              style={{ border: 0 }}
-              width="100%"
-              height="600"
-              title="Book a call with DXE Solutions"
-            />
-          </div>
-        </div>
       )}
     </div>
   );

@@ -11,6 +11,7 @@
 		0098A320ED4AF5A9CB48DBE3 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F44A637646505F0FC42BF8 /* CalendarView.swift */; };
 		018E025FF4FCFDC080092351 /* AppearanceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B306722F9BDEE64D6EB6B00 /* AppearanceMode.swift */; };
 		05CF18C4D82ECCA0179052BE /* AdminDocumentsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3279152C0F443A1A9386791 /* AdminDocumentsEditor.swift */; };
+		11C7F08796E8D05E12F66493 /* SiteSettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F12757F9DF0620FBBDCA008 /* SiteSettingsModels.swift */; };
 		155BB921EB6F5BC291BC15C8 /* ProjectPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A6D1E4BFACEA4DD95FFBE9B /* ProjectPickerView.swift */; };
 		170979DDF58A111710E5F701 /* RoomScanGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A131A2DD5559AB14CD076D2 /* RoomScanGeometry.swift */; };
 		19817E31170FA85611BECB2A /* AdminProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A270B2F6972E90601183DDE /* AdminProjectListView.swift */; };
@@ -51,6 +52,7 @@
 		5EBD5F3524CB04C94C1C682A /* AdminClientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C37BC61C744D15E0EFE6E2E /* AdminClientListView.swift */; };
 		5ED4DB22916321F096DA4FBE /* AdminProposalsEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B692A7D0BA388BE58455243F /* AdminProposalsEditor.swift */; };
 		64A2F1AA3B2A1816F0E7D603 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A716BA4B5FC1BD5641D099FD /* SafariView.swift */; };
+		65C709C2FA8163D4C27900C1 /* SiteSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 035F23A0A0F52684A8703002 /* SiteSettingsView.swift */; };
 		6B6227B3103C38EB85447C47 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3818DF9DB37FA921B849D4A9 /* DashboardView.swift */; };
 		6BE419557186D27E6DCB7806 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F12598F4EABA84E5A5D90AD /* EmptyStateView.swift */; };
 		6BE771DBE5C2CC733BE896A2 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */; };
@@ -125,6 +127,7 @@
 
 /* Begin PBXFileReference section */
 		0181533C592188C370411A8F /* AdminPaymentScheduleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPaymentScheduleEditor.swift; sourceTree = "<group>"; };
+		035F23A0A0F52684A8703002 /* SiteSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteSettingsView.swift; sourceTree = "<group>"; };
 		045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		04F9EF72B3FBC9E198275DC9 /* GeneratePaymentScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratePaymentScheduleView.swift; sourceTree = "<group>"; };
 		05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackEnabler.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		6D267A312C7B0E47FAA424D6 /* EmployeeMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeMoreView.swift; sourceTree = "<group>"; };
 		6DE0ED254AADEF7B8AE3A2FC /* AdminContactListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminContactListView.swift; sourceTree = "<group>"; };
 		6DFC15BCE90ADFCB1C631FFF /* DesignStudioListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignStudioListView.swift; sourceTree = "<group>"; };
+		6F12757F9DF0620FBBDCA008 /* SiteSettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteSettingsModels.swift; sourceTree = "<group>"; };
 		6FC99BEBEFE366DE169506F7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A9CC1C6688E471C7EC398F2 /* CalendarExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarExport.swift; sourceTree = "<group>"; };
 		830CE59E405BCD0A23E414B9 /* FloorPlanManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloorPlanManagerView.swift; sourceTree = "<group>"; };
@@ -359,6 +363,7 @@
 				2691E764F6EAD131CC41E1E8 /* SendIntakeFormView.swift */,
 				0932077758FDD662093311B1 /* SettingsView.swift */,
 				C4F230DC3FDB8154E17CF7F5 /* SignaturePadView.swift */,
+				035F23A0A0F52684A8703002 /* SiteSettingsView.swift */,
 				B1BC5D704AA740F73561D6F8 /* SplashView.swift */,
 				EF6D36460E80E987CDB7E48C /* UtilitiesView.swift */,
 			);
@@ -396,6 +401,7 @@
 				CFE0F60E4E0CA2484A1FCEEA /* RoomScanController.swift */,
 				1A131A2DD5559AB14CD076D2 /* RoomScanGeometry.swift */,
 				3C00961334D62B117687008C /* RoomScanGLBExporter.swift */,
+				6F12757F9DF0620FBBDCA008 /* SiteSettingsModels.swift */,
 				21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */,
 				05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */,
 				96A8EDC856961F1CA2AA278E /* Theme.swift */,
@@ -588,6 +594,8 @@
 				87CDBF3B88724F14497A62CB /* SendIntakeFormView.swift in Sources */,
 				E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */,
 				1EAA242983742B8BB8CE5FFD /* SignaturePadView.swift in Sources */,
+				11C7F08796E8D05E12F66493 /* SiteSettingsModels.swift in Sources */,
+				65C709C2FA8163D4C27900C1 /* SiteSettingsView.swift in Sources */,
 				D65F58FFB6D302567FBA6A27 /* SplashView.swift in Sources */,
 				5CC2DD085A09ADC38CE731D0 /* SupabaseConfig.swift in Sources */,
 				3E5880AE9971C4FF37164EED /* SwipeBackEnabler.swift in Sources */,

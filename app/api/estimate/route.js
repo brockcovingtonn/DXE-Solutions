@@ -56,17 +56,25 @@ export async function POST(request) {
     // which is the critical path. Every submission lands here regardless
     // of project type, so staff can review it later from Contacts (unlike
     // design_studio_leads, which is transient and Design-Studio-only).
+    // The returned id also lets the client follow up with /api/book-call
+    // if the public booking page is enabled.
+    let estimateRequestId = null;
     try {
-      await supabaseAdmin().from('estimate_requests').insert({
-        first_name: firstName,
-        last_name: lastName || null,
-        email: email || null,
-        phone: phone || null,
-        project_type: projectType,
-        details: details || null,
-        hear_about: hearAbout || null,
-        referral_name: referralName || null,
-      });
+      const { data: inserted } = await supabaseAdmin()
+        .from('estimate_requests')
+        .insert({
+          first_name: firstName,
+          last_name: lastName || null,
+          email: email || null,
+          phone: phone || null,
+          project_type: projectType,
+          details: details || null,
+          hear_about: hearAbout || null,
+          referral_name: referralName || null,
+        })
+        .select('id')
+        .single();
+      estimateRequestId = inserted?.id || null;
     } catch (persistError) {
       console.error('Estimate request persistence error:', persistError);
     }
@@ -91,7 +99,7 @@ export async function POST(request) {
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, estimateRequestId });
   } catch (err) {
     console.error('Estimate API error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
