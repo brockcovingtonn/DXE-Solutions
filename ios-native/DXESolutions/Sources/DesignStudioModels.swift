@@ -166,6 +166,7 @@ struct DesignStudioQuote: Codable, Identifiable {
     var id: String
     var quoteNumber: String
     var status: String
+    var source: String?
     var clientId: String?
     var clientName: String?
     var clientEmail: String?
@@ -198,7 +199,7 @@ struct DesignStudioQuote: Codable, Identifiable {
     var updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, status, pricing, total, deposit, complexity, intake
+        case id, status, source, pricing, total, deposit, complexity, intake
         case quoteNumber = "quote_number"
         case clientId = "client_id"
         case clientName = "client_name"
@@ -252,9 +253,60 @@ struct IntakeAnswers: Codable, Equatable {
             || !inspiration.isEmpty || !keep.isEmpty || !avoid.isEmpty || !structural.isEmpty
             || !household.isEmpty || !contact.isEmpty || !notes.isEmpty
     }
+
+    init(vision: String = "", rooms: String = "", timeline: String = "", budget: String = "", style: [String] = [],
+         inspiration: String = "", keep: String = "", avoid: String = "", structural: String = "",
+         household: String = "", contact: String = "", notes: String = "") {
+        self.vision = vision
+        self.rooms = rooms
+        self.timeline = timeline
+        self.budget = budget
+        self.style = style
+        self.inspiration = inspiration
+        self.keep = keep
+        self.avoid = avoid
+        self.structural = structural
+        self.household = household
+        self.contact = contact
+        self.notes = notes
+    }
+
+    // Swift's synthesized Decodable still requires every key even when a
+    // property has a default value — only an Optional type skips a missing
+    // key. design_studio_quotes.intake defaults to '{}'::jsonb (no keys at
+    // all) for every quote that hasn't had intake filled in yet, which is
+    // most of them, so the synthesized decoder threw keyNotFound and the
+    // whole DesignStudioQuote decode failed — surfacing as "Could not load
+    // this quote." for effectively every quote. Decode each field
+    // leniently instead.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        vision = try container.decodeIfPresent(String.self, forKey: .vision) ?? ""
+        rooms = try container.decodeIfPresent(String.self, forKey: .rooms) ?? ""
+        timeline = try container.decodeIfPresent(String.self, forKey: .timeline) ?? ""
+        budget = try container.decodeIfPresent(String.self, forKey: .budget) ?? ""
+        style = try container.decodeIfPresent([String].self, forKey: .style) ?? []
+        inspiration = try container.decodeIfPresent(String.self, forKey: .inspiration) ?? ""
+        keep = try container.decodeIfPresent(String.self, forKey: .keep) ?? ""
+        avoid = try container.decodeIfPresent(String.self, forKey: .avoid) ?? ""
+        structural = try container.decodeIfPresent(String.self, forKey: .structural) ?? ""
+        household = try container.decodeIfPresent(String.self, forKey: .household) ?? ""
+        contact = try container.decodeIfPresent(String.self, forKey: .contact) ?? ""
+        notes = try container.decodeIfPresent(String.self, forKey: .notes) ?? ""
+    }
 }
 
 struct DesignStudioIntakeSavePayload: Encodable { var intake: IntakeAnswers }
+
+// The dashboard's "Send Intake Form" button — creates a design_studio_leads
+// row and emails the intake link. No quote exists until the lead converts
+// (see lib/design-studio/leads.js); mirrors api/design-studio/leads POST.
+struct DesignStudioLeadCreatePayload: Encodable {
+    var fullName: String
+    var phone: String
+    var email: String
+    var address: String
+}
 
 struct DesignStudioViewer: Codable {
     var id: String

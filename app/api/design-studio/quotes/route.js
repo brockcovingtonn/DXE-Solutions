@@ -14,7 +14,7 @@ export async function GET(request) {
     let query = db
       .from('design_studio_quotes')
       .select(
-        'id, quote_number, status, client_name, project_address, project_type, service_level, complexity, area_sqft, total, deposit, valid_until, created_at, created_by, created_by_name, share_token'
+        'id, quote_number, status, source, client_name, project_address, project_type, service_level, complexity, area_sqft, total, deposit, valid_until, created_at, created_by, created_by_name, share_token'
       )
       .order('created_at', { ascending: false })
       .limit(200);

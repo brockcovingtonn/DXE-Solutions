@@ -1,25 +1,26 @@
 import { supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { convertLeadToQuote } from '@/lib/design-studio/leads';
 
 export const dynamic = 'force-dynamic';
 
-// Unauthenticated, reachable only with the quote's share_token — same
-// pattern as app/proposal/[token]/page.js. The client never has an
-// account/session here, so this can't route through requireStaff.
+// Unauthenticated, reachable only with a lead's token — same "no login"
+// pattern as the old quote-scoped /proposal/[token]. Submitting is what
+// actually creates the quote; see lib/design-studio/leads.js.
 export async function GET(request, { params }) {
   try {
     const { token } = await params;
     const db = supabaseAdmin();
-    const { data: quote } = await db
-      .from('design_studio_quotes')
-      .select('id, quote_number, client_name, intake, intake_submitted_at')
-      .eq('share_token', token)
+    const { data: lead } = await db
+      .from('design_studio_leads')
+      .select('full_name, intake')
+      .eq('token', token)
       .maybeSingle();
-    if (!quote) {
+    if (!lead) {
       const e = new Error('Not found');
       e.status = 404;
       throw e;
     }
-    return Response.json({ quote });
+    return Response.json({ lead: { fullName: lead.full_name, intake: lead.intake } });
   } catch (err) {
     return jsonError(err);
   }
@@ -31,22 +32,14 @@ export async function POST(request, { params }) {
     const body = await request.json();
     const db = supabaseAdmin();
 
-    const { data: quote } = await db
-      .from('design_studio_quotes')
-      .select('id')
-      .eq('share_token', token)
-      .maybeSingle();
-    if (!quote) {
+    const { data: lead } = await db.from('design_studio_leads').select('*').eq('token', token).maybeSingle();
+    if (!lead) {
       const e = new Error('Not found');
       e.status = 404;
       throw e;
     }
 
-    const { error } = await db
-      .from('design_studio_quotes')
-      .update({ intake: body.intake || {}, intake_submitted_at: new Date().toISOString() })
-      .eq('id', quote.id);
-    if (error) throw error;
+    await convertLeadToQuote(db, lead, body.intake || {});
 
     return Response.json({ ok: true });
   } catch (err) {

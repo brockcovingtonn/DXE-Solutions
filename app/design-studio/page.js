@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getStaffUser, supabaseAdmin } from '@/lib/design-studio/server';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
+import SendIntakeFormButton from '@/components/design-studio/SendIntakeFormButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +21,16 @@ export default async function DesignStudioDashboard() {
   const db = supabaseAdmin();
   let query = db
     .from('design_studio_quotes')
-    .select('id, quote_number, status, client_name, project_address, project_type, service_level, area_sqft, total, created_at, created_by_name, valid_until')
+    .select('id, quote_number, status, source, client_name, project_address, project_type, service_level, area_sqft, total, created_at, created_by_name, valid_until')
     .order('created_at', { ascending: false })
     .limit(100);
   if (!user.isMaster) query = query.eq('created_by', user.id);
   const { data: quotes } = await query;
   const rows = quotes || [];
+
+  const { count: pendingLeadCount } = await db
+    .from('design_studio_leads')
+    .select('id', { count: 'exact', head: true });
 
   const open = rows.filter((q) => q.status === 'draft' || q.status === 'sent');
   const won = rows.filter((q) => q.status === 'accepted');
@@ -44,10 +49,14 @@ export default async function DesignStudioDashboard() {
               {[BRAND.parentLine, `signed in as ${user.name} (${user.role.replace('_', ' ')})`].filter(Boolean).join(' · ')}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             {user.isMaster ? (
               <Link href="/design-studio/rates" style={{ ...S.btnGhost, textDecoration: 'none' }}>Rate card</Link>
             ) : null}
+            <SendIntakeFormButton />
+            <Link href="/design-studio/leads" className="ds-link" style={{ ...S.small, textDecoration: 'none', color: C.muted }}>
+              Pending leads{pendingLeadCount ? ` (${pendingLeadCount})` : ''}
+            </Link>
             <Link href="/design-studio/new" style={{ ...S.btn, textDecoration: 'none' }}>New quote</Link>
           </div>
         </header>
@@ -63,7 +72,7 @@ export default async function DesignStudioDashboard() {
           <h2 style={S.h2}>{user.isMaster ? 'All quotes' : 'My quotes'}</h2>
           {rows.length === 0 ? (
             <div style={{ ...S.small, padding: '18px 0' }}>
-              No quotes yet. Start with <Link href="/design-studio/new" style={{ color: C.clay }}>a new quote</Link>.
+              No quotes yet. Start with <Link href="/design-studio/new" className="ds-link" style={{ color: C.clay }}>a new quote</Link>.
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -84,7 +93,7 @@ export default async function DesignStudioDashboard() {
                     return (
                       <tr key={q.id} style={{ borderTop: `1px solid ${C.line}` }}>
                         <td style={{ padding: '11px 10px 11px 0', whiteSpace: 'nowrap' }}>
-                          <Link href={`/design-studio/${q.id}`} style={{ color: C.ink, fontWeight: 600, textDecoration: 'none' }}>
+                          <Link href={`/design-studio/${q.id}`} className="ds-link" style={{ color: C.ink, fontWeight: 600, textDecoration: 'none' }}>
                             {q.quote_number}
                           </Link>
                           <div style={{ fontSize: 12, color: C.muted }}>
@@ -93,6 +102,11 @@ export default async function DesignStudioDashboard() {
                         </td>
                         <td style={{ padding: '11px 10px' }}>
                           {q.client_name || '—'}
+                          {q.source === 'web_lead' ? (
+                            <span style={{ marginLeft: 6, fontSize: 10.5, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: C.clayDark, background: 'rgba(201,168,87,0.16)', padding: '2px 6px', borderRadius: 4 }}>
+                              Submitted form
+                            </span>
+                          ) : null}
                           <div style={{ fontSize: 12, color: C.muted }}>{q.project_address || ''}</div>
                         </td>
                         <td style={{ padding: '11px 10px' }}>

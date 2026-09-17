@@ -17,6 +17,7 @@ struct DesignStudioListView: View {
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var showNewQuote = false
+    @State private var showSendIntakeForm = false
 
     private var open: [DesignStudioQuote] { quotes.filter { $0.status == "draft" || $0.status == "sent" } }
     private var accepted: [DesignStudioQuote] { quotes.filter { $0.status == "accepted" } }
@@ -44,6 +45,12 @@ struct DesignStudioListView: View {
                                 Label("Rate card", systemImage: "slider.horizontal.3")
                                     .font(.subheadline.weight(.medium))
                             }
+                        }
+                        Button {
+                            showSendIntakeForm = true
+                        } label: {
+                            Label("Send Intake Form", systemImage: "envelope")
+                                .font(.subheadline.weight(.medium))
                         }
 
                         VStack(alignment: .leading, spacing: 10) {
@@ -84,6 +91,9 @@ struct DesignStudioListView: View {
                 DesignStudioQuoteBuilderView(existingQuoteId: nil)
             }
         }
+        .sheet(isPresented: $showSendIntakeForm) {
+            SendIntakeFormView()
+        }
         .task { await load() }
         .refreshable { await load() }
     }
@@ -112,9 +122,20 @@ struct DesignStudioListView: View {
         HStack(alignment: .top, spacing: 10) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(quote.quoteNumber).font(.subheadline.weight(.semibold)).foregroundColor(Theme.navy)
-                Text(quote.clientName?.isEmpty == false ? quote.clientName! : "No client name yet")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                HStack(spacing: 6) {
+                    Text(quote.clientName?.isEmpty == false ? quote.clientName! : "No client name yet")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    if quote.source == "web_lead" {
+                        Text("SUBMITTED FORM")
+                            .font(.system(size: 9, weight: .bold))
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Theme.gold.opacity(0.18))
+                            .foregroundColor(Theme.navyDark)
+                            .clipShape(RoundedRectangle(cornerRadius: 3))
+                    }
+                }
                 Text("\(designStudioProjectTypeLabels[quote.projectType] ?? quote.projectType) · \(designStudioServiceLevelLabels[quote.serviceLevel] ?? quote.serviceLevel)")
                     .font(.caption2)
                     .foregroundColor(.secondary)

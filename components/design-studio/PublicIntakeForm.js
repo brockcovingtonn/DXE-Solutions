@@ -5,13 +5,13 @@ import IntakeForm from './IntakeForm';
 import { C, S } from '@/lib/design-studio/brand';
 
 export default function PublicIntakeForm({ token }) {
-  const [quote, setQuote] = useState(null);
+  const [lead, setLead] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`/api/intake/${token}`)
       .then((r) => r.json())
-      .then((data) => setQuote(data.quote || null))
+      .then((data) => setLead(data.lead || null))
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -28,16 +28,15 @@ export default function PublicIntakeForm({ token }) {
   }
 
   if (loading) return <div style={{ ...S.small, padding: 24 }}>Loading…</div>;
-  if (!quote) return <div style={{ ...S.small, padding: 24 }}>This link is no longer valid.</div>;
+  if (!lead) return <div style={{ ...S.small, padding: 24 }}>This link is no longer valid.</div>;
 
   return (
     <div style={S.card}>
-      <div style={{ ...S.small, color: C.muted, marginBottom: 4 }}>{quote.quote_number}</div>
       <h1 style={{ ...S.h1, fontSize: 22, marginBottom: 6 }}>Tell us about your project</h1>
       <p style={{ color: C.muted, fontSize: 14, marginBottom: 22 }}>
-        A few details to help us design {quote.client_name ? `for ${quote.client_name}` : 'your space'}.
+        A few details to help us design {lead.fullName ? `for ${lead.fullName}` : 'your space'}.
       </p>
-      <IntakeForm initialAnswers={quote.intake} onSubmit={onSubmit} mode="public" submittedAt={quote.intake_submitted_at} />
+      <IntakeForm initialAnswers={lead.intake} onSubmit={onSubmit} mode="public" />
     </div>
   );
 }

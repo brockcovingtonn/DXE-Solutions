@@ -66,6 +66,7 @@
 		7D736C1B5F977FC491D33D95 /* EmployeeChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511721C9D81DE62866876F7A /* EmployeeChatView.swift */; };
 		7D7A503B81E88ED0DE9BC012 /* AdminAccountingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B760759A4F24A5E2CAB4201A /* AdminAccountingListView.swift */; };
 		81DAFEF904CD576E36045AF3 /* ClientProjectHandoffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E64F7C765F058C470BFD43FC /* ClientProjectHandoffView.swift */; };
+		87CDBF3B88724F14497A62CB /* SendIntakeFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2691E764F6EAD131CC41E1E8 /* SendIntakeFormView.swift */; };
 		8C0761502D76BF8F499651B7 /* AdminDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 304D7C96990A70E24BF6BDA7 /* AdminDashboardView.swift */; };
 		8C9760E31198CF86EEA7C59F /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8724BE8656A8DDAFCCB47E06 /* MessageBubble.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
@@ -146,6 +147,7 @@
 		1FE5A372DFE173B50FEB1987 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		21FFED219E1EC0A727CE58FB /* SupabaseConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseConfig.swift; sourceTree = "<group>"; };
 		23318D848D19D0A00E2C60CB /* AdminMilestonesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminMilestonesListView.swift; sourceTree = "<group>"; };
+		2691E764F6EAD131CC41E1E8 /* SendIntakeFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendIntakeFormView.swift; sourceTree = "<group>"; };
 		2953CB626BF873B468477CA2 /* AdminTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminTabView.swift; sourceTree = "<group>"; };
 		2A0D8F73809963CECEDE2423 /* ProposalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProposalsView.swift; sourceTree = "<group>"; };
 		2C2841D62327953F8BFA3670 /* DesignStudioRateCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignStudioRateCardView.swift; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 				09C5777FE44F9F4A4FE91CE7 /* RoomScanAnnotateView.swift */,
 				C0553A6CD54D1DE302EC8D7A /* RoomScanView.swift */,
 				A716BA4B5FC1BD5641D099FD /* SafariView.swift */,
+				2691E764F6EAD131CC41E1E8 /* SendIntakeFormView.swift */,
 				0932077758FDD662093311B1 /* SettingsView.swift */,
 				C4F230DC3FDB8154E17CF7F5 /* SignaturePadView.swift */,
 				B1BC5D704AA740F73561D6F8 /* SplashView.swift */,
@@ -578,6 +581,7 @@
 				170979DDF58A111710E5F701 /* RoomScanGeometry.swift in Sources */,
 				709C398755C4868A53327EEC /* RoomScanView.swift in Sources */,
 				64A2F1AA3B2A1816F0E7D603 /* SafariView.swift in Sources */,
+				87CDBF3B88724F14497A62CB /* SendIntakeFormView.swift in Sources */,
 				E45AE878B8D0A0278E3AB1A1 /* SettingsView.swift in Sources */,
 				1EAA242983742B8BB8CE5FFD /* SignaturePadView.swift in Sources */,
 				D65F58FFB6D302567FBA6A27 /* SplashView.swift in Sources */,

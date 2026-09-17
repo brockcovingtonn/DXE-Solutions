@@ -9,27 +9,27 @@ export async function generateMetadata({ params }) {
   const { token } = await params;
   const db = supabaseAdmin();
   const { data } = await db
-    .from('design_studio_quotes')
-    .select('quote_number')
-    .eq('share_token', token)
+    .from('design_studio_leads')
+    .select('full_name')
+    .eq('token', token)
     .maybeSingle();
   return {
-    title: data ? `${BRAND.name} — Intake ${data.quote_number}` : BRAND.name,
+    title: data ? `${BRAND.name} — Intake` : BRAND.name,
     robots: { index: false, follow: false },
   };
 }
 
-// Unauthenticated, reachable only with the token — same pattern as
+// Unauthenticated, reachable only with a lead's token — same pattern as
 // app/proposal/[token]/page.js.
 export default async function PublicIntakePage({ params }) {
   const { token } = await params;
   const db = supabaseAdmin();
-  const { data: quote } = await db
-    .from('design_studio_quotes')
+  const { data: lead } = await db
+    .from('design_studio_leads')
     .select('id')
-    .eq('share_token', token)
+    .eq('token', token)
     .maybeSingle();
-  if (!quote) notFound();
+  if (!lead) notFound();
 
   return (
     <div style={{ background: C.sand, minHeight: '100vh', padding: '36px 18px 70px' }}>

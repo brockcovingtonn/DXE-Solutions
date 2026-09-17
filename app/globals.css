@@ -235,6 +235,16 @@ button {
   cursor: not-allowed;
 }
 
+/* Design Studio — plain-text clickable links use inline style={} for
+   everything else, but hover needs a real :hover rule. */
+.ds-link {
+  transition: color 0.15s ease;
+}
+
+.ds-link:hover {
+  color: #C9A857 !important;
+}
+
 /* Form elements (marketing pages, light bg) */
 .form-row {
   display: grid;
