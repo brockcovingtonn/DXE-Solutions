@@ -8,14 +8,16 @@ import ModelLightbox from './ModelLightbox';
 // interactive 3D view shown side by side (not a toggle) — kept modest in
 // size since these are supporting visuals, not the main proposal content.
 // The 3D view expands to a full-size lightbox on click. Only the 2D floor
-// plan is downloadable; a scan with no glTF export just shows the 2D side.
+// plan is downloadable; a scan with no glTF export shows an AR Quick Look
+// link instead (USDZ can't render inline in a browser).
 export default function RoomScanCard({ scan }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const hasBoth = Boolean(scan.modelGltfUrl && scan.floorPlanUrl);
+  const hasArOnly = Boolean(!scan.modelGltfUrl && scan.modelUrl);
+  const hasBoth = Boolean((scan.modelGltfUrl || hasArOnly) && scan.floorPlanUrl);
 
   return (
     <div style={{ background: C.sand, borderRadius: 8, overflow: 'hidden' }}>
-      {scan.floorPlanUrl || scan.modelGltfUrl ? (
+      {scan.floorPlanUrl || scan.modelGltfUrl || hasArOnly ? (
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {scan.floorPlanUrl ? (
             <div style={{ flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150 }}>
@@ -26,6 +28,22 @@ export default function RoomScanCard({ scan }) {
                 style={{ width: '100%', height: 180, objectFit: 'contain', background: '#fff', display: 'block' }}
               />
             </div>
+          ) : null}
+          {hasArOnly ? (
+            // No web-viewable glb for this scan — USDZ can't render inline
+            // in a browser, so offer AR Quick Look (iOS/iPadOS) instead.
+            <a
+              href={scan.modelUrl}
+              rel="ar"
+              style={{
+                flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150, height: 180,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                backgroundImage: 'repeating-linear-gradient(45deg, rgba(62,84,104,0.08) 0, rgba(62,84,104,0.08) 1px, transparent 1px, transparent 10px)',
+                fontSize: 13, fontWeight: 600, color: C.clay, textDecoration: 'none',
+              }}
+            >
+              View in AR (USDZ) →
+            </a>
           ) : null}
           {scan.modelGltfUrl ? (
             <div

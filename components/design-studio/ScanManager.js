@@ -147,6 +147,19 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             />
           ) : null}
         </div>
+      ) : scan.modelUrl ? (
+        <div style={{ marginTop: 6 }}>
+          {/* No web-viewable glb for this scan (older capture, or export
+              failed) — USDZ can't render inline in a browser, so this opens
+              AR Quick Look on iOS/iPadOS instead of forcing a download. */}
+          <a
+            href={scan.modelUrl}
+            rel="ar"
+            style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none' }}
+          >
+            View in AR (USDZ) →
+          </a>
+        </div>
       ) : null}
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 13, cursor: 'pointer' }}>
