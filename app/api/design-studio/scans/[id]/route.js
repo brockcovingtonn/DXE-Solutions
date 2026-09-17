@@ -7,10 +7,16 @@ const URL_TTL = 3600;
 
 async function signScan(db, scan) {
   const { projects, ...rest } = scan;
-  const [{ data: model }, { data: floorPlan }, { data: modelGltf }, { data: annotatedPdf }] = await Promise.all([
+  const [{ data: model }, { data: floorPlan }, { data: floorPlanDownload }, { data: modelGltf }, { data: annotatedPdf }] = await Promise.all([
     db.storage.from(BUCKET).createSignedUrl(scan.model_path, URL_TTL),
     scan.floor_plan_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.floor_plan_path, URL_TTL)
+      : Promise.resolve({ data: null }),
+    // Only the 2D floor plan is downloadable — a separate signed URL with
+    // Content-Disposition: attachment, since a plain <a download> doesn't
+    // force a download for a cross-origin (Supabase Storage) link.
+    scan.floor_plan_path
+      ? db.storage.from(BUCKET).createSignedUrl(scan.floor_plan_path, URL_TTL, { download: true })
       : Promise.resolve({ data: null }),
     scan.model_gltf_path
       ? db.storage.from(BUCKET).createSignedUrl(scan.model_gltf_path, URL_TTL)
@@ -24,6 +30,7 @@ async function signScan(db, scan) {
     project_name: projects?.name || null,
     model_url: model?.signedUrl || null,
     floor_plan_url: floorPlan?.signedUrl || null,
+    floor_plan_download_url: floorPlanDownload?.signedUrl || null,
     model_gltf_url: modelGltf?.signedUrl || null,
     annotated_pdf_url: annotatedPdf?.signedUrl || null,
   };

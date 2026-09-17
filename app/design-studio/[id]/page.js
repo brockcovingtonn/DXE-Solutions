@@ -28,10 +28,13 @@ export default async function QuoteDetailPage({ params }) {
 
   const roomScans = await Promise.all(
     (scanRows || []).map(async (scan) => {
-      const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
+      const [{ data: model }, { data: floorPlan }, { data: floorPlanDownload }, { data: modelGltf }] = await Promise.all([
         db.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
         scan.floor_plan_path
           ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+          : Promise.resolve({ data: null }),
+        scan.floor_plan_path
+          ? db.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600, { download: true })
           : Promise.resolve({ data: null }),
         scan.model_gltf_path
           ? db.storage.from('design-studio-scans').createSignedUrl(scan.model_gltf_path, 3600)
@@ -47,6 +50,7 @@ export default async function QuoteDetailPage({ params }) {
         windowCount: scan.window_count,
         modelUrl: model?.signedUrl || null,
         floorPlanUrl: floorPlan?.signedUrl || null,
+        floorPlanDownloadUrl: floorPlanDownload?.signedUrl || null,
         modelGltfUrl: modelGltf?.signedUrl || null,
         showToClient: scan.show_to_client,
         project: scan.projects ? { id: scan.projects.id, name: scan.projects.name } : null,

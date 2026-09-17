@@ -7,8 +7,8 @@ import ModelLightbox from './ModelLightbox';
 // A room scan on the client-facing proposal: the 2D floor plan and a small
 // interactive 3D view shown side by side (not a toggle) — kept modest in
 // size since these are supporting visuals, not the main proposal content.
-// The 3D view expands to a full-size lightbox on click. Falls back to a
-// plain AR/download link on older scans with no glTF export.
+// The 3D view expands to a full-size lightbox on click. Only the 2D floor
+// plan is downloadable; a scan with no glTF export just shows the 2D side.
 export default function RoomScanCard({ scan }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const hasBoth = Boolean(scan.modelGltfUrl && scan.floorPlanUrl);
@@ -28,7 +28,12 @@ export default function RoomScanCard({ scan }) {
             </div>
           ) : null}
           {scan.modelGltfUrl ? (
-            <div style={{ flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150, position: 'relative' }}>
+            <div
+              style={{
+                flex: hasBoth ? '1 1 50%' : '1 1 100%', minWidth: 150, position: 'relative',
+                backgroundImage: 'repeating-linear-gradient(45deg, rgba(62,84,104,0.08) 0, rgba(62,84,104,0.08) 1px, transparent 1px, transparent 10px)',
+              }}
+            >
               <model-viewer
                 src={scan.modelGltfUrl}
                 ios-src={scan.modelUrl || undefined}
@@ -61,16 +66,6 @@ export default function RoomScanCard({ scan }) {
           <div style={{ fontSize: 12.5, color: C.muted, marginTop: 2 }}>
             Measured {Number(scan.areaSqft).toLocaleString()} sf via LiDAR scan
           </div>
-        ) : null}
-        {!scan.modelGltfUrl && scan.modelUrl ? (
-          <a
-            href={scan.modelUrl}
-            target="_blank"
-            rel="noopener noreferrer ar"
-            style={{ display: 'inline-block', marginTop: 8, fontSize: 12.5, fontWeight: 600, color: C.clay, textDecoration: 'none' }}
-          >
-            Download 3D file (USDZ) →
-          </a>
         ) : null}
       </div>
 

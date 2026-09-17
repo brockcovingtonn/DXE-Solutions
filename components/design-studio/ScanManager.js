@@ -120,7 +120,12 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             </button>
           ) : null}
           {lightboxOpen ? (
-            <ImageLightbox src={scan.floorPlanUrl} alt={scan.roomLabel || 'Floor plan'} onClose={() => setLightboxOpen(false)} />
+            <ImageLightbox
+              src={scan.floorPlanUrl}
+              alt={scan.roomLabel || 'Floor plan'}
+              downloadUrl={scan.floorPlanDownloadUrl}
+              onClose={() => setLightboxOpen(false)}
+            />
           ) : null}
         </div>
       ) : null}
@@ -131,7 +136,7 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             onClick={() => setShowViewer(true)}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...S.small, color: C.clay, fontWeight: 600 }}
           >
-            View 3D model →
+            View 3D Floor Plan →
           </button>
           {showViewer ? (
             <ModelLightbox
@@ -142,15 +147,6 @@ function ScanRow({ scan, isMaster, onUpdate }) {
             />
           ) : null}
         </div>
-      ) : scan.modelUrl ? (
-        <a
-          href={scan.modelUrl}
-          target="_blank"
-          rel="noopener noreferrer ar"
-          style={{ ...S.small, color: C.clay, fontWeight: 600, textDecoration: 'none', marginTop: 6, display: 'inline-block' }}
-        >
-          Download 3D file (USDZ) →
-        </a>
       ) : null}
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 13, cursor: 'pointer' }}>

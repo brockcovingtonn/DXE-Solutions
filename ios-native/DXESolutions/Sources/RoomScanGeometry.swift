@@ -157,12 +157,18 @@ enum RoomScanGeometry {
     /// picked out in the accent color, scaled and centered to fill the
     /// canvas. Good enough as a proposal visual — not a CAD export.
     static func renderFloorPlan(_ room: CapturedRoom, size: CGSize = CGSize(width: 900, height: 900)) -> UIImage {
-        struct Segment { let a: SIMD2<Float>; let b: SIMD2<Float>; let kind: Kind }
+        struct Segment { let a: SIMD2<Float>; let b: SIMD2<Float>; let kind: Kind; let lengthFt: Double }
         enum Kind { case wall, door, window }
 
-        var segments: [Segment] = room.walls.map { let (a, b) = endpoints(for: $0); return Segment(a: a, b: b, kind: .wall) }
-        segments += room.doors.map { let (a, b) = endpoints(for: $0); return Segment(a: a, b: b, kind: .door) }
-        segments += room.windows.map { let (a, b) = endpoints(for: $0); return Segment(a: a, b: b, kind: .window) }
+        func makeSegments(_ surfaces: [CapturedRoom.Surface], kind: Kind) -> [Segment] {
+            surfaces.map { surface in
+                let (a, b) = endpoints(for: surface)
+                return Segment(a: a, b: b, kind: kind, lengthFt: Double(surface.dimensions.x) * metersToFeet)
+            }
+        }
+        var segments: [Segment] = makeSegments(room.walls, kind: .wall)
+        segments += makeSegments(room.doors, kind: .door)
+        segments += makeSegments(room.windows, kind: .window)
 
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { ctx in
@@ -204,6 +210,34 @@ enum RoomScanGeometry {
                 }
                 path.lineCapStyle = .round
                 path.stroke()
+            }
+
+            // Dimension labels — like a real floor plan/CAD drawing, not
+            // just a line diagram. Rotated to sit flush along each segment.
+            for segment in segments {
+                let a = point(segment.a)
+                let b = point(segment.b)
+                let midpoint = CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
+                var angle = atan2(b.y - a.y, b.x - a.x)
+                // Keep text upright — flip a near-vertical-reading label
+                // rather than rendering it upside down.
+                if angle > .pi / 2 || angle < -.pi / 2 { angle += .pi }
+
+                let text = String(format: "%.1f ft", segment.lengthFt) as NSString
+                let attrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 11, weight: .semibold),
+                    .foregroundColor: UIColor(red: 0.173, green: 0.243, blue: 0.314, alpha: 1),
+                ]
+                let textSize = text.size(withAttributes: attrs)
+
+                ctx.cgContext.saveGState()
+                ctx.cgContext.translateBy(x: midpoint.x, y: midpoint.y)
+                ctx.cgContext.rotate(by: angle)
+                let chipRect = CGRect(x: -textSize.width / 2 - 3, y: -textSize.height / 2 - 8, width: textSize.width + 6, height: textSize.height + 2)
+                UIColor(white: 1, alpha: 0.82).setFill()
+                UIBezierPath(roundedRect: chipRect, cornerRadius: 3).fill()
+                text.draw(at: CGPoint(x: -textSize.width / 2, y: -textSize.height / 2 - 7), withAttributes: attrs)
+                ctx.cgContext.restoreGState()
             }
 
             // Furniture/fixtures RoomPlan detected — muted labeled boxes so

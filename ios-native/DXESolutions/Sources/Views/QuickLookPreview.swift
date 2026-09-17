@@ -1,7 +1,31 @@
 import SwiftUI
 import QuickLook
 
-struct QuickLookPreview: UIViewControllerRepresentable {
+// QLPreviewController presented bare (no navigation bar) has no built-in
+// way to dismiss itself — this wraps it with our own close button so every
+// preview sheet in the app (documents, invoices, proposals, Design Studio
+// scans/floor plans) can actually be closed.
+struct QuickLookPreview: View {
+    let url: URL
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            QuickLookRepresentable(url: url)
+                .ignoresSafeArea()
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.white, .black.opacity(0.4))
+            }
+            .padding()
+        }
+    }
+}
+
+private struct QuickLookRepresentable: UIViewControllerRepresentable {
     let url: URL
 
     func makeUIViewController(context: Context) -> QLPreviewController {
