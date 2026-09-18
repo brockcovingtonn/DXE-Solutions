@@ -110,7 +110,7 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
           <img src="/images/logo-cream.png" alt="DXE Solutions" style={{ height: 32 }} />
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontWeight: 300 }}>|</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/higher-thinking-logo.png" alt="Higher Thinking Consulting" style={{ height: 65 }} />
+          <img src="/images/higher-thinking-logo.png" alt="Higher Thinking Consulting" style={{ height: 78 }} />
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 17, fontWeight: 600, color: '#FFF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
