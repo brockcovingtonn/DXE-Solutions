@@ -11,150 +11,228 @@ function firstName(fullName) {
   return String(fullName || '').trim().split(/\s+/)[0] || 'there';
 }
 
-const gold = { fontSize: '0.68rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#C9A857', fontWeight: 600, marginBottom: '0.3rem' };
+const sectionTitle = { fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-secondary)', margin: '34px 0 10px' };
 
 // Read-only rendering of a proposal — a cover letter followed by the
 // formal proposal (project info, scope of services, compensation
-// breakdown, payment terms, limitations, signature block), matching
-// DXE's own proposal-letter format. Shared by the finalize preview
-// modal, the admin "view" page, and the client portal.
-export default function ProposalDocument({ proposal, lineItems }) {
+// breakdown, payment terms, limitations, signature block). Shared by
+// the finalize preview modal, the admin "view" page, and the client
+// portal — restyling this once keeps all three cohesive. Visual
+// language deliberately mirrors components/design-studio/ProposalDocument.js
+// (same letterhead, watermark, section treatment) minus the Higher
+// Thinking Consulting co-brand — this is a DXE Solutions-only document.
+export default function ProposalDocument({ proposal, lineItems, watermark, signatureUrl }) {
+  const signature = Array.isArray(proposal.proposal_signatures) ? proposal.proposal_signatures[0] : proposal.proposal_signatures;
+  const decline = Array.isArray(proposal.proposal_declines) ? proposal.proposal_declines[0] : proposal.proposal_declines;
+  const issued = proposal.created_at ? new Date(proposal.created_at) : new Date();
+
   return (
-    <div style={{ background: '#fff', color: '#1a2530', maxWidth: '760px', margin: '0 auto', fontFamily: 'Inter, -apple-system, sans-serif' }}>
-      <div style={{ background: '#2C3E50', height: '10px' }} />
-      <div style={{ background: '#C9A857', height: '3px' }} />
-      <div style={{ padding: '2rem 2.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.25rem' }}>
-          <div style={{ fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>DXE SOLUTIONS</div>
-          <div style={{ fontSize: '0.78rem', color: '#718096' }}>{formatDate(proposal.created_at || new Date())}</div>
+    <article
+      style={{
+        position: 'relative',
+        background: 'var(--white)',
+        color: '#1a2530',
+        border: '1px solid var(--border)',
+        borderRadius: 10,
+        maxWidth: 780,
+        margin: '0 auto',
+        fontFamily: 'Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        lineHeight: 1.55,
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute', top: '50%', left: '50%', width: 460, height: 460,
+          transform: 'translate(-50%, -50%) rotate(-18deg)', opacity: 0.04, zIndex: 0, pointerEvents: 'none',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/logo-black.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      </div>
+
+      {watermark ? (
+        <div
+          style={{
+            position: 'absolute', top: 14, right: 18, fontSize: 11, fontWeight: 700,
+            letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', zIndex: 2,
+          }}
+        >
+          {watermark}
         </div>
-        <div style={{ fontSize: '0.72rem', color: '#718096', marginBottom: '1.75rem' }}>Permitting &amp; Project Management</div>
+      ) : null}
 
-        <p style={{ fontSize: '0.9rem', marginBottom: '0.85rem' }}>Dear {firstName(proposal.client_name)},</p>
+      <header
+        style={{
+          position: 'relative', zIndex: 1, background: 'var(--navy)', padding: '20px 32px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/logo-cream.png" alt="DXE Solutions" style={{ height: 32 }} />
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 17, fontWeight: 600, color: '#FFF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Proposal
+          </div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 }}>
+            Generated {formatDate(issued)}
+          </div>
+        </div>
+      </header>
+      <div style={{ position: 'relative', zIndex: 1, height: 4, background: 'var(--gold)' }} />
 
-        {proposal.intro_paragraph && (
-          <p style={{ fontSize: '0.85rem', lineHeight: 1.7, color: '#2d3748', marginBottom: '0.85rem', whiteSpace: 'pre-line' }}>{proposal.intro_paragraph}</p>
-        )}
+      <div style={{ position: 'relative', zIndex: 1, padding: '28px 40px 44px' }}>
+        <div style={{ fontSize: 13.5, color: 'var(--gold)', fontWeight: 600 }}>Permitting &amp; Project Management</div>
+        <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>
+          dixie@dxesolutions.com · 323-364-0810
+        </div>
 
-        <p style={{ fontSize: '0.85rem', marginBottom: '1.25rem' }}>We look forward to the opportunity to support your project.</p>
-        <p style={{ fontSize: '0.85rem', marginBottom: 0 }}>Sincerely,</p>
-        <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy)', marginBottom: '1.75rem' }}>{proposal.prepared_by || 'DXE Solutions'}</p>
+        <p style={{ fontSize: 14, marginTop: 22, marginBottom: '0.85rem' }}>Dear {firstName(proposal.client_name)},</p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid #DCE5EC', margin: '0 0 1.5rem' }} />
+        {proposal.intro_paragraph ? (
+          <p style={{ fontSize: 13.5, lineHeight: 1.7, color: '#2d3748', marginBottom: '0.85rem', whiteSpace: 'pre-line' }}>{proposal.intro_paragraph}</p>
+        ) : null}
 
-        <h3 style={{ fontFamily: 'Cormorant Garamond, Georgia, serif', fontSize: '1.3rem', color: 'var(--navy)', margin: '0 0 0.5rem' }}>
-          PROPOSAL — {proposal.title || 'Scope of Work'}
-        </h3>
-        <p style={{ fontSize: '0.72rem', color: '#718096', marginBottom: '1.5rem' }}>
-          Project: {proposal.title} &nbsp;·&nbsp; Project Address: {proposal.project_address || '—'} &nbsp;·&nbsp; Client: {proposal.client_name || '—'} &nbsp;·&nbsp; Date: {formatDate(proposal.created_at || new Date())}
-        </p>
+        <p style={{ fontSize: 13.5, marginBottom: '1.25rem' }}>We look forward to the opportunity to support your project.</p>
+        <p style={{ fontSize: 13.5, marginBottom: 0 }}>Sincerely,</p>
+        <p style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--navy)', marginBottom: 0 }}>{proposal.prepared_by || 'DXE Solutions'}</p>
 
-        {proposal.scope_summary && (
+        <div style={sectionTitle}>{proposal.title || 'Scope of work'}</div>
+        <div style={{ background: 'var(--cream)', borderRadius: 8, padding: '18px 20px' }}>
+          <div style={{ fontSize: 18, fontWeight: 600 }}>{proposal.title || 'Scope of Work'}</div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 10 }}>
+            Project Address: {proposal.project_address || '—'} &nbsp;·&nbsp; Client: {proposal.client_name || '—'}
+          </div>
+        </div>
+
+        {proposal.scope_summary ? (
           <>
-            <div style={gold}>Project Description</div>
-            <p style={{ fontSize: '0.85rem', lineHeight: 1.7, color: '#2d3748', marginBottom: '1.25rem', whiteSpace: 'pre-line' }}>{proposal.scope_summary}</p>
+            <div style={sectionTitle}>Project Description</div>
+            <p style={{ fontSize: 13.5, lineHeight: 1.7, color: '#2d3748', whiteSpace: 'pre-line', margin: 0 }}>{proposal.scope_summary}</p>
           </>
-        )}
+        ) : null}
 
-        {lineItems && lineItems.length > 0 && (
+        {lineItems && lineItems.length > 0 ? (
           <>
-            <div style={gold}>Scope of Services</div>
-            <ul style={{ margin: '0 0 1.5rem', paddingLeft: '1.1rem', fontSize: '0.84rem', lineHeight: 1.8, color: '#2d3748' }}>
+            <div style={sectionTitle}>Scope of Services</div>
+            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14.5 }}>
               {lineItems.map((item) => (
                 <li key={item.id || `${item.category}-${item.description}`}>
-                  {item.category && <strong>{item.category}</strong>}
+                  {item.category ? <strong>{item.category}</strong> : null}
                   {item.category && item.description ? ' — ' : ''}
                   {item.description}
                 </li>
               ))}
             </ul>
           </>
-        )}
+        ) : null}
 
-        <div style={gold}>Compensation Breakdown</div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginBottom: '1rem' }}>
+        <div style={sectionTitle}>Compensation Breakdown</div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
           <thead>
-            <tr style={{ background: '#F6F8FA' }}>
-              <th style={{ textAlign: 'left', padding: '0.5rem', fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>DESCRIPTION</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem', fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>QTY</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem', fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>UNIT</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem', fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>UNIT PRICE</th>
-              <th style={{ textAlign: 'right', padding: '0.5rem', fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--navy)' }}>AMOUNT</th>
+            <tr style={{ background: 'var(--cream)' }}>
+              <th style={{ textAlign: 'left', padding: '8px 10px', fontSize: 11, letterSpacing: '0.05em', color: 'var(--navy)' }}>DESCRIPTION</th>
+              <th style={{ textAlign: 'right', padding: '8px 10px', fontSize: 11, letterSpacing: '0.05em', color: 'var(--navy)' }}>QTY</th>
+              <th style={{ textAlign: 'left', padding: '8px 10px', fontSize: 11, letterSpacing: '0.05em', color: 'var(--navy)' }}>UNIT</th>
+              <th style={{ textAlign: 'right', padding: '8px 10px', fontSize: 11, letterSpacing: '0.05em', color: 'var(--navy)' }}>UNIT PRICE</th>
+              <th style={{ textAlign: 'right', padding: '8px 10px', fontSize: 11, letterSpacing: '0.05em', color: 'var(--navy)' }}>AMOUNT</th>
             </tr>
           </thead>
           <tbody>
             {(lineItems || []).map((item) => (
-              <tr key={item.id || `${item.category}-${item.description}`} style={{ borderBottom: '1px solid #EDF1F4' }}>
-                <td style={{ padding: '0.55rem 0.5rem' }}>
-                  {item.category && <strong>{item.category}</strong>}
+              <tr key={item.id || `${item.category}-${item.description}`} style={{ borderBottom: '1px solid var(--border)' }}>
+                <td style={{ padding: '10px' }}>
+                  {item.category ? <strong>{item.category}</strong> : null}
                   {item.category && item.description ? ' — ' : ''}
                   {item.description}
                 </td>
-                <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right' }}>{item.quantity}</td>
-                <td style={{ padding: '0.55rem 0.5rem' }}>{item.unit}</td>
-                <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right' }}>{formatCurrency(item.unit_price)}</td>
-                <td style={{ padding: '0.55rem 0.5rem', textAlign: 'right', fontWeight: 600 }}>{formatCurrency(item.amount)}</td>
+                <td style={{ padding: '10px', textAlign: 'right' }}>{item.quantity}</td>
+                <td style={{ padding: '10px' }}>{item.unit}</td>
+                <td style={{ padding: '10px', textAlign: 'right' }}>{formatCurrency(item.unit_price)}</td>
+                <td style={{ padding: '10px', textAlign: 'right', fontWeight: 600 }}>{formatCurrency(item.amount)}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ width: '220px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', padding: '0.3rem 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+          <div style={{ width: 220 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, padding: '5px 0' }}>
               <span>Subtotal</span>
               <span>{formatCurrency(proposal.subtotal)}</span>
             </div>
-            {Number(proposal.adjustment) !== 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', padding: '0.3rem 0' }}>
+            {Number(proposal.adjustment) !== 0 ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, padding: '5px 0' }}>
                 <span>{proposal.adjustment_label || 'Adjustment'}</span>
                 <span>{formatCurrency(proposal.adjustment)}</span>
               </div>
-            )}
-            <div style={{ borderTop: '1px solid var(--navy)', marginTop: '0.3rem', paddingTop: '0.4rem', display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem', fontWeight: 700, color: 'var(--navy)' }}>
+            ) : null}
+            <div style={{ borderTop: '2px solid var(--navy)', marginTop: 6, paddingTop: 10, display: 'flex', justifyContent: 'space-between', fontSize: 19, fontWeight: 700, color: 'var(--navy)' }}>
               <span>Total</span>
               <span>{formatCurrency(proposal.total)}</span>
             </div>
           </div>
         </div>
 
-        {proposal.payment_terms && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <div style={gold}>Payment Terms</div>
-            <p style={{ fontSize: '0.85rem', lineHeight: 1.6, whiteSpace: 'pre-line' }}>{proposal.payment_terms}</p>
-          </div>
-        )}
+        {proposal.payment_terms ? (
+          <>
+            <div style={sectionTitle}>Payment Terms</div>
+            <p style={{ fontSize: 13.5, lineHeight: 1.65, color: '#2d3748', whiteSpace: 'pre-line', margin: 0 }}>{proposal.payment_terms}</p>
+          </>
+        ) : null}
 
-        {proposal.valid_until && (
-          <p style={{ fontSize: '0.78rem', fontStyle: 'italic', color: '#718096', marginTop: '0.5rem' }}>
+        {proposal.valid_until ? (
+          <p style={{ fontSize: 12.5, fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: 10 }}>
             This proposal is valid until {formatDate(proposal.valid_until)}.
           </p>
-        )}
+        ) : null}
 
-        {proposal.limitations && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <div style={gold}>Limitations of Responsibility</div>
-            <p style={{ fontSize: '0.76rem', lineHeight: 1.6, color: '#718096', whiteSpace: 'pre-line' }}>{proposal.limitations}</p>
+        {proposal.limitations ? (
+          <>
+            <div style={sectionTitle}>Limitations of Responsibility</div>
+            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: 'var(--text-secondary)', whiteSpace: 'pre-line', margin: 0 }}>{proposal.limitations}</p>
+          </>
+        ) : null}
+
+        <div style={sectionTitle}>Authorization</div>
+        {signature ? (
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24 }}>
+            {signatureUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={signatureUrl} alt={`Signature of ${signature.signer_name || 'client'}`} style={{ height: 50 }} />
+            ) : null}
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+              Signed by {signature.signer_name}
+              <br />
+              {formatDate(signature.created_at)}
+            </div>
+          </div>
+        ) : decline ? (
+          <div style={{ fontSize: 13, color: 'var(--warn, #A8562F)' }}>
+            Declined by {firstName(proposal.client_name)} on {formatDate(decline.created_at)}
+            {decline.reason ? <><br />Reason: {decline.reason}</> : null}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 40, marginTop: 4 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ borderTop: '1px solid var(--text-tertiary)', paddingTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>Client Signature</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ borderTop: '1px solid var(--text-tertiary)', paddingTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>Date</div>
+            </div>
           </div>
         )}
-
-        <div style={{ marginTop: '2rem' }}>
-          <div style={gold}>Authorization</div>
-        </div>
-        <div style={{ display: 'flex', gap: '2.5rem', marginTop: '1.25rem' }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ borderTop: '1px solid #A0AEC0', paddingTop: '0.35rem', fontSize: '0.72rem', color: '#718096' }}>Client Signature</div>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ borderTop: '1px solid #A0AEC0', paddingTop: '0.35rem', fontSize: '0.72rem', color: '#718096' }}>Date</div>
-          </div>
-        </div>
-        <div style={{ marginTop: '1.75rem', width: '220px' }}>
-          <div style={{ borderTop: '1px solid #A0AEC0', paddingTop: '0.35rem', fontSize: '0.72rem', color: '#718096' }}>
+        <div style={{ marginTop: 20, width: 220 }}>
+          <div style={{ borderTop: '1px solid var(--text-tertiary)', paddingTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
             {proposal.prepared_by || 'DXE Solutions'}, DXE Solutions
           </div>
         </div>
+
+        <footer style={{ marginTop: 34, paddingTop: 16, borderTop: '1px solid var(--border)', fontSize: 12, color: 'var(--text-secondary)', textAlign: 'center' }}>
+          DXE Solutions · Permitting &amp; Project Management
+        </footer>
       </div>
-    </div>
+    </article>
   );
 }

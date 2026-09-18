@@ -55,7 +55,7 @@ export default async function AdminProjectPage({ params }) {
 
   const { data: proposals } = await supabase
     .from('proposals')
-    .select('*, proposal_signatures(signer_name, created_at)')
+    .select('*, proposal_signatures(signer_name, created_at), proposal_declines(reason, created_at)')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
 

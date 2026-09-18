@@ -46,6 +46,16 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'This proposal has already been signed' }, { status: 400 });
     }
 
+    const { data: existingDecline } = await supabase
+      .from('proposal_declines')
+      .select('id')
+      .eq('proposal_id', proposalId)
+      .maybeSingle();
+
+    if (existingDecline) {
+      return NextResponse.json({ error: 'This proposal has already been declined' }, { status: 400 });
+    }
+
     const { data: lineItems } = await supabase
       .from('proposal_line_items')
       .select('*')

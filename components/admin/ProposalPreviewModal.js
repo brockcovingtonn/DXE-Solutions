@@ -52,7 +52,7 @@ export default function ProposalPreviewModal({ proposalId, proposal, lineItems, 
         </div>
 
         <div style={{ padding: '1.5rem', maxHeight: '65vh', overflowY: 'auto', background: '#DCE5EC' }}>
-          <ProposalDocument proposal={proposal} lineItems={lineItems} />
+          <ProposalDocument proposal={proposal} lineItems={lineItems} watermark="Preview" />
         </div>
 
         <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(var(--border-rgb),0.12)' }}>

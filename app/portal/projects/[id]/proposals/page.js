@@ -19,12 +19,9 @@ export default async function ClientProposalsPage({ params }) {
   // project.
   const { data: proposals } = await supabase
     .from('proposals')
-    .select('*, proposal_signatures(signer_name, created_at)')
+    .select('*, proposal_signatures(signer_name, created_at), proposal_declines(reason, created_at)')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
-
-  const { data: profile } = await supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single();
-  const currentUserName = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim();
 
   return (
     <div>
@@ -34,7 +31,7 @@ export default async function ClientProposalsPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <ClientProposalsList proposals={proposals} currentUserName={currentUserName} />
+        <ClientProposalsList proposals={proposals} projectId={projectId} />
       </div>
     </div>
   );
