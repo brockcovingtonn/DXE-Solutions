@@ -124,7 +124,7 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
       <div style={{ position: 'relative', zIndex: 1, height: 4, background: C.clay }} />
 
       <div style={{ position: 'relative', zIndex: 1, padding: '28px 40px 44px' }}>
-        <div style={{ fontSize: 13.5, color: C.clay, fontWeight: 600 }}>{BRAND.tagline}</div>
+        <div style={{ fontSize: 13.5, color: C.clay, fontWeight: 600 }}>Residential Design & Space Planning</div>
         <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>
           {[BRAND.parentLine, DESIGN_STUDIO_CONTACT.email, DESIGN_STUDIO_CONTACT.phone].filter(Boolean).join(' · ')}
         </div>
@@ -272,7 +272,7 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
       <p style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.65, margin: 0 }}>{TERMS_NOTE}</p>
 
       <footer style={{ marginTop: 34, paddingTop: 16, borderTop: `1px solid ${C.line}`, fontSize: 12, color: C.muted, textAlign: 'center' }}>
-        {[BRAND.name, BRAND.parentLine, BRAND.website].filter(Boolean).join(' · ')}
+        DXE Solutions | Higher Thinking Consulting · Residential Design & Space Planning
       </footer>
       </div>
     </article>
