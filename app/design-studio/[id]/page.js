@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { getStaffUser, supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
+import DownloadProposalButton from '@/components/design-studio/DownloadProposalButton';
 import QuoteActions from '@/components/design-studio/QuoteActions';
 import ScanManager from '@/components/design-studio/ScanManager';
 import FloorPlanManager from '@/components/design-studio/FloorPlanManager';
@@ -107,6 +108,9 @@ export default async function QuoteDetailPage({ params }) {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 22, alignItems: 'start', marginTop: 18 }}>
           <div>
+            <div style={{ textAlign: 'right', marginBottom: 12 }}>
+              <DownloadProposalButton />
+            </div>
             <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} floorPlans={clientVisibleFloorPlans} />
           </div>
 

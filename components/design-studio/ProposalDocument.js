@@ -39,7 +39,28 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
         browser); ios-src on each element separately hands off to native AR
         Quick Look on iOS Safari using the full-fidelity USDZ instead. */}
     <Script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" strategy="afterInteractive" />
+    {/* "Download PDF" prints just this element — everything else on the
+        page (dashboard chrome, expired banner, the button itself) is
+        hidden via visibility so the browser's print-to-PDF output is a
+        clean copy of the proposal alone. */}
+    <style>{`
+      @media print {
+        body * { visibility: hidden; }
+        #ds-proposal-document, #ds-proposal-document * { visibility: visible; }
+        #ds-proposal-document {
+          position: absolute !important;
+          top: 0; left: 0;
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+        .ds-no-print { display: none !important; }
+      }
+    `}</style>
     <article
+      id="ds-proposal-document"
       style={{
         position: 'relative',
         background: C.paper,
@@ -87,9 +108,9 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/logo-cream.png" alt="DXE Solutions" style={{ height: 32 }} />
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontWeight: 300 }}>×</span>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontWeight: 300 }}>|</span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/higher-thinking-logo.png" alt="Higher Thinking Consulting" style={{ height: 44 }} />
+          <img src="/images/higher-thinking-logo.png" alt="Higher Thinking Consulting" style={{ height: 54 }} />
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 17, fontWeight: 600, color: '#FFF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>

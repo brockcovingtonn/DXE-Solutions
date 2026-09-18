@@ -100,7 +100,7 @@ struct DesignStudioListView: View {
             }
         }
         .background(Theme.screenBackground.ignoresSafeArea())
-        .navigationTitle("DXE Solutions × Higher Thinking")
+        .navigationTitle("DXE Solutions | Higher Thinking")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
+import DownloadProposalButton from '@/components/design-studio/DownloadProposalButton';
 import { BRAND, DESIGN_STUDIO_CONTACT, C } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
@@ -101,6 +102,7 @@ export default async function PublicProposalPage({ params }) {
     <div style={{ background: C.sand, minHeight: '100vh', padding: '36px 18px 70px' }}>
       {expired ? (
         <div
+          className="ds-no-print"
           style={{
             maxWidth: 780, margin: '0 auto 16px', background: '#F5EAE4', color: C.warn,
             border: `1px solid #E8D5C9`, borderRadius: 8, padding: '12px 16px', fontSize: 13.5,
@@ -111,9 +113,14 @@ export default async function PublicProposalPage({ params }) {
         </div>
       ) : null}
 
+      <div className="ds-no-print" style={{ maxWidth: 780, margin: '0 auto 14px', textAlign: 'right' }}>
+        <DownloadProposalButton />
+      </div>
+
       <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} floorPlans={floorPlans} />
 
       <div
+        className="ds-no-print"
         style={{
           maxWidth: 780, margin: '20px auto 0', textAlign: 'center', fontSize: 13, color: C.muted,
           fontFamily: 'ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',

@@ -49,7 +49,7 @@ export default async function DesignStudioDashboard() {
       <div style={S.shell}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14, marginBottom: 22 }}>
           <div>
-            <h1 style={S.h1}>DXE Solutions × Higher Thinking Consulting</h1>
+            <h1 style={S.h1}>DXE Solutions | Higher Thinking Consulting</h1>
             <div style={{ fontSize: 14, color: C.clay, marginTop: 3 }}>{BRAND.tagline}</div>
             <div style={{ ...S.small, marginTop: 5 }}>
               {[BRAND.parentLine, `signed in as ${user.name} (${user.role.replace('_', ' ')})`].filter(Boolean).join(' · ')}
