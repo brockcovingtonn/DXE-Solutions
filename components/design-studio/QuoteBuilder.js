@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { calculateQuote, ADDON_ORDER, EMPTY_INPUT, addOnRate } from '@/lib/design-studio/pricing';
+import { calculateQuote, ADDON_ORDER, EMPTY_INPUT, addOnRate, buildIncludedBullets } from '@/lib/design-studio/pricing';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
 import ProposalDocument from './ProposalDocument';
 import ClientPicker from './ClientPicker';
+import IncludedItemsEditor from './IncludedItemsEditor';
 
 export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
   const [tab, setTab] = useState('build');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [editingLineItemsFor, setEditingLineItemsFor] = useState(null);
 
   const quote = useMemo(() => calculateQuote(form, config), [form, config]);
 
@@ -89,6 +91,7 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
             project_address: form.projectAddress,
             quote_number: 'PREVIEW',
             created_at: new Date().toISOString(),
+            included_override: form.includedOverride,
           }}
           pricing={quote}
           watermark="Preview"
@@ -146,10 +149,11 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
                   {levels.map(([k, l]) => {
                     const on = form.serviceLevel === k;
+                    const customized = on && Array.isArray(form.includedOverride) && form.includedOverride.length > 0;
                     return (
                       <button
                         key={k}
-                        onClick={() => setForm((f) => ({ ...f, serviceLevel: k }))}
+                        onClick={() => setForm((f) => ({ ...f, serviceLevel: k, includedOverride: f.serviceLevel === k ? f.includedOverride : null }))}
                         style={{
                           textAlign: 'left', padding: '12px 14px', cursor: 'pointer',
                           border: `1px solid ${on ? C.clay : C.line}`,
@@ -164,6 +168,18 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                           {money(activeType?.packages?.[k] || 0)} starting
                         </div>
                         <div style={{ ...S.small, marginTop: 5 }}>{l.blurb}</div>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setForm((f) => ({ ...f, serviceLevel: k, includedOverride: f.serviceLevel === k ? f.includedOverride : null }));
+                            setEditingLineItemsFor(k);
+                          }}
+                          style={{ fontSize: 12.5, fontWeight: 600, color: C.clay, marginTop: 8, cursor: 'pointer' }}
+                        >
+                          Edit line items →{customized ? ' (customized)' : ''}
+                        </div>
                       </button>
                     );
                   })}
@@ -257,7 +273,7 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
               {quote.tradePartner.applied ? <Row label="Trade partner" value={`−${money(quote.tradePartner.amount)}`} accent={C.warn} /> : null}
               {quote.adjustment ? <Row label="Adjustment" value={`${quote.adjustment > 0 ? '+' : '−'}${money(Math.abs(quote.adjustment))}`} accent={C.warn} /> : null}
               {quote.minimum.applied ? (
-                <Row label={`Minimum fee applied`} value={money(quote.minimum.fee)} accent={C.warn} />
+                <Row label="Below reference minimum" value={money(quote.minimum.fee)} accent={C.muted} />
               ) : null}
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14, marginTop: 6, borderTop: `2px solid ${C.ink}` }}>
                 <strong style={{ fontSize: 16 }}>Total</strong>
@@ -298,6 +314,19 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
           </aside>
         </div>
       )}
+
+      {editingLineItemsFor ? (
+        <IncludedItemsEditor
+          levelLabel={config.serviceLevels?.[editingLineItemsFor]?.label || editingLineItemsFor}
+          defaultBullets={buildIncludedBullets(quote.included)}
+          initialBullets={form.includedOverride}
+          onSave={(bullets) => {
+            setForm((f) => ({ ...f, includedOverride: bullets }));
+            setEditingLineItemsFor(null);
+          }}
+          onClose={() => setEditingLineItemsFor(null)}
+        />
+      ) : null}
     </div>
   );
 }

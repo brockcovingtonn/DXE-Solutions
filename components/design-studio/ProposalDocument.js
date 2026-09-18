@@ -1,6 +1,7 @@
 import Script from 'next/script';
 import RoomScanCard from './RoomScanCard';
 import { BRAND, SCOPE_NOTE, TERMS_NOTE, C, money } from '@/lib/design-studio/brand';
+import { buildIncludedBullets } from '@/lib/design-studio/pricing';
 
 /**
  * The only thing a client ever sees.
@@ -15,6 +16,10 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
   if (!p) return null;
 
   const inc = p.included || {};
+  const bullets =
+    Array.isArray(quote?.included_override) && quote.included_override.length
+      ? quote.included_override
+      : buildIncludedBullets(inc);
   const addOns = (p.selectedAddOns || []).filter((l) => l.qty > 0);
   const issued = quote?.created_at ? new Date(quote.created_at) : new Date();
 
@@ -79,8 +84,13 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/logo-cream.png" alt="DXE Solutions" style={{ height: 36 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo-cream.png" alt="DXE Solutions" style={{ height: 32 }} />
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 15, fontWeight: 300 }}>×</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/higher-thinking-logo.png" alt="Higher Thinking Consulting" style={{ height: 44 }} />
+        </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 17, fontWeight: 600, color: '#FFF', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Design Proposal
@@ -162,19 +172,9 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
 
       <div style={sectionTitle}>What is included</div>
       <ul style={{ margin: 0, paddingLeft: 20, fontSize: 15 }}>
-        <li>Existing conditions set up as a working base plan</li>
-        <li>{inc.concepts} proposed layout concept{inc.concepts === '1' ? '' : 's'}</li>
-        <li>Finalised dimensioned 2D floor plan</li>
-        <li>Furniture and fixture layout — {String(inc.styling || '').toLowerCase()}</li>
-        {inc.model3d ? <li>Complete 3D model of the design</li> : null}
-        {inc.renderedViews > 0 ? (
-          <li>{inc.renderedViews} rendered presentation view{inc.renderedViews === 1 ? '' : 's'}</li>
-        ) : null}
-        {inc.finishDirection && inc.finishDirection !== 'Not included' ? (
-          <li>Material and finish direction — {String(inc.finishDirection).toLowerCase()}</li>
-        ) : null}
-        <li>{inc.revisions} revision round{inc.revisions === 1 ? '' : 's'}</li>
-        <li>Presentation-ready PDF package</li>
+        {bullets.map((b, i) => (
+          <li key={i}>{b}</li>
+        ))}
       </ul>
 
       <div style={sectionTitle}>Investment</div>

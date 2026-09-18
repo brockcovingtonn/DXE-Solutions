@@ -30,7 +30,7 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: quote } = await db
     .from('design_studio_quotes')
-    .select('id, quote_number, status, client_name, project_address, pricing, valid_until, created_at')
+    .select('id, quote_number, status, client_name, project_address, pricing, included_override, valid_until, created_at')
     .eq('share_token', token)
     .maybeSingle();
 

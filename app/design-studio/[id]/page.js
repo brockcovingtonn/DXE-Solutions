@@ -137,7 +137,7 @@ export default async function QuoteDetailPage({ params }) {
               {p.addOnTotal ? <Row label="Add-ons" value={`+${money(p.addOnTotal)}`} /> : null}
               {p.tradePartner?.applied ? <Row label="Trade partner" value={`−${money(p.tradePartner.amount)}`} accent={C.warn} /> : null}
               {p.adjustment ? <Row label="Adjustment" value={money(p.adjustment)} accent={C.warn} /> : null}
-              {p.minimum?.applied ? <Row label="Minimum applied" value={money(p.minimum.fee)} accent={C.warn} /> : null}
+              {p.minimum?.applied ? <Row label="Below reference minimum" value={money(p.minimum.fee)} accent={C.muted} /> : null}
               <div style={{ borderTop: `1px solid ${C.line}`, marginTop: 8, paddingTop: 10 }}>
                 <Row label="Est. hours" value={`${internal.estHours ?? '—'} hrs`} />
                 <Row

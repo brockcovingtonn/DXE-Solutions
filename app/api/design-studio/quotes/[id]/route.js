@@ -92,6 +92,7 @@ export async function PATCH(request, { params }) {
         add_ons: body.reprice.addOns || {},
         manual_adjustment: Number(body.reprice.manualAdjustment) || 0,
         adjustment_note: body.reprice.adjustmentNote || null,
+        included_override: Array.isArray(body.reprice.includedOverride) ? body.reprice.includedOverride : null,
         pricing: recalculated,
         config_snapshot: config,
         total: recalculated.total,

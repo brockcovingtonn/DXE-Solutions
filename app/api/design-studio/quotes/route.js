@@ -67,6 +67,7 @@ export async function POST(request) {
         manual_adjustment: Number(body.manualAdjustment) || 0,
         adjustment_note: body.adjustmentNote || null,
         internal_notes: body.internalNotes || null,
+        included_override: Array.isArray(body.includedOverride) ? body.includedOverride : null,
         pricing: quote,
         config_snapshot: config,
         total: quote.total,
