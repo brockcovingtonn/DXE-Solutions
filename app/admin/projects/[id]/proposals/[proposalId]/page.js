@@ -36,16 +36,14 @@ export default async function EditProposalPage({ params }) {
         <h1>Edit Proposal</h1>
         <p>{project.name}</p>
       </div>
-      <div className={styles.fullWidthCard}>
-        <ProposalForm
-          projectId={params.id}
-          proposalId={params.proposalId}
-          initialProposal={proposal}
-          initialLineItems={lineItems || []}
-          project={project}
-          preparedByDefault={proposal.prepared_by}
-        />
-      </div>
+      <ProposalForm
+        projectId={params.id}
+        proposalId={params.proposalId}
+        initialProposal={proposal}
+        initialLineItems={lineItems || []}
+        project={project}
+        preparedByDefault={proposal.prepared_by}
+      />
     </div>
   );
 }

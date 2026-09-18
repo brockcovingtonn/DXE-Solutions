@@ -30,9 +30,7 @@ export default async function NewProposalPage({ params }) {
         <h1>Create A Proposal</h1>
         <p>{project.name}</p>
       </div>
-      <div className={styles.fullWidthCard}>
-        <ProposalForm projectId={params.id} project={project} preparedByDefault={preparedByDefault} />
-      </div>
+      <ProposalForm projectId={params.id} project={project} preparedByDefault={preparedByDefault} />
     </div>
   );
 }

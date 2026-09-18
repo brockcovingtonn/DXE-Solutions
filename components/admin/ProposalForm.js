@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import adminStyles from '@/components/admin.module.css';
 import { PROPOSAL_SCOPE_GROUPS, PROPOSAL_UNITS } from '@/lib/constants';
 import ProposalPreviewModal from '@/components/admin/ProposalPreviewModal';
 
@@ -21,6 +20,31 @@ const DEFAULT_INTRO =
 
 const DEFAULT_LIMITATIONS =
   'This proposal is based on the scope of work described herein and information reasonably available at the time of preparation. Pricing assumes normal working conditions and does not include costs arising from concealed or unforeseen conditions, code changes, or scope changes requested after acceptance — any such items will be addressed through a written change order. Permit fees, utility fees, and other third-party or agency fees are the responsibility of the property owner unless specifically included above. This proposal is not a contract; a signed agreement and deposit are required before work begins.';
+
+// Same card/section visual language as components/design-studio/QuoteBuilder.js
+// (numbered cards, gold uppercase section headers, sticky price summary) —
+// defined locally rather than imported from lib/design-studio/brand.js, which
+// is deliberately self-contained to that feature. Same CSS custom properties
+// either way, so the result looks identical.
+const S = {
+  card: { background: '#fff', border: '1px solid var(--border)', borderRadius: 10, padding: 22, marginBottom: 18 },
+  h2: { fontSize: 13, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-secondary)', margin: '0 0 14px' },
+  label: { display: 'block', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--navy)', marginBottom: 6 },
+  input: { width: '100%', padding: '9px 11px', border: '1px solid var(--border)', borderRadius: 6, fontSize: 15, background: '#fff', color: '#1a2530', boxSizing: 'border-box' },
+  btn: { padding: '10px 18px', background: 'var(--navy)', color: '#fff', border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  btnGhost: { padding: '10px 18px', background: 'transparent', color: 'var(--navy)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  grid2: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 16 },
+  small: { fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.6 },
+};
+
+function Row({ label, value }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '7px 0', fontSize: 14 }}>
+      <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+      <span style={{ fontWeight: 600, color: 'var(--navy)' }}>{value}</span>
+    </div>
+  );
+}
 
 export default function ProposalForm({ projectId, proposalId, initialProposal, initialLineItems, project, preparedByDefault }) {
   const router = useRouter();
@@ -202,213 +226,194 @@ export default function ProposalForm({ projectId, proposalId, initialProposal, i
   }
 
   return (
-    <div>
-      <div className={adminStyles.formGrid2}>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Proposal title</label>
-          <input className={adminStyles.fieldInput} value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Prepared by</label>
-          <input className={adminStyles.fieldInput} value={preparedBy} onChange={(e) => setPreparedBy(e.target.value)} />
-        </div>
-      </div>
-      <div className={adminStyles.formGrid2}>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Client name</label>
-          <input className={adminStyles.fieldInput} value={clientName} onChange={(e) => setClientName(e.target.value)} />
-        </div>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Project address</label>
-          <input className={adminStyles.fieldInput} value={projectAddress} onChange={(e) => setProjectAddress(e.target.value)} />
-        </div>
-      </div>
-
-      <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Cover letter intro</label>
-        <textarea className={adminStyles.fieldTextarea} style={{ minHeight: '90px' }} value={introParagraph} onChange={(e) => setIntroParagraph(e.target.value)} />
-      </div>
-      <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Project description (optional)</label>
-        <textarea className={adminStyles.fieldTextarea} value={scopeSummary} onChange={(e) => setScopeSummary(e.target.value)} />
-      </div>
-      <div className={adminStyles.formGrid2}>
-        <div className={adminStyles.fieldGroup}>
-          <label className={adminStyles.fieldLabel}>Valid until</label>
-          <input className={adminStyles.fieldInput} type="date" value={validUntil || ''} onChange={(e) => setValidUntil(e.target.value)} />
-        </div>
-      </div>
-
-      <h4 style={{ fontSize: '0.95rem', color: 'var(--navy)', margin: '1.5rem 0 0.75rem' }}>Scope of work</h4>
-      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-        Click to add or remove a scope item. Each one drops a line item into the proposal below and a bullet into the Scope of Services section.
-      </p>
-      {PROPOSAL_SCOPE_GROUPS.map((group) => (
-        <div key={group.group} style={{ marginBottom: '0.85rem' }}>
-          <div style={{ fontSize: '0.68rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: '0.4rem' }}>
-            {group.group}
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: 22, alignItems: 'start' }}>
+      <div>
+        {/* 1 — Details */}
+        <section style={S.card}>
+          <h2 style={S.h2}>1 · Proposal details</h2>
+          <div style={S.grid2}>
+            <div>
+              <label style={S.label}>Proposal title</label>
+              <input style={S.input} value={title} onChange={(e) => setTitle(e.target.value)} />
+            </div>
+            <div>
+              <label style={S.label}>Prepared by</label>
+              <input style={S.input} value={preparedBy} onChange={(e) => setPreparedBy(e.target.value)} />
+            </div>
+            <div>
+              <label style={S.label}>Client name</label>
+              <input style={S.input} value={clientName} onChange={(e) => setClientName(e.target.value)} />
+            </div>
+            <div>
+              <label style={S.label}>Project address</label>
+              <input style={S.input} value={projectAddress} onChange={(e) => setProjectAddress(e.target.value)} />
+            </div>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-            {group.items.map((item) => {
-              const active = selectedScopes.has(item.key);
+          <div style={{ marginTop: 14 }}>
+            <label style={S.label}>Valid until</label>
+            <input style={{ ...S.input, maxWidth: 200 }} type="date" value={validUntil || ''} onChange={(e) => setValidUntil(e.target.value)} />
+          </div>
+        </section>
+
+        {/* 2 — Cover letter */}
+        <section style={S.card}>
+          <h2 style={S.h2}>2 · Cover letter</h2>
+          <label style={S.label}>Intro paragraph</label>
+          <textarea style={{ ...S.input, minHeight: 90, resize: 'vertical' }} value={introParagraph} onChange={(e) => setIntroParagraph(e.target.value)} />
+          <div style={{ marginTop: 14 }}>
+            <label style={S.label}>Project description (optional)</label>
+            <textarea style={{ ...S.input, minHeight: 70, resize: 'vertical' }} value={scopeSummary} onChange={(e) => setScopeSummary(e.target.value)} />
+          </div>
+        </section>
+
+        {/* 3 — Scope of work */}
+        <section style={S.card}>
+          <h2 style={S.h2}>3 · Scope of work</h2>
+          <div style={{ ...S.small, marginBottom: 14 }}>
+            Click to add or remove a scope item. Each one drops a line item into the proposal below and a bullet into the Scope of Services section.
+          </div>
+          {PROPOSAL_SCOPE_GROUPS.map((group) => (
+            <div key={group.group} style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-tertiary)', marginBottom: 7 }}>
+                {group.group}
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {group.items.map((item) => {
+                  const active = selectedScopes.has(item.key);
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => toggleScope(item)}
+                      style={{
+                        padding: '7px 14px',
+                        fontSize: 13,
+                        borderRadius: 999,
+                        border: active ? '1px solid var(--gold)' : '1px solid var(--border)',
+                        background: active ? 'rgba(201,168,87,0.15)' : 'transparent',
+                        color: active ? '#7a5c0a' : 'var(--text-secondary)',
+                        fontWeight: active ? 600 : 400,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {active && <i className="ti ti-check" style={{ marginRight: 5 }} aria-hidden="true"></i>}
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* 4 — Compensation */}
+        <section style={S.card}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <h2 style={{ ...S.h2, margin: 0 }}>4 · Compensation breakdown</h2>
+            <button type="button" style={S.btnGhost} onClick={fetchEstimates} disabled={estimating || lineItems.length === 0}>
+              {estimating ? 'Estimating…' : 'Estimate from past proposals'}
+            </button>
+          </div>
+
+          {lineItems.length === 0 ? <div style={S.small}>No line items yet — pick a scope above or add a custom one.</div> : null}
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {lineItems.map((row) => {
+              const est = estimates[row.category];
+              const amount = (Number(row.quantity) || 0) * (Number(row.unit_price) || 0);
               return (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => toggleScope(item)}
-                  style={{
-                    padding: '0.4rem 0.75rem',
-                    fontSize: '0.78rem',
-                    borderRadius: '999px',
-                    border: active ? '1px solid var(--gold)' : '1px solid rgba(var(--border-rgb),0.25)',
-                    background: active ? 'rgba(201,168,87,0.15)' : 'transparent',
-                    color: active ? '#7a5c0a' : 'var(--text-secondary)',
-                    fontWeight: active ? 600 : 400,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {active && <i className="ti ti-check" style={{ marginRight: '0.3rem' }} aria-hidden="true"></i>}
-                  {item.label}
-                </button>
+                <div key={row._key} style={{ border: '1px solid var(--border)', borderRadius: 8, padding: 14 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 2fr', gap: 8, marginBottom: 8 }}>
+                    <input style={S.input} placeholder="Category (e.g. Flooring)" value={row.category} onChange={(e) => updateLineItem(row._key, 'category', e.target.value)} />
+                    <input style={S.input} placeholder="Description" value={row.description} onChange={(e) => updateLineItem(row._key, 'description', e.target.value)} />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '0.7fr 0.7fr 1fr 1fr auto', gap: 8, alignItems: 'center' }}>
+                    <input style={S.input} type="number" min="0" step="0.01" placeholder="Qty" value={row.quantity} onChange={(e) => updateLineItem(row._key, 'quantity', e.target.value)} />
+                    <select style={S.input} value={row.unit} onChange={(e) => updateLineItem(row._key, 'unit', e.target.value)}>
+                      {PROPOSAL_UNITS.map((u) => (
+                        <option key={u} value={u}>{u}</option>
+                      ))}
+                    </select>
+                    <input style={S.input} type="number" min="0" step="0.01" placeholder="Unit price" value={row.unit_price} onChange={(e) => updateLineItem(row._key, 'unit_price', e.target.value)} />
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--navy)', textAlign: 'right' }}>{formatCurrency(amount)}</div>
+                    <button
+                      type="button"
+                      onClick={() => removeLineItem(row._key)}
+                      aria-label="Remove line item"
+                      style={{ background: 'none', border: `1px solid var(--border)`, borderRadius: 6, width: 30, height: 30, cursor: 'pointer', color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1 }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  {est ? (
+                    <div style={{ marginTop: 8, fontSize: 12.5, color: 'var(--text-secondary)' }}>
+                      Avg from {est.sampleSize} past proposal{est.sampleSize === 1 ? '' : 's'}: {formatCurrency(est.avgUnitPrice)}{' '}
+                      <button
+                        type="button"
+                        onClick={() => updateLineItem(row._key, 'unit_price', est.avgUnitPrice)}
+                        style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', fontWeight: 600, fontSize: 12.5, padding: 0, marginLeft: 5 }}
+                      >
+                        Use this
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               );
             })}
           </div>
-        </div>
-      ))}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '1.5rem 0 0.75rem' }}>
-        <h4 style={{ fontSize: '0.95rem', color: 'var(--navy)', margin: 0 }}>Compensation breakdown</h4>
-        <button type="button" className={adminStyles.cancelBtn} onClick={fetchEstimates} disabled={estimating || lineItems.length === 0}>
-          <i className="ti ti-chart-bar" aria-hidden="true" style={{ marginRight: '0.35rem' }}></i>
-          {estimating ? 'Estimating…' : 'Estimate from past proposals'}
-        </button>
+          <button type="button" style={{ ...S.btnGhost, marginTop: 12, fontSize: 13 }} onClick={addCustomLineItem}>
+            + Add custom line item
+          </button>
+        </section>
+
+        {/* 5 — Terms */}
+        <section style={S.card}>
+          <h2 style={S.h2}>5 · Terms</h2>
+          <label style={S.label}>Payment terms</label>
+          <textarea style={{ ...S.input, minHeight: 70, resize: 'vertical' }} value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} />
+          <div style={{ marginTop: 14 }}>
+            <label style={S.label}>Limitations of responsibility</label>
+            <textarea style={{ ...S.input, minHeight: 90, resize: 'vertical' }} value={limitations} onChange={(e) => setLimitations(e.target.value)} />
+          </div>
+        </section>
+
+        {/* 6 — Internal */}
+        <section style={S.card}>
+          <h2 style={S.h2}>6 · Internal only</h2>
+          <label style={S.label}>Internal notes</label>
+          <textarea style={{ ...S.input, minHeight: 70, resize: 'vertical' }} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <div style={{ ...S.small, marginTop: 10 }}>Nothing in this section appears on the client proposal.</div>
+        </section>
       </div>
 
-      {lineItems.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No line items yet — pick a scope above or add a custom one.</p>}
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-        {lineItems.map((row) => {
-          const est = estimates[row.category];
-          const amount = (Number(row.quantity) || 0) * (Number(row.unit_price) || 0);
-          return (
-            <div key={row._key} style={{ border: '1px solid rgba(var(--border-rgb),0.12)', borderRadius: '6px', padding: '0.75rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 2fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <input
-                  className={adminStyles.fieldInput}
-                  placeholder="Category (e.g. Flooring)"
-                  value={row.category}
-                  onChange={(e) => updateLineItem(row._key, 'category', e.target.value)}
-                />
-                <input
-                  className={adminStyles.fieldInput}
-                  placeholder="Description"
-                  value={row.description}
-                  onChange={(e) => updateLineItem(row._key, 'description', e.target.value)}
-                />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '0.7fr 0.7fr 1fr 1fr auto', gap: '0.5rem', alignItems: 'center' }}>
-                <input
-                  className={adminStyles.fieldInput}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="Qty"
-                  value={row.quantity}
-                  onChange={(e) => updateLineItem(row._key, 'quantity', e.target.value)}
-                />
-                <select className={adminStyles.fieldInput} value={row.unit} onChange={(e) => updateLineItem(row._key, 'unit', e.target.value)}>
-                  {PROPOSAL_UNITS.map((u) => (
-                    <option key={u} value={u}>{u}</option>
-                  ))}
-                </select>
-                <input
-                  className={adminStyles.fieldInput}
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="Unit price"
-                  value={row.unit_price}
-                  onChange={(e) => updateLineItem(row._key, 'unit_price', e.target.value)}
-                />
-                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--navy)', textAlign: 'right' }}>{formatCurrency(amount)}</div>
-                <button type="button" className={adminStyles.iconBtn} onClick={() => removeLineItem(row._key)} aria-label="Remove line item">
-                  <i className="ti ti-trash" aria-hidden="true"></i>
-                </button>
-              </div>
-              {est && (
-                <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                  Avg from {est.sampleSize} past proposal{est.sampleSize === 1 ? '' : 's'}: {formatCurrency(est.avgUnitPrice)}{' '}
-                  <button
-                    type="button"
-                    onClick={() => updateLineItem(row._key, 'unit_price', est.avgUnitPrice)}
-                    style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', fontWeight: 600, fontSize: '0.75rem', padding: 0, marginLeft: '0.3rem' }}
-                  >
-                    Use this
-                  </button>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <button type="button" className={adminStyles.addRowBtn} onClick={addCustomLineItem} style={{ marginTop: '0.75rem' }}>
-        <i className="ti ti-plus" aria-hidden="true"></i> Add custom line item
-      </button>
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
-        <div style={{ width: '280px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', padding: '0.3rem 0' }}>
-            <span>Subtotal</span>
-            <span>{formatCurrency(totals.subtotal)}</span>
+      {/* Sticky summary */}
+      <aside style={{ position: 'sticky', top: 20 }}>
+        <div style={{ ...S.card, marginBottom: 14 }}>
+          <h2 style={S.h2}>Price build</h2>
+          <Row label="Subtotal" value={formatCurrency(totals.subtotal)} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0' }}>
+            <input style={{ ...S.input, flex: 1 }} value={adjustmentLabel} onChange={(e) => setAdjustmentLabel(e.target.value)} placeholder="Adjustment label" />
+            <input style={{ ...S.input, width: 100 }} type="number" step="0.01" value={adjustment} onChange={(e) => setAdjustment(e.target.value)} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.3rem 0' }}>
-            <input
-              className={adminStyles.fieldInput}
-              style={{ flex: 1 }}
-              value={adjustmentLabel}
-              onChange={(e) => setAdjustmentLabel(e.target.value)}
-              placeholder="Adjustment label"
-            />
-            <input
-              className={adminStyles.fieldInput}
-              style={{ width: '110px' }}
-              type="number"
-              step="0.01"
-              value={adjustment}
-              onChange={(e) => setAdjustment(e.target.value)}
-            />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', fontWeight: 700, color: 'var(--navy)', borderTop: '1px solid rgba(var(--border-rgb),0.15)', marginTop: '0.4rem', paddingTop: '0.5rem' }}>
-            <span>Total</span>
-            <span>{formatCurrency(totals.total)}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 14, marginTop: 6, borderTop: '2px solid var(--navy)' }}>
+            <strong style={{ fontSize: 16 }}>Total</strong>
+            <strong style={{ fontSize: 22, color: 'var(--navy)' }}>{formatCurrency(totals.total)}</strong>
           </div>
         </div>
-      </div>
 
-      <div className={adminStyles.fieldGroup} style={{ marginTop: '1.5rem' }}>
-        <label className={adminStyles.fieldLabel}>Payment terms</label>
-        <textarea className={adminStyles.fieldTextarea} value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} />
-      </div>
-      <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Limitations of responsibility</label>
-        <textarea className={adminStyles.fieldTextarea} style={{ minHeight: '90px' }} value={limitations} onChange={(e) => setLimitations(e.target.value)} />
-      </div>
-      <div className={adminStyles.fieldGroup}>
-        <label className={adminStyles.fieldLabel}>Internal notes (not shown on the proposal)</label>
-        <textarea className={adminStyles.fieldTextarea} value={notes} onChange={(e) => setNotes(e.target.value)} />
-      </div>
-
-      {message && <p className={message.includes('saved') ? adminStyles.formMsgSuccess : adminStyles.formMsgError}>{message}</p>}
-
-      <div className={adminStyles.saveBar}>
-        <button type="button" className={adminStyles.cancelBtn} onClick={saveDraft} disabled={saving}>
-          {saving ? 'Saving…' : 'Save draft'}
-        </button>
-        <button type="button" className="btn-navy" onClick={handleFinalizeClick} disabled={saving}>
-          Finalize
-        </button>
-      </div>
+        {message ? (
+          <div style={{ ...S.small, color: message.includes('saved') ? 'var(--text-success, #065F46)' : 'var(--warn, #A8562F)', marginBottom: 10 }}>{message}</div>
+        ) : null}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <button type="button" style={S.btn} onClick={handleFinalizeClick} disabled={saving}>
+            Finalize
+          </button>
+          <button type="button" style={S.btnGhost} onClick={saveDraft} disabled={saving}>
+            {saving ? 'Saving…' : 'Save draft'}
+          </button>
+        </div>
+      </aside>
 
       {showPreview && previewData && currentProposalId && (
         <ProposalPreviewModal
