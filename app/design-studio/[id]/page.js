@@ -81,6 +81,12 @@ export default async function QuoteDetailPage({ params }) {
 
   const clientVisibleFloorPlans = floorPlans.filter((f) => f.show_to_client);
 
+  let signatureUrl = null;
+  if (quote.signature_path) {
+    const { data } = await db.storage.from('design-studio-scans').createSignedUrl(quote.signature_path, 3600);
+    signatureUrl = data?.signedUrl || null;
+  }
+
   const p = quote.pricing || {};
   const internal = p.internal || {};
 
@@ -97,6 +103,16 @@ export default async function QuoteDetailPage({ params }) {
               {quote.client_name || 'Unnamed client'}
               {quote.project_address ? ` · ${quote.project_address}` : ''} · prepared by {quote.created_by_name || '—'}
             </div>
+            {quote.signer_name ? (
+              <div style={{ ...S.small, marginTop: 4, color: C.good }}>
+                Signed by {quote.signer_name}
+                {quote.signed_at ? ` on ${new Date(quote.signed_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}` : ''}
+              </div>
+            ) : quote.status === 'declined' ? (
+              <div style={{ ...S.small, marginTop: 4, color: C.warn }}>
+                Declined{quote.decline_reason ? ` — ${quote.decline_reason}` : ''}
+              </div>
+            ) : null}
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 26, fontWeight: 600 }}>{money(quote.total)}</div>
@@ -111,7 +127,7 @@ export default async function QuoteDetailPage({ params }) {
             <div style={{ textAlign: 'right', marginBottom: 12 }}>
               <DownloadProposalButton />
             </div>
-            <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} floorPlans={clientVisibleFloorPlans} />
+            <ProposalDocument quote={quote} pricing={p} roomScans={clientVisibleScans} floorPlans={clientVisibleFloorPlans} signatureUrl={signatureUrl} />
           </div>
 
           <aside>

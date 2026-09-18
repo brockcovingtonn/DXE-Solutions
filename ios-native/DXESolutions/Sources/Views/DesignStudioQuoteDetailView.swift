@@ -122,6 +122,13 @@ struct DesignStudioQuoteDetailView: View {
                     .clipShape(Capsule())
             }
             Text("Deposit \(designStudioCurrency(quote.deposit))").font(.caption).foregroundColor(.secondary)
+            if let signerName = quote.signerName, !signerName.isEmpty {
+                Text("Signed by \(signerName)\(quote.signedAt.map { " on \(shortDate($0))" } ?? "")")
+                    .font(.caption2).foregroundColor(Color(red: 0.02, green: 0.37, blue: 0.28))
+            } else if quote.status == "declined" {
+                Text("Declined\(quote.declineReason.map { " — \($0)" } ?? "")")
+                    .font(.caption2).foregroundColor(.red)
+            }
         }
     }
 

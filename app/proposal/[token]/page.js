@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
 import DownloadProposalButton from '@/components/design-studio/DownloadProposalButton';
+import ProposalDecisionPanel from '@/components/design-studio/ProposalDecisionPanel';
 import { BRAND, DESIGN_STUDIO_CONTACT, C } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +32,7 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: quote } = await db
     .from('design_studio_quotes')
-    .select('id, quote_number, status, client_name, project_address, pricing, included_override, hide_addon_menu, valid_until, created_at')
+    .select('id, quote_number, status, client_name, project_address, pricing, included_override, hide_addon_menu, signature_path, signer_name, signed_at, decided_at, valid_until, created_at')
     .eq('share_token', token)
     .maybeSingle();
 
@@ -84,6 +85,12 @@ export default async function PublicProposalPage({ params }) {
     })
   );
 
+  let signatureUrl = null;
+  if (quote.signature_path) {
+    const { data } = await db.storage.from('design-studio-scans').createSignedUrl(quote.signature_path, 3600);
+    signatureUrl = data?.signedUrl || null;
+  }
+
   const { internal, inputs, ...safePricing } = quote.pricing || {};
   const pricing = {
     ...safePricing,
@@ -117,7 +124,11 @@ export default async function PublicProposalPage({ params }) {
         <DownloadProposalButton />
       </div>
 
-      <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} floorPlans={floorPlans} />
+      {!expired ? (
+        <ProposalDecisionPanel shareToken={token} status={quote.status} decidedAt={quote.decided_at} />
+      ) : null}
+
+      <ProposalDocument quote={quote} pricing={pricing} roomScans={roomScans} floorPlans={floorPlans} signatureUrl={signatureUrl} />
 
       <div
         className="ds-no-print"

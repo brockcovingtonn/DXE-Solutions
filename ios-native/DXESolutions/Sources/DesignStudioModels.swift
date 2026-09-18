@@ -195,6 +195,9 @@ struct DesignStudioQuote: Codable, Identifiable {
     var validUntil: String?
     var sentAt: String?
     var decidedAt: String?
+    var signerName: String?
+    var signedAt: String?
+    var declineReason: String?
     var createdBy: String?
     var createdByName: String?
     var createdAt: String
@@ -226,6 +229,9 @@ struct DesignStudioQuote: Codable, Identifiable {
         case validUntil = "valid_until"
         case sentAt = "sent_at"
         case decidedAt = "decided_at"
+        case signerName = "signer_name"
+        case signedAt = "signed_at"
+        case declineReason = "decline_reason"
         case createdBy = "created_by"
         case createdByName = "created_by_name"
         case createdAt = "created_at"

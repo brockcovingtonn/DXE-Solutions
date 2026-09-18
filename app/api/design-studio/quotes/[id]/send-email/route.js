@@ -25,7 +25,8 @@ export async function POST(request, { params }) {
       throw e;
     }
 
-    const result = await sendProposalStudioEmail(quote);
+    const body = await request.json().catch(() => ({}));
+    const result = await sendProposalStudioEmail(quote, { intent: body.intent });
     if (!result.sent) {
       const e = new Error(result.error || 'Could not send this email.');
       e.status = 400;

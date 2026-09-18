@@ -24,7 +24,10 @@ export async function GET(request, { params }) {
       throw e;
     }
 
-    const email = buildProposalEmail(quote);
+    const { searchParams } = new URL(request.url);
+    const intent = searchParams.get('intent') || undefined;
+
+    const email = buildProposalEmail(quote, { intent });
     return Response.json(email);
   } catch (err) {
     return jsonError(err);

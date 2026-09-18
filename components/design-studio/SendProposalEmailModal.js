@@ -7,7 +7,7 @@ import { C, S } from '@/lib/design-studio/brand';
 // Loads the exact composed email (same builder the send route uses) so
 // what staff approves here is exactly what goes out — never a
 // separately-maintained "preview" that could drift from the real thing.
-export default function SendProposalEmailModal({ quoteId, onClose }) {
+export default function SendProposalEmailModal({ quoteId, intent, onClose }) {
   const router = useRouter();
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,8 @@ export default function SendProposalEmailModal({ quoteId, onClose }) {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`/api/design-studio/quotes/${quoteId}/email-preview`);
+        const qs = intent ? `?intent=${encodeURIComponent(intent)}` : '';
+        const res = await fetch(`/api/design-studio/quotes/${quoteId}/email-preview${qs}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Could not load the email preview');
         if (!cancelled) setPreview(data);
@@ -31,13 +32,17 @@ export default function SendProposalEmailModal({ quoteId, onClose }) {
     return () => {
       cancelled = true;
     };
-  }, [quoteId]);
+  }, [quoteId, intent]);
 
   async function send() {
     setSending(true);
     setError('');
     try {
-      const res = await fetch(`/api/design-studio/quotes/${quoteId}/send-email`, { method: 'POST' });
+      const res = await fetch(`/api/design-studio/quotes/${quoteId}/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ intent }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Could not send this email');
       onClose();
@@ -55,7 +60,7 @@ export default function SendProposalEmailModal({ quoteId, onClose }) {
     >
       <div style={{ background: C.paper, borderRadius: 8, width: '100%', maxWidth: 620, overflow: 'hidden' }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: `1px solid ${C.line}` }}>
-          <h3 style={{ margin: 0, fontSize: 16 }}>Send proposal</h3>
+          <h3 style={{ margin: 0, fontSize: 16 }}>{intent === 'esign' ? 'Request e-sign' : 'Send proposal'}</h3>
           <button type="button" onClick={onClose} aria-label="Close" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: C.muted }}>
             ✕
           </button>

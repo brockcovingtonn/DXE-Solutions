@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function SignaturePad({ documentId, signUrl, defaultName, onSigned, onCancel }) {
+export default function SignaturePad({ documentId, signUrl, defaultName, extraFields, onSigned, onCancel }) {
   const canvasRef = useRef(null);
   const drawingRef = useRef(false);
   const [hasDrawn, setHasDrawn] = useState(false);
@@ -73,7 +73,7 @@ export default function SignaturePad({ documentId, signUrl, defaultName, onSigne
       const res = await fetch(signUrl || `/api/documents/${documentId}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signatureDataUrl: dataUrl, signerName }),
+        body: JSON.stringify({ signatureDataUrl: dataUrl, signerName, ...extraFields }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || 'Could not save your signature.');

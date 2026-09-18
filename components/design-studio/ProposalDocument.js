@@ -11,7 +11,7 @@ import { buildIncludedBullets } from '@/lib/design-studio/pricing';
  * effective hourly rate. The client sees one package price, real optional
  * add-ons, and the total. Nothing here invites line-item negotiation.
  */
-export default function ProposalDocument({ quote, pricing, watermark, roomScans, floorPlans }) {
+export default function ProposalDocument({ quote, pricing, watermark, roomScans, floorPlans, signatureUrl }) {
   const p = pricing || quote?.pricing;
   if (!p) return null;
 
@@ -231,6 +231,23 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
           <div style={{ fontSize: 21, fontWeight: 600, marginTop: 4 }}>{money(p.balance)}</div>
         </div>
       </div>
+
+      {quote?.signature_path && signatureUrl ? (
+        <>
+          <div style={sectionTitle}>Authorization</div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={signatureUrl} alt={`Signature of ${quote.signer_name || 'client'}`} style={{ height: 50 }} />
+            <div style={{ fontSize: 13, color: C.muted }}>
+              Signed by {quote.signer_name}
+              <br />
+              {quote.signed_at
+                ? new Date(quote.signed_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                : ''}
+            </div>
+          </div>
+        </>
+      ) : null}
 
       {!quote?.hide_addon_menu ? (
         <>
