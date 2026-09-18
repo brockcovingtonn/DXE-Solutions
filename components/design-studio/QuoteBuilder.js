@@ -92,6 +92,7 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
             quote_number: 'PREVIEW',
             created_at: new Date().toISOString(),
             included_override: form.includedOverride,
+            hide_addon_menu: form.hideAddOnMenu,
           }}
           pricing={quote}
           watermark="Preview"
@@ -257,7 +258,11 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                 <label style={S.label}>Internal notes</label>
                 <textarea style={{ ...S.input, minHeight: 74, resize: 'vertical' }} value={form.internalNotes} onChange={set('internalNotes')} />
               </div>
-              <div style={{ ...S.small, marginTop: 10 }}>Nothing in this section appears on the client proposal.</div>
+              <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 14.5, marginTop: 16 }}>
+                <input type="checkbox" checked={!!form.hideAddOnMenu} onChange={set('hideAddOnMenu')} />
+                Hide &quot;Available if needed&quot; section on the proposal
+              </label>
+              <div style={{ ...S.small, marginTop: 10 }}>Nothing else in this section appears on the client proposal.</div>
             </section>
           </div>
 

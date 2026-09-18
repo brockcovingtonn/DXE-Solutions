@@ -185,6 +185,8 @@ struct DesignStudioQuote: Codable, Identifiable {
     var manualAdjustment: Double?
     var adjustmentNote: String?
     var internalNotes: String?
+    var includedOverride: [String]?
+    var hideAddOnMenu: Bool?
     var pricing: QuotePricing?
     var configSnapshot: DesignStudioConfig?
     var total: Double
@@ -217,6 +219,8 @@ struct DesignStudioQuote: Codable, Identifiable {
         case manualAdjustment = "manual_adjustment"
         case adjustmentNote = "adjustment_note"
         case internalNotes = "internal_notes"
+        case includedOverride = "included_override"
+        case hideAddOnMenu = "hide_addon_menu"
         case configSnapshot = "config_snapshot"
         case shareToken = "share_token"
         case validUntil = "valid_until"
@@ -681,12 +685,15 @@ struct DesignStudioQuoteInput: Encodable, Equatable {
     var manualAdjustment: Double
     var adjustmentNote: String
     var internalNotes: String
+    var includedOverride: [String]?
+    var hideAddOnMenu: Bool
 
     static var empty: DesignStudioQuoteInput {
         DesignStudioQuoteInput(
             clientId: nil, clientName: "", clientEmail: "", clientPhone: "", projectAddress: "",
             projectType: "adu", serviceLevel: "design", complexity: "standard", areaSqft: 600,
-            rush: false, tradePartner: false, addOns: [:], manualAdjustment: 0, adjustmentNote: "", internalNotes: ""
+            rush: false, tradePartner: false, addOns: [:], manualAdjustment: 0, adjustmentNote: "", internalNotes: "",
+            includedOverride: nil, hideAddOnMenu: false
         )
     }
 }
@@ -695,6 +702,7 @@ struct DesignStudioStatusPayload: Encodable { var status: String }
 struct DesignStudioInternalNotesPayload: Encodable { var internalNotes: String }
 struct DesignStudioRepricePayload: Encodable { var reprice: DesignStudioQuoteInput }
 struct DesignStudioConfigSavePayload: Encodable { var config: DesignStudioConfig; var note: String? }
+struct DesignStudioReassignPayload: Encodable { var reassignTo: String }
 
 // MARK: - Display helpers
 

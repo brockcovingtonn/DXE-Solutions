@@ -1,6 +1,6 @@
 import Script from 'next/script';
 import RoomScanCard from './RoomScanCard';
-import { BRAND, SCOPE_NOTE, TERMS_NOTE, C, money } from '@/lib/design-studio/brand';
+import { BRAND, DESIGN_STUDIO_CONTACT, SCOPE_NOTE, TERMS_NOTE, C, money } from '@/lib/design-studio/brand';
 import { buildIncludedBullets } from '@/lib/design-studio/pricing';
 
 /**
@@ -105,7 +105,7 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
       <div style={{ position: 'relative', zIndex: 1, padding: '28px 40px 44px' }}>
         <div style={{ fontSize: 13.5, color: C.clay, fontWeight: 600 }}>{BRAND.tagline}</div>
         <div style={{ fontSize: 12, color: C.muted, marginTop: 6 }}>
-          {[BRAND.parentLine, BRAND.email, BRAND.phone].filter(Boolean).join(' · ')}
+          {[BRAND.parentLine, DESIGN_STUDIO_CONTACT.email, DESIGN_STUDIO_CONTACT.phone].filter(Boolean).join(' · ')}
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, margin: '22px 0 6px' }}>
@@ -211,17 +211,21 @@ export default function ProposalDocument({ quote, pricing, watermark, roomScans,
         </div>
       </div>
 
-      <div style={sectionTitle}>Available if needed</div>
-      <div style={{ fontSize: 14.5 }}>
-        {(p.addOnLines || [])
-          .filter((l) => l.qty === 0)
-          .map((l) => (
-            <div key={l.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', color: C.inkSoft }}>
-              <span>{l.label}</span>
-              <span>{money(l.rate)} / {l.unit}</span>
-            </div>
-          ))}
-      </div>
+      {!quote?.hide_addon_menu ? (
+        <>
+          <div style={sectionTitle}>Available if needed</div>
+          <div style={{ fontSize: 14.5 }}>
+            {(p.addOnLines || [])
+              .filter((l) => l.qty === 0)
+              .map((l) => (
+                <div key={l.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', color: C.inkSoft }}>
+                  <span>{l.label}</span>
+                  <span>{money(l.rate)} / {l.unit}</span>
+                </div>
+              ))}
+          </div>
+        </>
+      ) : null}
 
       <div style={sectionTitle}>Scope note</div>
       <p style={{ fontSize: 12.5, color: C.inkSoft, lineHeight: 1.65, margin: 0 }}>{SCOPE_NOTE}</p>

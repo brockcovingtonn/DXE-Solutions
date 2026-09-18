@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/design-studio/server';
 import ProposalDocument from '@/components/design-studio/ProposalDocument';
-import { BRAND, C } from '@/lib/design-studio/brand';
+import { BRAND, DESIGN_STUDIO_CONTACT, C } from '@/lib/design-studio/brand';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +30,7 @@ export default async function PublicProposalPage({ params }) {
 
   const { data: quote } = await db
     .from('design_studio_quotes')
-    .select('id, quote_number, status, client_name, project_address, pricing, included_override, valid_until, created_at')
+    .select('id, quote_number, status, client_name, project_address, pricing, included_override, hide_addon_menu, valid_until, created_at')
     .eq('share_token', token)
     .maybeSingle();
 
@@ -119,7 +119,7 @@ export default async function PublicProposalPage({ params }) {
           fontFamily: 'ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         }}
       >
-        Questions about this proposal? Contact {BRAND.email || BRAND.website}.
+        Questions about this proposal? Contact {DESIGN_STUDIO_CONTACT.email}.
       </div>
     </div>
   );

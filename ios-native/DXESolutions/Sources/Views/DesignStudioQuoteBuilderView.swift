@@ -27,6 +27,10 @@ struct DesignStudioQuoteBuilderView: View {
     @State private var manualAdjustmentText = "0"
     @State private var adjustmentNote = ""
     @State private var internalNotes = ""
+    @State private var includedOverride: [String]?
+    @State private var hideAddOnMenu = false
+    @State private var showLineItemsEditor = false
+    @State private var hasLoaded = false
 
     @State private var preview: QuotePricing?
     @State private var isLoading = true
@@ -48,7 +52,8 @@ struct DesignStudioQuoteBuilderView: View {
             projectType: projectType, serviceLevel: serviceLevel, complexity: complexity,
             areaSqft: Double(areaSqftText) ?? 0,
             rush: rush, tradePartner: tradePartner, addOns: addOns,
-            manualAdjustment: Double(manualAdjustmentText) ?? 0, adjustmentNote: adjustmentNote, internalNotes: internalNotes
+            manualAdjustment: Double(manualAdjustmentText) ?? 0, adjustmentNote: adjustmentNote, internalNotes: internalNotes,
+            includedOverride: includedOverride, hideAddOnMenu: hideAddOnMenu
         )
     }
 
@@ -98,6 +103,13 @@ struct DesignStudioQuoteBuilderView: View {
                         }
 
                         pickerField("Service level", selection: $serviceLevel, options: designStudioServiceLevelOrder, labels: designStudioServiceLevelLabels)
+                        Button {
+                            showLineItemsEditor = true
+                        } label: {
+                            Text("Edit line items →\(includedOverride?.isEmpty == false ? " (customized)" : "")")
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(Theme.gold)
+                        }
                         pickerField("Complexity", selection: $complexity, options: designStudioComplexityOrder, labels: designStudioComplexityLabels)
 
                         sectionHeader("Add-ons")
@@ -119,6 +131,7 @@ struct DesignStudioQuoteBuilderView: View {
                             TextEditor(text: $internalNotes).frame(height: 80)
                                 .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color(.separator)))
                         }
+                        Toggle("Hide \"Available if needed\" on proposal", isOn: $hideAddOnMenu)
 
                         if let errorMessage {
                             Text(errorMessage).font(.caption).foregroundColor(.red)
@@ -149,6 +162,15 @@ struct DesignStudioQuoteBuilderView: View {
         }
         .task { await load() }
         .onChange(of: currentInput) { _ in schedulePreview() }
+        .onChange(of: serviceLevel) { _ in if hasLoaded { includedOverride = nil } }
+        .sheet(isPresented: $showLineItemsEditor) {
+            IncludedItemsEditorView(
+                levelLabel: designStudioServiceLevelLabels[serviceLevel] ?? serviceLevel,
+                defaultBullets: preview.map { buildIncludedBullets($0.included) } ?? [],
+                initialBullets: includedOverride,
+                onSave: { includedOverride = $0 }
+            )
+        }
         .sheet(isPresented: $showClientPicker) {
             ClientPickerView { client in
                 clientId = client.id
@@ -300,6 +322,8 @@ struct DesignStudioQuoteBuilderView: View {
                 manualAdjustmentText = String(format: "%g", quote.manualAdjustment ?? 0)
                 adjustmentNote = quote.adjustmentNote ?? ""
                 internalNotes = quote.internalNotes ?? ""
+                includedOverride = quote.includedOverride
+                hideAddOnMenu = quote.hideAddOnMenu ?? false
                 preview = quote.pricing
             } catch let apiError as APIError {
                 errorMessage = apiError.errorDescription
@@ -312,6 +336,7 @@ struct DesignStudioQuoteBuilderView: View {
         config = configResponse?.config
         isLoading = false
         schedulePreview()
+        hasLoaded = true
     }
 
     private func save() async {

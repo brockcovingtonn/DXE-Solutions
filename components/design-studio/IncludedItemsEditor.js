@@ -17,6 +17,15 @@ export default function IncludedItemsEditor({ levelLabel, defaultBullets, initia
   function removeLine(i) {
     setBullets((prev) => prev.filter((_, idx) => idx !== i));
   }
+  function moveLine(i, direction) {
+    setBullets((prev) => {
+      const j = i + direction;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+  }
   function addLine() {
     setBullets((prev) => [...prev, '']);
   }
@@ -48,6 +57,26 @@ export default function IncludedItemsEditor({ levelLabel, defaultBullets, initia
 
         {bullets.map((b, i) => (
           <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <button
+                type="button"
+                onClick={() => moveLine(i, -1)}
+                disabled={i === 0}
+                aria-label="Move up"
+                style={{ background: 'none', border: `1px solid ${C.line}`, borderRadius: 4, width: 22, height: 16, cursor: i === 0 ? 'default' : 'pointer', color: i === 0 ? C.line : C.muted, fontSize: 10, lineHeight: 1, padding: 0 }}
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                onClick={() => moveLine(i, 1)}
+                disabled={i === bullets.length - 1}
+                aria-label="Move down"
+                style={{ background: 'none', border: `1px solid ${C.line}`, borderRadius: 4, width: 22, height: 16, cursor: i === bullets.length - 1 ? 'default' : 'pointer', color: i === bullets.length - 1 ? C.line : C.muted, fontSize: 10, lineHeight: 1, padding: 0 }}
+              >
+                ▼
+              </button>
+            </div>
             <input
               style={{ ...S.input, flex: 1 }}
               value={b}

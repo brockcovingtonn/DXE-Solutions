@@ -18,6 +18,8 @@ struct DesignStudioListView: View {
     @State private var errorMessage: String?
     @State private var showNewQuote = false
     @State private var showSendIntakeForm = false
+    @State private var reassigningQuote: DesignStudioQuote?
+    @State private var busyQuoteId: String?
 
     private var open: [DesignStudioQuote] { quotes.filter { $0.status == "draft" || $0.status == "sent" } }
     private var accepted: [DesignStudioQuote] { quotes.filter { $0.status == "accepted" } }
@@ -61,12 +63,34 @@ struct DesignStudioListView: View {
                                 Text("No quotes yet. Start with a new quote.").font(.subheadline).foregroundColor(.secondary)
                             } else {
                                 ForEach(quotes) { quote in
-                                    NavigationLink {
-                                        DesignStudioQuoteDetailView(quoteId: quote.id)
-                                    } label: {
-                                        row(quote)
+                                    HStack(spacing: 6) {
+                                        NavigationLink {
+                                            DesignStudioQuoteDetailView(quoteId: quote.id)
+                                        } label: {
+                                            row(quote)
+                                        }
+                                        .buttonStyle(.plain)
+
+                                        Menu {
+                                            if viewer?.isMaster == true {
+                                                Button {
+                                                    reassigningQuote = quote
+                                                } label: {
+                                                    Label("Reassign \"By\"", systemImage: "person.2")
+                                                }
+                                            }
+                                            Button(role: .destructive) {
+                                                Task { await delete(quote) }
+                                            } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        } label: {
+                                            Image(systemName: "ellipsis.circle")
+                                                .foregroundColor(.secondary)
+                                                .padding(.horizontal, 4)
+                                        }
+                                        .disabled(busyQuoteId == quote.id)
                                     }
-                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -76,7 +100,7 @@ struct DesignStudioListView: View {
             }
         }
         .background(Theme.screenBackground.ignoresSafeArea())
-        .navigationTitle("Design Studio")
+        .navigationTitle("DXE Solutions × Higher Thinking")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -95,8 +119,45 @@ struct DesignStudioListView: View {
         .sheet(isPresented: $showSendIntakeForm) {
             SendIntakeFormView()
         }
+        .sheet(item: $reassigningQuote) { quote in
+            StaffPickerView { staffId, staffName in
+                Task { await reassign(quote, staffId: staffId, staffName: staffName) }
+            }
+        }
         .task { await load() }
         .refreshable { await load() }
+    }
+
+    private func delete(_ quote: DesignStudioQuote) async {
+        busyQuoteId = quote.id
+        defer { busyQuoteId = nil }
+        do {
+            try await APIClient.send("api/design-studio/quotes/\(quote.id)", method: "DELETE", body: EmptyBody())
+            quotes.removeAll { $0.id == quote.id }
+        } catch let apiError as APIError {
+            errorMessage = apiError.errorDescription
+        } catch {
+            errorMessage = "Could not delete this quote."
+        }
+    }
+
+    private func reassign(_ quote: DesignStudioQuote, staffId: String, staffName: String) async {
+        busyQuoteId = quote.id
+        defer { busyQuoteId = nil }
+        do {
+            try await APIClient.send(
+                "api/design-studio/quotes/\(quote.id)", method: "PATCH",
+                body: DesignStudioReassignPayload(reassignTo: staffId)
+            )
+            if let index = quotes.firstIndex(where: { $0.id == quote.id }) {
+                quotes[index].createdBy = staffId
+                quotes[index].createdByName = staffName
+            }
+        } catch let apiError as APIError {
+            errorMessage = apiError.errorDescription
+        } catch {
+            errorMessage = "Could not reassign this quote."
+        }
     }
 
     private var statCards: some View {

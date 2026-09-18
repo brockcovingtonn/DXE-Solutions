@@ -36,6 +36,7 @@ export default async function EditQuotePage({ params }) {
     adjustmentNote: quote.adjustment_note || '',
     internalNotes: quote.internal_notes || '',
     includedOverride: quote.included_override || null,
+    hideAddOnMenu: quote.hide_addon_menu || false,
   };
 
   return (

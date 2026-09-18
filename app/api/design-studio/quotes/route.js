@@ -68,6 +68,7 @@ export async function POST(request) {
         adjustment_note: body.adjustmentNote || null,
         internal_notes: body.internalNotes || null,
         included_override: Array.isArray(body.includedOverride) ? body.includedOverride : null,
+        hide_addon_menu: Boolean(body.hideAddOnMenu),
         pricing: quote,
         config_snapshot: config,
         total: quote.total,

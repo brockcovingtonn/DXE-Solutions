@@ -93,11 +93,40 @@ export async function PATCH(request, { params }) {
         manual_adjustment: Number(body.reprice.manualAdjustment) || 0,
         adjustment_note: body.reprice.adjustmentNote || null,
         included_override: Array.isArray(body.reprice.includedOverride) ? body.reprice.includedOverride : null,
+        hide_addon_menu: Boolean(body.reprice.hideAddOnMenu),
         pricing: recalculated,
         config_snapshot: config,
         total: recalculated.total,
         deposit: recalculated.deposit,
       });
+    }
+
+    // Reassigning "By" transfers real ownership — a non-master's access to a
+    // quote is gated on created_by (see loadOwned above), so this also
+    // transfers who can view/edit it, not just a display label.
+    if (body.reassignTo !== undefined) {
+      if (!user.isMaster) {
+        const e = new Error('Master admin access required to reassign a quote.');
+        e.status = 403;
+        throw e;
+      }
+      const { data: targetProfile, error: profileError } = await db
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .eq('id', body.reassignTo)
+        .maybeSingle();
+      if (profileError) throw profileError;
+      if (!targetProfile) {
+        const e = new Error('Staff member not found.');
+        e.status = 400;
+        throw e;
+      }
+      const targetName =
+        [targetProfile.first_name, targetProfile.last_name].filter(Boolean).join(' ').trim() ||
+        targetProfile.email ||
+        '—';
+      patch.created_by = targetProfile.id;
+      patch.created_by_name = targetName;
     }
 
     if (Object.keys(patch).length === 0) {
