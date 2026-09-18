@@ -8,7 +8,12 @@ import Supabase
 // builder before it has an id yet (the builder attaches it after saving).
 struct RoomScanView: View {
     var quoteId: String?
+    var projectId: String? = nil
     var onComplete: (RoomScan) -> Void
+
+    // A client scanning their own project has no Design Studio quote/proposal
+    // to show this scan on — that toggle only makes sense in the staff flow.
+    private var isClientCapture: Bool { quoteId == nil && projectId != nil }
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var controller = RoomScanController()
@@ -132,7 +137,9 @@ struct RoomScanView: View {
                     TextField("e.g. Kitchen", text: $roomLabel).textFieldStyle(.roundedBorder)
                 }
 
-                Toggle("Show on client proposal", isOn: $showToClient)
+                if !isClientCapture {
+                    Toggle("Show on client proposal", isOn: $showToClient)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("MEASURED AREA (SF)").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
@@ -243,7 +250,7 @@ struct RoomScanView: View {
 
         do {
             let urls: RoomScanUploadURLResponse = try await APIClient.sendDecoding(
-                "api/design-studio/scans/upload-url", method: "POST", body: EmptyBody()
+                "api/design-studio/scans/upload-url", method: "POST", body: RoomScanUploadUrlPayload(projectId: projectId)
             )
 
             try await SupabaseConfig.client.storage.from("design-studio-scans").uploadToSignedURL(
@@ -273,6 +280,7 @@ struct RoomScanView: View {
                 body: RoomScanCreatePayload(
                     scanId: urls.scanId,
                     quoteId: quoteId,
+                    projectId: projectId,
                     roomLabel: roomLabel.isEmpty ? nil : roomLabel,
                     showToClient: showToClient,
                     areaSqft: Double(areaText),

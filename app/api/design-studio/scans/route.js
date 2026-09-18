@@ -1,4 +1,5 @@
-import { requireStaff, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { requireStaff, requireStaffOrScanningClient, getStaffUser, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { getRequestClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,8 +41,8 @@ async function signScan(db, scan) {
 // floor plan straight to Storage via the signed URLs from upload-url.
 export async function POST(request) {
   try {
-    const user = await requireStaff(request);
     const body = await request.json();
+    const user = await requireStaffOrScanningClient(request, body.projectId);
     if (!body.scanId) {
       const e = new Error('scanId is required');
       e.status = 400;
@@ -82,10 +83,10 @@ export async function POST(request) {
 }
 
 // Scans attached to a quote or a project — the quote detail page's "room
-// scan" panel, and the project detail page's equivalent.
+// scan" panel, the project detail page's equivalent, and (project-scoped
+// only) the client's own scan history.
 export async function GET(request) {
   try {
-    await requireStaff(request);
     const { searchParams } = new URL(request.url);
     const quoteId = searchParams.get('quoteId');
     const projectId = searchParams.get('projectId');
@@ -96,6 +97,47 @@ export async function GET(request) {
     }
 
     const db = supabaseAdmin();
+
+    if (quoteId) {
+      // Unchanged: quote-scoped scans stay staff-only, exactly as before —
+      // this is the original Design Studio flow, no client ever reaches it.
+      await requireStaff(request);
+    } else {
+      // Project-scoped: master admins see everything; employees only if
+      // assigned to the project (project_employees); a client only their
+      // own project's scans, regardless of whether room_scanner_enabled is
+      // currently on — turning capture off shouldn't hide past scans.
+      const staffUser = await getStaffUser(request);
+      if (staffUser) {
+        if (!staffUser.isMaster) {
+          const { data: assignment } = await db
+            .from('project_employees')
+            .select('project_id')
+            .eq('project_id', projectId)
+            .eq('employee_id', staffUser.id)
+            .maybeSingle();
+          if (!assignment) {
+            const e = new Error('Not authorised');
+            e.status = 403;
+            throw e;
+          }
+        }
+      } else {
+        const { user } = await getRequestClient(request);
+        if (!user) {
+          const e = new Error('Not authorised');
+          e.status = 403;
+          throw e;
+        }
+        const { data: project } = await db.from('projects').select('owner_id').eq('id', projectId).maybeSingle();
+        if (!project || project.owner_id !== user.id) {
+          const e = new Error('Not authorised');
+          e.status = 403;
+          throw e;
+        }
+      }
+    }
+
     let query = db.from('design_studio_room_scans').select('*, projects(name)').order('created_at', { ascending: false });
     query = quoteId ? query.eq('quote_id', quoteId) : query.eq('project_id', projectId);
     const { data, error } = await query;

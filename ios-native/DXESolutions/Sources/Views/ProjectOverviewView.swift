@@ -156,6 +156,13 @@ struct ProjectOverviewView: View {
             } label: {
                 filesButton(icon: "person.text.rectangle", label: "Contacts")
             }
+            if project.roomScannerEnabled == true {
+                NavigationLink {
+                    RoomScansView(project: project)
+                } label: {
+                    filesButton(icon: "viewfinder", label: "Room Scan")
+                }
+            }
         }
         .buttonStyle(.plain)
     }

@@ -35,6 +35,7 @@ struct AdminProjectDetailView: View {
     @State private var zoning = ""
     @State private var lotSize = ""
     @State private var buildingSize = ""
+    @State private var roomScannerEnabled = false
     @State private var isSavingInfo = false
     @State private var infoMessage: String?
     @State private var infoMessageIsError = false
@@ -88,6 +89,7 @@ struct AdminProjectDetailView: View {
                         sectionCard("Accounting") { AdminAccountingEditor(projectId: projectId) }
                         sectionCard("Payment Schedule") { AdminPaymentScheduleEditor(projectId: projectId) }
                         sectionCard("Photos") { AdminPhotosEditor(projectId: projectId) }
+                        sectionCard("Room Scans") { AdminRoomScansEditor(projectId: projectId) }
                         sectionCard("Notes & Updates") { AdminNotesEditor(projectId: projectId) }
                     }
                     .padding()
@@ -144,6 +146,11 @@ struct AdminProjectDetailView: View {
                 labeledField("Lot Size", text: $lotSize)
                 labeledField("Building Size", text: $buildingSize)
 
+                Divider().padding(.vertical, 4)
+                Toggle("Room scanner enabled", isOn: $roomScannerEnabled)
+                Text("Lets the client capture their own LiDAR room scans from the native app.")
+                    .font(.caption2).foregroundColor(.secondary)
+
                 if let infoMessage {
                     Text(infoMessage).font(.caption).foregroundColor(infoMessageIsError ? .red : Color(red: 0.02, green: 0.37, blue: 0.28))
                 }
@@ -178,13 +185,15 @@ struct AdminProjectDetailView: View {
             let zoning: String
             let lot_size: String
             let building_size: String
+            let room_scanner_enabled: Bool
         }
         let payload = Payload(
             name: name, address: address, project_type: projectType,
             started_on: startedOn, estimated_completion: estimatedCompletion,
             progress_pct: Int(progressPct), status: status,
             apn: apn, jurisdiction: jurisdiction, zoning: zoning,
-            lot_size: lotSize, building_size: buildingSize
+            lot_size: lotSize, building_size: buildingSize,
+            room_scanner_enabled: roomScannerEnabled
         )
         do {
             try await APIClient.send("api/admin/projects/\(projectId)", method: "PATCH", body: payload)
@@ -214,7 +223,8 @@ struct AdminProjectDetailView: View {
             zoning: project.zoning,
             lotSize: project.lotSize,
             buildingSize: project.buildingSize,
-            color: nil
+            color: nil,
+            roomScannerEnabled: project.roomScannerEnabled
         )
     }
 
@@ -440,6 +450,7 @@ struct AdminProjectDetailView: View {
             zoning = project.zoning ?? ""
             lotSize = project.lotSize ?? ""
             buildingSize = project.buildingSize ?? ""
+            roomScannerEnabled = project.roomScannerEnabled ?? false
         } catch {
             errorMessage = "Could not load project."
             isLoading = false

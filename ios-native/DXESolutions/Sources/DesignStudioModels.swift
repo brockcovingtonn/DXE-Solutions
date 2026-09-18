@@ -566,9 +566,14 @@ struct RoomScanUploadURLResponse: Decodable {
     struct SignedUpload: Decodable { var path: String; var token: String }
 }
 
+struct RoomScanUploadUrlPayload: Encodable {
+    var projectId: String?
+}
+
 struct RoomScanCreatePayload: Encodable {
     var scanId: String
     var quoteId: String?
+    var projectId: String?
     var roomLabel: String?
     var showToClient: Bool
     var areaSqft: Double?

@@ -63,6 +63,7 @@
 		6C61F9C3C634D36A27A9DE9E /* CoverSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA17CB6E249C552B5277D74 /* CoverSheetView.swift */; };
 		6F33E7B3F06A6DA6B65FFFFA /* AdminMilestonesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23318D848D19D0A00E2C60CB /* AdminMilestonesListView.swift */; };
 		6F428D795A36A9C46DDB2B9D /* AdminEmployeeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ECC45E00D0B560C82CF395 /* AdminEmployeeDetailView.swift */; };
+		6F98E8390315EA56AC72E550 /* AdminRoomScansEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5309B56920FE5042B912B8ED /* AdminRoomScansEditor.swift */; };
 		709C398755C4868A53327EEC /* RoomScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0553A6CD54D1DE302EC8D7A /* RoomScanView.swift */; };
 		74160C950BD6EFBB7D730BC1 /* AdminClientDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D27F88BBEDBCB4B401A85F9 /* AdminClientDetailView.swift */; };
 		741D7C1E63E86AE1432BB7F9 /* AdminTemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB799B82344845DEE91B9C1 /* AdminTemplatesView.swift */; };
@@ -78,6 +79,7 @@
 		90B2239A3CC264954294FFD7 /* FloorPlanCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9054E53851C690E45CA48C4B /* FloorPlanCanvasView.swift */; };
 		93A73909D3314874116DA788 /* BiometricAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */; };
 		93DE9C8DCDA83707611E2F61 /* AdminChatThreadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C400542EAC483541691B8 /* AdminChatThreadView.swift */; };
+		94861D41AB9D149EEF6A1971 /* RoomScansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03FB5A0DB20BAB8E627F07A1 /* RoomScansView.swift */; };
 		94D80F77040EEABCF5AA3C97 /* FloorPlanManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830CE59E405BCD0A23E414B9 /* FloorPlanManagerView.swift */; };
 		98C53AAF7C98FCAA000A09E8 /* EmployeeTrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0ABE2733F6432D1D035466 /* EmployeeTrainingView.swift */; };
 		9A09140E82A13FF7A2DE1C08 /* DesignStudioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E82BA96E5597864CE11FE8 /* DesignStudioModels.swift */; };
@@ -138,6 +140,7 @@
 		0181533C592188C370411A8F /* AdminPaymentScheduleEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminPaymentScheduleEditor.swift; sourceTree = "<group>"; };
 		025B1ABFF8854D83D9C94213 /* StaffPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StaffPickerView.swift; sourceTree = "<group>"; };
 		035F23A0A0F52684A8703002 /* SiteSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteSettingsView.swift; sourceTree = "<group>"; };
+		03FB5A0DB20BAB8E627F07A1 /* RoomScansView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RoomScansView.swift; sourceTree = "<group>"; };
 		045E619ACC77E1431E4AAFBB /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		04F9EF72B3FBC9E198275DC9 /* GeneratePaymentScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratePaymentScheduleView.swift; sourceTree = "<group>"; };
 		05E9C406F1C1FB463F0706E9 /* SwipeBackEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeBackEnabler.swift; sourceTree = "<group>"; };
@@ -180,6 +183,7 @@
 		4ABBA5571AB04A7A9271D144 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
 		4BE2EEF063B99A51AC4ADB9D /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		511721C9D81DE62866876F7A /* EmployeeChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeChatView.swift; sourceTree = "<group>"; };
+		5309B56920FE5042B912B8ED /* AdminRoomScansEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdminRoomScansEditor.swift; sourceTree = "<group>"; };
 		53A5D5568EBC8FA104E86733 /* AddToCalendarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCalendarButton.swift; sourceTree = "<group>"; };
 		56BEFF22483EE2B9FA0946AE /* BiometricAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuth.swift; sourceTree = "<group>"; };
 		56BF6CC57968E832914576A0 /* PhotosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosView.swift; sourceTree = "<group>"; };
@@ -389,6 +393,8 @@
 				EF6D36460E80E987CDB7E48C /* UtilitiesView.swift */,
 				A8B8934B699480497D0AFBBB /* IncludedItemsEditorView.swift */,
 				025B1ABFF8854D83D9C94213 /* StaffPickerView.swift */,
+				03FB5A0DB20BAB8E627F07A1 /* RoomScansView.swift */,
+				5309B56920FE5042B912B8ED /* AdminRoomScansEditor.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -638,6 +644,8 @@
 				3556F5770272A090B0F90CCF /* IncludedItemsEditorView.swift in Sources */,
 				B08A696640E46F4756A1323A /* StaffPickerView.swift in Sources */,
 				9C06076897CDC637DA0765EA /* DesignStudioBullets.swift in Sources */,
+				94861D41AB9D149EEF6A1971 /* RoomScansView.swift in Sources */,
+				6F98E8390315EA56AC72E550 /* AdminRoomScansEditor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

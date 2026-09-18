@@ -1,4 +1,4 @@
-import { requireStaff, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { requireStaff, requireStaffOrScanOwner, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,21 +56,46 @@ export async function GET(request, { params }) {
 
 // Attaches a scan captured before the quote existed — the builder scans a
 // room first, then attaches once the quote it belongs to has been saved.
+// Also how both the wall editor and the annotate flow save their changes
+// (elements/objects/hasAnnotatedPdf) — a client can now reach this too,
+// for their own project's scans, but only for those three fields; the
+// quote/project-attachment and show-to-client fields stay staff-only.
 export async function PATCH(request, { params }) {
   try {
-    await requireStaff(request);
     const { id } = await params;
+    const user = await requireStaffOrScanOwner(request, id);
     const body = await request.json();
     const db = supabaseAdmin();
 
     const patch = {};
-    if (body.quoteId !== undefined) patch.quote_id = body.quoteId;
+    if (user.role !== 'client') {
+      if (body.quoteId !== undefined) patch.quote_id = body.quoteId;
+      if (body.showToClient !== undefined) patch.show_to_client = Boolean(body.showToClient);
+      if (body.projectId !== undefined) patch.project_id = body.projectId;
+    }
     if (body.roomLabel !== undefined) patch.room_label = body.roomLabel;
-    if (body.showToClient !== undefined) patch.show_to_client = Boolean(body.showToClient);
-    if (body.projectId !== undefined) patch.project_id = body.projectId;
     if (body.elements !== undefined) patch.elements = Array.isArray(body.elements) ? body.elements : [];
     if (body.objects !== undefined) patch.objects = Array.isArray(body.objects) ? body.objects : [];
     if (body.hasAnnotatedPdf !== undefined) patch.annotated_pdf_path = body.hasAnnotatedPdf ? `${id}/annotated.pdf` : null;
+
+    // A client's request can legally end up with nothing to change — e.g.
+    // it only contained staff-only fields, silently dropped above. An
+    // empty .update({}) errors at the DB layer, so just return the
+    // current row untouched instead of treating that as a failure.
+    if (Object.keys(patch).length === 0) {
+      const { data: existing, error: fetchError } = await db
+        .from('design_studio_room_scans')
+        .select('*, projects(name)')
+        .eq('id', id)
+        .maybeSingle();
+      if (fetchError) throw fetchError;
+      if (!existing) {
+        const e = new Error('Scan not found');
+        e.status = 404;
+        throw e;
+      }
+      return Response.json({ scan: await signScan(db, existing) });
+    }
 
     const { data, error } = await db
       .from('design_studio_room_scans')

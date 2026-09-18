@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
 import { getViewableProject } from '@/lib/project-access';
+import { supabaseAdmin as designStudioAdmin } from '@/lib/design-studio/server';
 import styles from '@/components/portal-shared.module.css';
 import EmptyState from '@/components/EmptyState';
 import EmployeeActionItems from '@/components/EmployeeActionItems';
@@ -68,6 +69,29 @@ export default async function EmployeeProjectPage({ params }) {
     supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
     supabase.from('calendar_events').select('*').eq('project_id', projectId).order('start_time'),
   ]);
+
+  // RLS-scoped — the employee policy on design_studio_room_scans already
+  // limits this to projects the caller is assigned to via project_employees,
+  // same guarantee getViewableProject already gave the rest of this page.
+  const { data: roomScans } = await supabase
+    .from('design_studio_room_scans')
+    .select('id, room_label, area_sqft, area_is_estimate, wall_count, model_path, floor_plan_path')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+
+  // The design-studio-scans storage bucket has no client-facing policies
+  // (same as the admin project page's equivalent section) — table-level
+  // access was already decided by RLS above, this just signs the URLs.
+  let roomScansWithUrls = [];
+  if (roomScans && roomScans.length > 0) {
+    const scansDb = designStudioAdmin();
+    roomScansWithUrls = await Promise.all(
+      roomScans.map(async (scan) => {
+        const { data: model } = await scansDb.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600);
+        return { ...scan, model_url: model?.signedUrl || null };
+      })
+    );
+  }
 
   let photosWithUrls = [];
   if (photos && photos.length > 0) {
@@ -393,6 +417,34 @@ export default async function EmployeeProjectPage({ params }) {
           <PhotoGrid photos={photosWithUrls} showDownload />
         )}
       </div>
+
+      {roomScansWithUrls.length > 0 ? (
+        <div className={styles.fullWidthCard}>
+          <h3>Room scans</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            {roomScansWithUrls.map((scan) => (
+              <div
+                key={scan.id}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem', border: '1px solid rgba(var(--border-rgb),0.1)' }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{scan.room_label || 'Scanned space'}</div>
+                  {scan.area_sqft ? (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
+                      {Math.round(scan.area_sqft)} sf{scan.area_is_estimate ? ' (approx.)' : ''} · {scan.wall_count} walls
+                    </div>
+                  ) : null}
+                </div>
+                {scan.model_url ? (
+                  <a href={scan.model_url} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', fontSize: '0.8rem', fontWeight: 600 }}>
+                    View
+                  </a>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.fullWidthCard}>
         <h3>Accounting</h3>

@@ -1,4 +1,4 @@
-import { requireStaff, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { requireStaffOrScanOwner, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,8 +10,8 @@ const BUCKET = 'design-studio-scans';
 // at a deterministic path under the existing scan id.
 export async function POST(request, { params }) {
   try {
-    await requireStaff(request);
     const { id } = await params;
+    await requireStaffOrScanOwner(request, id);
     const db = supabaseAdmin();
 
     const { data: scan, error: scanError } = await db

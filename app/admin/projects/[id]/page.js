@@ -5,6 +5,8 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
 import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
+import ScanManager from '@/components/design-studio/ScanManager';
+import { supabaseAdmin as designStudioAdmin } from '@/lib/design-studio/server';
 import PermitsEditor from '@/components/admin/PermitsEditor';
 import AccountingEditor from '@/components/admin/AccountingEditor';
 import ProjectTeamEditor from '@/components/admin/ProjectTeamEditor';
@@ -64,6 +66,56 @@ export default async function AdminProjectPage({ params }) {
     .select('*')
     .eq('project_id', projectId)
     .order('due_date');
+
+  // RLS-scoped on purpose (not service-role) — the new employee/client
+  // policies on design_studio_room_scans decide what comes back here for
+  // free: admins see everything, employees only if assigned to this
+  // project via project_employees. Storage has no client-facing policies
+  // on this bucket though, so signed URLs still need the service-role
+  // client below, applied only to rows RLS has already allowed through.
+  const { data: roomScans } = await supabase
+    .from('design_studio_room_scans')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  const { data: currentProfile } = await supabase.from('profiles').select('is_admin').eq('id', currentUser?.id).maybeSingle();
+  const isMaster = Boolean(currentProfile?.is_admin);
+
+  let roomScansWithUrls = [];
+  if (roomScans && roomScans.length > 0) {
+    const scansDb = designStudioAdmin();
+    roomScansWithUrls = await Promise.all(
+      roomScans.map(async (scan) => {
+        const [{ data: model }, { data: floorPlan }, { data: modelGltf }] = await Promise.all([
+          scansDb.storage.from('design-studio-scans').createSignedUrl(scan.model_path, 3600),
+          scan.floor_plan_path
+            ? scansDb.storage.from('design-studio-scans').createSignedUrl(scan.floor_plan_path, 3600)
+            : Promise.resolve({ data: null }),
+          scan.model_gltf_path
+            ? scansDb.storage.from('design-studio-scans').createSignedUrl(scan.model_gltf_path, 3600)
+            : Promise.resolve({ data: null }),
+        ]);
+        return {
+          id: scan.id,
+          roomLabel: scan.room_label,
+          areaSqft: scan.area_sqft,
+          areaIsEstimate: scan.area_is_estimate,
+          wallCount: scan.wall_count,
+          doorCount: scan.door_count,
+          windowCount: scan.window_count,
+          modelUrl: model?.signedUrl || null,
+          floorPlanUrl: floorPlan?.signedUrl || null,
+          modelGltfUrl: modelGltf?.signedUrl || null,
+          elements: scan.elements || [],
+          objects: scan.objects || [],
+          showToClient: scan.show_to_client,
+          project: { id: projectId, name: project.name },
+        };
+      })
+    );
+  }
 
   const assignedEmployeeIds = (employeeAssignments || []).map((a) => a.employee_id);
 
@@ -228,6 +280,13 @@ export default async function AdminProjectPage({ params }) {
         <h3>Photos</h3>
         <AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} />
       </div>
+
+      {roomScansWithUrls.length > 0 ? (
+        <div className={styles.fullWidthCard}>
+          <h3>Room scans</h3>
+          <ScanManager scans={roomScansWithUrls} isMaster={isMaster} />
+        </div>
+      ) : null}
 
       <DangerDeleteButton
         heading="Delete this project"

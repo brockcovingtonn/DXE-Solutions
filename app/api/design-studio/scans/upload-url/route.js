@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { requireStaff, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
+import { requireStaffOrScanningClient, supabaseAdmin, jsonError } from '@/lib/design-studio/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +12,8 @@ const BUCKET = 'design-studio-scans';
 // actual bytes never pass through Next.js.
 export async function POST(request) {
   try {
-    await requireStaff(request);
+    const body = await request.json().catch(() => ({}));
+    await requireStaffOrScanningClient(request, body.projectId);
     const db = supabaseAdmin();
     const scanId = randomUUID();
 

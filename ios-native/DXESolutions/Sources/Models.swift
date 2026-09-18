@@ -15,6 +15,7 @@ struct Project: Codable, Identifiable, Hashable {
     let lotSize: String?
     let buildingSize: String?
     let color: String?
+    let roomScannerEnabled: Bool?
 
     enum CodingKeys: String, CodingKey {
         case id, name, address, status, apn, jurisdiction, zoning, color
@@ -24,6 +25,7 @@ struct Project: Codable, Identifiable, Hashable {
         case estimatedCompletion = "estimated_completion"
         case lotSize = "lot_size"
         case buildingSize = "building_size"
+        case roomScannerEnabled = "room_scanner_enabled"
     }
 }
 
@@ -404,6 +406,7 @@ struct CoverSheetProject: Codable, Hashable {
     let zoning: String?
     let lotSize: String?
     let buildingSize: String?
+    let roomScannerEnabled: Bool?
     let profiles: CoverSheetOwner?
 
     enum CodingKeys: String, CodingKey {
@@ -414,6 +417,7 @@ struct CoverSheetProject: Codable, Hashable {
         case estimatedCompletion = "estimated_completion"
         case lotSize = "lot_size"
         case buildingSize = "building_size"
+        case roomScannerEnabled = "room_scanner_enabled"
     }
 }
 

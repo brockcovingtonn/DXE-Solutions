@@ -22,13 +22,14 @@ export default function ProjectInfoForm({ project }) {
     lot_size: project.lot_size || '',
     building_size: project.building_size || '',
     color: project.color || PROJECT_COLOR_PALETTE[0],
+    room_scanner_enabled: project.room_scanner_enabled || false,
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   function handleChange(e) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: name === 'progress_pct' ? Number(value) : value }));
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : name === 'progress_pct' ? Number(value) : value }));
   }
 
   async function handleSave(e) {
@@ -139,6 +140,13 @@ export default function ProjectInfoForm({ project }) {
             aria-label="Custom color"
           />
         </div>
+      </div>
+
+      <div className={adminStyles.fieldGroup}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: 'pointer' }}>
+          <input type="checkbox" name="room_scanner_enabled" checked={form.room_scanner_enabled} onChange={handleChange} />
+          Room scanner enabled — lets the client capture their own LiDAR room scans from the native app
+        </label>
       </div>
 
       <div className={adminStyles.formGrid2}>

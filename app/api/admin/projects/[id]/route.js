@@ -43,6 +43,7 @@ export async function PATCH(request, { params }) {
       'lot_size',
       'building_size',
       'color',
+      'room_scanner_enabled',
     ];
 
     const update = {};
