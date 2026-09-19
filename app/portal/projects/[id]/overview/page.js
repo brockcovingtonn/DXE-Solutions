@@ -50,6 +50,7 @@ export default async function ProjectOverviewPage({ params }) {
     doc: 'ti-file',
     status: 'ti-check',
     photo: 'ti-photo',
+    proposal: 'ti-file-invoice',
   };
 
   const ICON_CLASS = {
@@ -57,6 +58,7 @@ export default async function ProjectOverviewPage({ params }) {
     doc: styles.actIconDoc,
     status: styles.actIconStatus,
     photo: styles.actIconPhoto,
+    proposal: styles.actIconProposal,
   };
 
   const BADGE_CLASS = {

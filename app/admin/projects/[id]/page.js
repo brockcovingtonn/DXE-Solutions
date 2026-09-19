@@ -3,25 +3,8 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
-import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
-import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
-import ScanManager from '@/components/design-studio/ScanManager';
 import { supabaseAdmin as designStudioAdmin } from '@/lib/design-studio/server';
-import PermitsEditor from '@/components/admin/PermitsEditor';
-import AccountingEditor from '@/components/admin/AccountingEditor';
-import ProjectTeamEditor from '@/components/admin/ProjectTeamEditor';
-import InterestedPartiesEditor from '@/components/admin/InterestedPartiesEditor';
-import PhasesEditor from '@/components/admin/PhasesEditor';
-import ActionItemsEditor from '@/components/admin/ActionItemsEditor';
-import MilestonesEditor from '@/components/admin/MilestonesEditor';
-import AdminUtilitiesEditor from '@/components/admin/AdminUtilitiesEditor';
-import AdminDocuments from '@/components/admin/AdminDocuments';
-import AdminPhotos from '@/components/admin/AdminPhotos';
-import AdminNotes from '@/components/admin/AdminNotes';
-import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
-import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
-import ProjectProposalsList from '@/components/admin/ProjectProposalsList';
-import PaymentScheduleEditor from '@/components/admin/PaymentScheduleEditor';
+import ProjectTabs from '@/components/admin/ProjectTabs';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -35,13 +18,14 @@ export default async function AdminProjectPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }, { data: contacts }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: proposalActivity }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }, { data: contacts }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('documents').select('*, document_signatures(signer_name, created_at)').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('photos').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+      supabase.from('activity').select('*').eq('project_id', projectId).eq('type', 'proposal').order('created_at', { ascending: false }),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.rpc('get_project_utilities_admin', { p_project_id: projectId }),
@@ -169,131 +153,30 @@ export default async function AdminProjectPage({ params }) {
         </div>
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Project details</h3>
-        <ProjectInfoForm project={project} />
-
-        <h3
-          style={{
-            fontFamily: 'Cormorant Garamond, serif',
-            fontSize: '1.1rem',
-            margin: '1.5rem 0 1rem',
-            color: 'var(--navy)',
-            paddingTop: '1.5rem',
-            borderTop: '1px solid rgba(var(--border-rgb),0.08)',
-          }}
-        >
-          Assigned employees
-        </h3>
-        <ProjectEmployeesForm
-          projectId={projectId}
-          allEmployees={allEmployees || []}
-          assignedEmployeeIds={assignedEmployeeIds}
-        />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Notes &amp; updates</h3>
-        <AdminNotes projectId={projectId} initialNotes={notes || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Permits</h3>
-        <PermitsEditor projectId={projectId} initialPermits={permits || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Project team</h3>
-        <ProjectTeamEditor projectId={projectId} initialTeam={team || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Interested parties</h3>
-        <InterestedPartiesEditor projectId={projectId} initialParties={interestedParties || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Project phases</h3>
-        <PhasesEditor projectId={projectId} initialPhases={phases || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Action items</h3>
-        <ActionItemsEditor
-          projectId={projectId}
-          initialItems={actionItems || []}
-          assignablePeople={assignablePeople || []}
-        />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Calendar</h3>
-        <ProjectCalendarEditor
-          projectId={projectId}
-          initialEvents={calendarEvents || []}
-          people={assignablePeople || []}
-          contacts={contacts || []}
-        />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Milestones</h3>
-        <MilestonesEditor projectId={projectId} initialMilestones={milestones || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Utilities</h3>
-        <AdminUtilitiesEditor projectId={projectId} initialUtilities={utilities || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Documents</h3>
-        <AdminDocuments projectId={projectId} initialDocs={docs || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Proposals</h3>
-        <ProjectProposalsList projectId={projectId} proposals={proposals || []} />
-      </div>
-
-      <div className={styles.fullWidthCard} id="accounting">
-        <h3>Accounting</h3>
-        <AccountingEditor projectId={projectId} initialInvoices={invoices || []} />
-
-        <h4
-          style={{
-            fontSize: '0.82rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--text-secondary)',
-            margin: '1.5rem 0 0.75rem',
-            paddingTop: '1.25rem',
-            borderTop: '1px solid rgba(var(--border-rgb),0.08)',
-          }}
-        >
-          Payment Schedule
-        </h4>
-        <PaymentScheduleEditor projectId={projectId} initialItems={paymentSchedule || []} />
-      </div>
-
-      <div className={styles.fullWidthCard}>
-        <h3>Photos</h3>
-        <AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} />
-      </div>
-
-      {roomScansWithUrls.length > 0 ? (
-        <div className={styles.fullWidthCard}>
-          <h3>Room scans</h3>
-          <ScanManager scans={roomScansWithUrls} isMaster={isMaster} />
-        </div>
-      ) : null}
-
-      <DangerDeleteButton
-        heading="Delete this project"
-        description="Permanently removes this project and everything attached to it — documents, permits, notes, photos, invoices, and calendar events. This cannot be undone."
-        buttonText="Delete project"
-        endpoint={`/api/admin/projects/${projectId}`}
-        redirectTo="/admin/projects"
+      <ProjectTabs
+        project={project}
+        projectId={projectId}
+        isMaster={isMaster}
+        phases={phases}
+        milestones={milestones}
+        docs={docs}
+        photosWithUrls={photosWithUrls}
+        notes={notes}
+        proposalActivity={proposalActivity}
+        team={team}
+        interestedParties={interestedParties}
+        utilities={utilities}
+        actionItems={actionItems}
+        assignablePeople={assignablePeople}
+        permits={permits}
+        invoices={invoices}
+        allEmployees={allEmployees}
+        assignedEmployeeIds={assignedEmployeeIds}
+        calendarEvents={calendarEvents}
+        contacts={contacts}
+        proposals={proposals}
+        paymentSchedule={paymentSchedule}
+        roomScansWithUrls={roomScansWithUrls}
       />
     </div>
   );

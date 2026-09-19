@@ -9,6 +9,7 @@ const ICONS = {
   doc: 'ti-file',
   status: 'ti-check',
   photo: 'ti-photo',
+  proposal: 'ti-file-invoice',
 };
 
 const ICON_CLASS_KEYS = {
@@ -16,6 +17,7 @@ const ICON_CLASS_KEYS = {
   doc: 'actIconDoc',
   status: 'actIconStatus',
   photo: 'actIconPhoto',
+  proposal: 'actIconProposal',
 };
 
 export default async function AdminActivityPage() {

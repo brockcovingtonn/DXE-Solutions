@@ -321,6 +321,11 @@
   color: #4c1d95;
 }
 
+.actIconProposal {
+  background: rgba(62, 84, 104, 0.12);
+  color: var(--navy);
+}
+
 .actTitle {
   font-size: 0.82rem;
   font-weight: 500;

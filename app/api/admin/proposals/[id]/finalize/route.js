@@ -104,6 +104,14 @@ export async function POST(request, { params }) {
   const { error: updateError } = await supabase.from('proposals').update(update).eq('id', params.id);
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 400 });
 
+  if (update.status === 'sent') {
+    await supabase.from('activity').insert({
+      project_id: proposal.project_id,
+      type: 'proposal',
+      text: `"${proposal.title}" was sent to ${recipientEmail}`,
+    });
+  }
+
   const { data: signed } = await supabase.storage.from('project-proposals').createSignedUrl(storagePath, 3600);
 
   return NextResponse.json({

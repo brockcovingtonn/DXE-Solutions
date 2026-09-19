@@ -6,7 +6,14 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
 
-export default function AdminNotes({ projectId, initialNotes }) {
+export function buildNotesTimeline(notes, proposalActivity = []) {
+  return [
+    ...(notes || []).map((n) => ({ kind: 'note', at: n.created_at, note: n })),
+    ...(proposalActivity || []).map((a) => ({ kind: 'activity', at: a.created_at, activity: a })),
+  ].sort((a, b) => new Date(b.at) - new Date(a.at));
+}
+
+export default function AdminNotes({ projectId, initialNotes, proposalActivity = [] }) {
   const router = useRouter();
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
@@ -88,6 +95,11 @@ export default function AdminNotes({ projectId, initialNotes }) {
     }
   }
 
+  // Proposal activity (sent/signed/declined) interleaved read-only among
+  // manual notes, sorted together by date — same underlying "what's
+  // happened on this project" timeline, not a separate feed.
+  const timeline = buildNotesTimeline(initialNotes, proposalActivity);
+
   return (
     <div>
       <form className={styles.noteForm} onSubmit={handleSubmit}>
@@ -105,68 +117,87 @@ export default function AdminNotes({ projectId, initialNotes }) {
       </form>
 
       <div className={styles.notesArea} style={{ marginTop: '1.5rem' }}>
-        {initialNotes.map((n) => (
-          <div
-            className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`}
-            key={n.id}
-          >
-            <div className={adminStyles.noteHeaderRow}>
-              <div className={styles.noteFrom}>{n.author_name}</div>
-              {editingId !== n.id && (
-                <div className={adminStyles.utilityEntryActions}>
-                  <button
-                    type="button"
-                    className={adminStyles.iconBtn}
-                    onClick={() => startEdit(n)}
-                    disabled={busyId === n.id}
-                    aria-label="Edit note"
-                  >
-                    <i className="ti ti-pencil" aria-hidden="true"></i>
-                  </button>
-                  <button
-                    type="button"
-                    className={adminStyles.iconBtn}
-                    onClick={() => handleDelete(n.id)}
-                    disabled={busyId === n.id}
-                    aria-label="Delete note"
-                  >
-                    <i className="ti ti-trash" aria-hidden="true"></i>
-                  </button>
+        {timeline.map((item) => {
+          if (item.kind === 'activity') {
+            const a = item.activity;
+            return (
+              <div className={styles.noteItem} key={`activity-${a.id}`} style={{ opacity: 0.85 }}>
+                <div className={adminStyles.noteHeaderRow}>
+                  <div className={styles.noteFrom}>
+                    <i className="ti ti-file-invoice" aria-hidden="true" style={{ marginRight: '0.35rem' }}></i>
+                    Proposal update
+                  </div>
                 </div>
+                <div className={styles.noteText}>{a.text}</div>
+                <div className={styles.noteTime}>{formatDate(a.created_at)}</div>
+              </div>
+            );
+          }
+
+          const n = item.note;
+          return (
+            <div
+              className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`}
+              key={n.id}
+            >
+              <div className={adminStyles.noteHeaderRow}>
+                <div className={styles.noteFrom}>{n.author_name}</div>
+                {editingId !== n.id && (
+                  <div className={adminStyles.utilityEntryActions}>
+                    <button
+                      type="button"
+                      className={adminStyles.iconBtn}
+                      onClick={() => startEdit(n)}
+                      disabled={busyId === n.id}
+                      aria-label="Edit note"
+                    >
+                      <i className="ti ti-pencil" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      className={adminStyles.iconBtn}
+                      onClick={() => handleDelete(n.id)}
+                      disabled={busyId === n.id}
+                      aria-label="Delete note"
+                    >
+                      <i className="ti ti-trash" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {editingId === n.id ? (
+                <div>
+                  <textarea
+                    className={adminStyles.fieldTextarea}
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    style={{ marginBottom: '0.5rem' }}
+                  />
+                  <div className={adminStyles.entryFormActions}>
+                    <button
+                      type="button"
+                      className="btn-navy"
+                      onClick={() => saveEdit(n.id)}
+                      disabled={busyId === n.id || !editText.trim()}
+                    >
+                      {busyId === n.id ? 'Saving...' : 'Save'}
+                    </button>
+                    <button type="button" className={adminStyles.cancelBtn} onClick={cancelEdit}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.noteText}>{n.body}</div>
+                  <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
+                </>
               )}
             </div>
-
-            {editingId === n.id ? (
-              <div>
-                <textarea
-                  className={adminStyles.fieldTextarea}
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  style={{ marginBottom: '0.5rem' }}
-                />
-                <div className={adminStyles.entryFormActions}>
-                  <button
-                    type="button"
-                    className="btn-navy"
-                    onClick={() => saveEdit(n.id)}
-                    disabled={busyId === n.id || !editText.trim()}
-                  >
-                    {busyId === n.id ? 'Saving...' : 'Save'}
-                  </button>
-                  <button type="button" className={adminStyles.cancelBtn} onClick={cancelEdit}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className={styles.noteText}>{n.body}</div>
-                <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
-              </>
-            )}
-          </div>
-        ))}
-        {initialNotes.length === 0 && (
+          );
+        })}
+        {timeline.length === 0 && (
           <EmptyState icon="ti-note" title="No notes yet" subtitle="Post an update above to keep the client in the loop." />
         )}
       </div>
