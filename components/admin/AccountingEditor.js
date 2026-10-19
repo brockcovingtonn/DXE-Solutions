@@ -136,9 +136,9 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
     <div>
       <div
         style={{
-          padding: '1rem 1.25rem',
+          padding: '0.85rem 1.1rem',
           background: 'var(--surface)',
-          marginBottom: '1.25rem',
+          marginBottom: '1rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -152,36 +152,25 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         {(initialInvoices || []).map((item) => (
           <div
             key={item.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.75rem',
-              border: '1px solid rgba(var(--border-rgb),0.12)',
-              opacity: busyId === item.id ? 0.6 : 1,
-            }}
+            className={adminStyles.listRow}
+            style={{ opacity: busyId === item.id ? 0.6 : 1 }}
           >
             <span
+              className={adminStyles.listRowPill}
               style={{
-                fontSize: '0.62rem',
-                fontWeight: 600,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                padding: '0.2rem 0.5rem',
                 background: item.kind === 'receipt' ? 'rgba(59,130,246,0.12)' : item.kind === 'reimbursement' ? 'rgba(147,51,234,0.12)' : 'rgba(201,168,87,0.18)',
                 color: item.kind === 'receipt' ? '#1e40af' : item.kind === 'reimbursement' ? '#7e22ce' : '#7a5c0a',
-                flexShrink: 0,
               }}
             >
               {item.kind}
             </span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{item.description}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
+            <div className={adminStyles.listRowMain}>
+              <div className={adminStyles.listRowTitle}>{item.description}</div>
+              <div className={adminStyles.listRowMeta}>
                 {item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}
                 {item.file_name && (
                   <>

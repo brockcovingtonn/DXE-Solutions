@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase-server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import { supabaseAdmin as designStudioAdmin } from '@/lib/design-studio/server';
-import ProjectTabs from '@/components/admin/ProjectTabs';
+import ProjectWorkspace from '@/components/admin/ProjectWorkspace';
 
 export default async function AdminProjectPage({ params }) {
   const supabase = createClient();
@@ -153,7 +153,7 @@ export default async function AdminProjectPage({ params }) {
         </div>
       </div>
 
-      <ProjectTabs
+      <ProjectWorkspace
         project={project}
         projectId={projectId}
         isMaster={isMaster}

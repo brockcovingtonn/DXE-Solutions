@@ -4,39 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AddToCalendarLink from '@/components/AddToCalendarLink';
 import { fetchWeather, weatherDisplay, weatherForDate } from '@/lib/weather-client';
+import { startOfDay, addDays, isSameDay, startOfWeek, formatTime, eventsOnDay } from '@/lib/calendar-utils';
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-function startOfDay(d) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
-}
-function addDays(d, n) {
-  const x = new Date(d);
-  x.setDate(x.getDate() + n);
-  return x;
-}
-function isSameDay(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
-function startOfWeek(d) {
-  const x = startOfDay(d);
-  x.setDate(x.getDate() - x.getDay());
-  return x;
-}
-function formatTime(dateStr) {
-  return new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-function eventsOnDay(events, day) {
-  return (events || [])
-    .filter((e) => {
-      const start = startOfDay(new Date(e.start_time));
-      const end = e.end_time ? startOfDay(new Date(e.end_time)) : start;
-      return start <= day && day <= end;
-    })
-    .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-}
 
 export default function WeekStripCalendar({ events, viewAllHref }) {
   const today = startOfDay(new Date());

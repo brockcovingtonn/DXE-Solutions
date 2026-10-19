@@ -119,22 +119,22 @@ export default function PaymentScheduleEditor({ projectId, initialItems }) {
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         {items.map((item) => {
           const s = STATUS_STYLE[item.status] || STATUS_STYLE.scheduled;
           const undated = isUndated(item);
           const overdue = !undated && item.status === 'scheduled' && !item.confirmed_at && new Date(`${item.due_date}T00:00:00`) < new Date(new Date().toDateString());
           return (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid rgba(var(--border-rgb),0.12)', opacity: busyId === item.id ? 0.6 : 1, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', background: s.bg, color: s.color, flexShrink: 0 }}>
+            <div key={item.id} className={adminStyles.listRow} style={{ opacity: busyId === item.id ? 0.6 : 1 }}>
+              <span className={adminStyles.listRowPill} style={{ background: s.bg, color: s.color }}>
                 {s.label}
               </span>
-              <div style={{ flex: 1, minWidth: '200px' }}>
-                <div style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--navy)' }}>
+              <div className={adminStyles.listRowMain} style={{ minWidth: '200px' }}>
+                <div className={adminStyles.listRowTitle}>
                   {item.description}
                   {item.percent ? ` (${item.percent}%)` : ''}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: overdue ? 'var(--text-error)' : 'var(--text-tertiary)', marginTop: '0.15rem' }}>
+                <div className={adminStyles.listRowMeta} style={{ color: overdue ? 'var(--text-error)' : undefined }}>
                   {undated ? 'No due date — invoice manually when this milestone is reached' : `Due ${formatDate(item.due_date)}`}
                   {!undated && (item.confirmed_at ? ` · Confirmed on schedule` : item.status === 'scheduled' ? ' · Not yet confirmed' : '')}
                   {overdue ? ' · Past due, unconfirmed' : ''}

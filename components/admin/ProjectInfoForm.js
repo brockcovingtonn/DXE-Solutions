@@ -172,18 +172,7 @@ export default function ProjectInfoForm({ project }) {
         </div>
       </div>
 
-      <h3
-        style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: '1.1rem',
-          margin: '1.5rem 0 1rem',
-          color: 'var(--navy)',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid rgba(var(--border-rgb),0.08)',
-        }}
-      >
-        Permitting details
-      </h3>
+      <h3 className={adminStyles.fieldDivider}>Permitting details</h3>
 
       <div className={adminStyles.formGrid2}>
         <div className={adminStyles.fieldGroup}>

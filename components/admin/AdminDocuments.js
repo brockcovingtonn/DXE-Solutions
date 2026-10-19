@@ -144,18 +144,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
   return (
     <div>
       {selectedIds.size > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            padding: '0.6rem 0.85rem',
-            background: 'var(--surface)',
-            border: '1px solid rgba(var(--border-rgb),0.15)',
-            marginBottom: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
+        <div className={adminStyles.bulkActionBar}>
           <span style={{ fontSize: '0.82rem', color: 'var(--navy)', fontWeight: 500 }}>
             {selectedIds.size} selected
           </span>

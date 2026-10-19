@@ -27,15 +27,15 @@ function ProposalRow({ proposal, projectId, busy, onDelete, onDuplicate, onToggl
   const decline = Array.isArray(proposal.proposal_declines) ? proposal.proposal_declines[0] : proposal.proposal_declines;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', border: '1px solid rgba(var(--border-rgb),0.12)', opacity: busy ? 0.6 : 1, flexWrap: 'wrap' }}>
-      <span style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', background: s.bg, color: s.color, flexShrink: 0 }}>
+    <div className={adminStyles.listRow} style={{ opacity: busy ? 0.6 : 1, flexWrap: 'wrap' }}>
+      <span className={adminStyles.listRowPill} style={{ background: s.bg, color: s.color }}>
         {s.label}
       </span>
-      <div style={{ flex: 1, minWidth: '200px' }}>
-        <Link href={href} style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--navy)' }}>
+      <div className={adminStyles.listRowMain} style={{ minWidth: '200px' }}>
+        <Link href={href} className={adminStyles.listRowTitle}>
           {proposal.title}
         </Link>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
+        <div className={adminStyles.listRowMeta}>
           {proposal.status === 'draft' ? `Last edited ${formatDate(proposal.updated_at)}` : proposal.status === 'sent' ? `Sent ${formatDate(proposal.sent_at)} to ${proposal.sent_to_email || ''}` : `Finalized ${formatDate(proposal.finalized_at)}`}
           {proposal.status !== 'draft' && proposal.visible_to_client && <> · <span style={{ color: 'var(--text-success)' }}>Shared with client</span></>}
         </div>
@@ -138,7 +138,7 @@ export default function ProjectProposalsList({ projectId, proposals }) {
       <h4 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', margin: '0 0 0.6rem' }}>
         Draft Proposals
       </h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         {drafts.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No draft proposals.</p>}
         {drafts.map((proposal) => (
           <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} onToggleVisible={handleToggleVisible} />
@@ -148,7 +148,7 @@ export default function ProjectProposalsList({ projectId, proposals }) {
       <h4 style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', margin: '0 0 0.6rem' }}>
         Finalized &amp; Sent Proposals
       </h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <div>
         {finalized.length === 0 && <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No finalized proposals yet.</p>}
         {finalized.map((proposal) => (
           <ProposalRow key={proposal.id} proposal={proposal} projectId={projectId} busy={busyId === proposal.id} onDelete={handleDelete} onDuplicate={handleDuplicate} onToggleVisible={handleToggleVisible} />

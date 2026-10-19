@@ -13,6 +13,13 @@ const emptyEntry = {
   comments: '',
 };
 
+function hasUtilityData(u) {
+  return Boolean(
+    u.contact_trade || u.contact_name || u.contact_phone || u.contact_email || u.contact_comments ||
+    (u.entries && u.entries.length > 0)
+  );
+}
+
 function buildUtilities(initialUtilities) {
   return UTILITY_TYPES.map((t) => {
     const existing = initialUtilities.find((u) => u.utility_type === t.value);
@@ -45,6 +52,20 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
       setUtilities(buildUtilities(initialUtilities));
     }
   }, [initialUtilities]);
+
+  const [expandedOverride, setExpandedOverride] = useState(() => new Set());
+
+  function expand(typeValue) {
+    setExpandedOverride((prev) => new Set(prev).add(typeValue));
+  }
+
+  function collapse(typeValue) {
+    setExpandedOverride((prev) => {
+      const next = new Set(prev);
+      next.delete(typeValue);
+      return next;
+    });
+  }
 
   const [addingFor, setAddingFor] = useState(null);
   const [newEntry, setNewEntry] = useState(emptyEntry);
@@ -179,6 +200,30 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
       {UTILITY_TYPES.map((type) => {
         const u = utilities.find((x) => x.utility_type === type.value);
         const entries = u.entries || [];
+        const isExpanded = u.enabled || hasUtilityData(u) || expandedOverride.has(type.value);
+
+        if (!isExpanded) {
+          return (
+            <div className={adminStyles.utilitySection} style={{ padding: '0.75rem 1rem', marginBottom: '0.6rem' }} key={type.value}>
+              <div className={adminStyles.utilitySectionHeader} style={{ margin: 0, padding: 0, border: 'none' }}>
+                <label className={adminStyles.utilityToggle}>
+                  <input
+                    type="checkbox"
+                    checked={u.enabled}
+                    onChange={(e) => {
+                      update(type.value, 'enabled', e.target.checked);
+                      if (e.target.checked) expand(type.value);
+                    }}
+                  />
+                  <span className={adminStyles.utilityToggleLabel}>{type.label}</span>
+                </label>
+                <button type="button" className={adminStyles.cancelBtn} style={{ padding: '0.3rem 0.75rem', fontSize: '0.72rem' }} onClick={() => expand(type.value)}>
+                  Add details
+                </button>
+              </div>
+            </div>
+          );
+        }
 
         return (
           <div className={adminStyles.utilitySection} key={type.value}>
@@ -191,9 +236,16 @@ export default function AdminUtilitiesEditor({ projectId, initialUtilities }) {
                 />
                 <span className={adminStyles.utilityToggleLabel}>{type.label}</span>
               </label>
-              <span className={adminStyles.utilityToggleHint}>
-                {u.enabled ? 'Visible to client' : 'Hidden from client'}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span className={adminStyles.utilityToggleHint}>
+                  {u.enabled ? 'Visible to client' : 'Hidden from client'}
+                </span>
+                {!u.enabled && !hasUtilityData(u) && (
+                  <button type="button" className={adminStyles.iconBtn} aria-label={`Collapse ${type.label}`} onClick={() => collapse(type.value)}>
+                    <i className="ti ti-chevron-up" aria-hidden="true"></i>
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className={adminStyles.utilityContactHeader} style={{ marginTop: 0 }}>
