@@ -26,6 +26,7 @@ export default function ProjectInfoForm({ project }) {
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [recalculating, setRecalculating] = useState(false);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -52,6 +53,16 @@ export default function ProjectInfoForm({ project }) {
       setMessage('Could not save changes.');
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleRecalculate() {
+    setRecalculating(true);
+    try {
+      await fetch(`/api/admin/projects/${project.id}/recalculate-progress`, { method: 'POST' });
+      router.refresh();
+    } finally {
+      setRecalculating(false);
     }
   }
 
@@ -247,6 +258,23 @@ export default function ProjectInfoForm({ project }) {
           onChange={handleChange}
           style={{ width: '100%' }}
         />
+        <p style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.35rem' }}>
+          {project.progress_pct_auto ?? true ? (
+            'Auto-calculated from the Scope of Work checklist.'
+          ) : (
+            <>
+              Manually set.{' '}
+              <button
+                type="button"
+                onClick={handleRecalculate}
+                disabled={recalculating}
+                style={{ background: 'none', border: 'none', padding: 0, color: 'var(--gold)', fontWeight: 600, cursor: 'pointer', fontSize: 'inherit' }}
+              >
+                {recalculating ? 'Recalculating...' : 'Recalculate from checklist'}
+              </button>
+            </>
+          )}
+        </p>
       </div>
 
       {message && (

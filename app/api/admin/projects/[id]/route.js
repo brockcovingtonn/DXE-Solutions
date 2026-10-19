@@ -56,15 +56,22 @@ export async function PATCH(request, { params }) {
       if (update[dateField] === '') update[dateField] = null;
     }
 
-    // Fetch current state to detect a status change
+    // Fetch current state to detect a status change, and to detect a
+    // manual progress_pct edit (ProjectInfoForm always sends this field
+    // on every save, so we only treat it as "manual" when the value
+    // actually changed from what's stored).
     let previousStatus = null;
-    if ('status' in update) {
+    if ('status' in update || 'progress_pct' in update) {
       const { data: existing } = await supabase
         .from('projects')
-        .select('status')
+        .select('status, progress_pct')
         .eq('id', params.id)
         .single();
       previousStatus = existing?.status;
+
+      if ('progress_pct' in update && Number(update.progress_pct) !== Number(existing?.progress_pct)) {
+        update.progress_pct_auto = false;
+      }
     }
 
     const { error } = await supabase.from('projects').update(update).eq('id', params.id);

@@ -97,11 +97,24 @@ export default function MilestonesEditor({ projectId, initialMilestones }) {
       {availablePresets.length > 0 && (
         <div className={adminStyles.presetChips}>
           <span className={adminStyles.presetChipsLabel}>Quick add:</span>
-          {availablePresets.map((p) => (
-            <button key={p} type="button" className={adminStyles.presetChip} onClick={() => add(p)}>
-              + {p}
-            </button>
-          ))}
+          <select
+            className={adminStyles.fieldInput}
+            style={{ width: 'auto', display: 'inline-block' }}
+            value=""
+            onChange={(e) => {
+              if (e.target.value) add(e.target.value);
+              e.target.value = '';
+            }}
+          >
+            <option value="" disabled>
+              Select a milestone...
+            </option>
+            {availablePresets.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 

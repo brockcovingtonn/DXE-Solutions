@@ -51,6 +51,15 @@ export default async function AdminProjectPage({ params }) {
     .eq('project_id', projectId)
     .order('due_date');
 
+  const { data: scopeAreas } = await supabase
+    .from('scope_areas')
+    .select('*, scope_items(*)')
+    .eq('project_id', projectId)
+    .order('sort_order');
+  (scopeAreas || []).forEach((area) => {
+    area.scope_items = (area.scope_items || []).sort((a, b) => a.sort_order - b.sort_order);
+  });
+
   // RLS-scoped on purpose (not service-role) — the new employee/client
   // policies on design_studio_room_scans decide what comes back here for
   // free: admins see everything, employees only if assigned to this
@@ -176,6 +185,7 @@ export default async function AdminProjectPage({ params }) {
         contacts={contacts}
         proposals={proposals}
         paymentSchedule={paymentSchedule}
+        scopeAreas={scopeAreas}
         roomScansWithUrls={roomScansWithUrls}
       />
     </div>

@@ -2,7 +2,6 @@
 
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
-import MiniMonthCalendar from '@/components/MiniMonthCalendar';
 import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
 import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
 import ScanManager from '@/components/design-studio/ScanManager';
@@ -14,20 +13,14 @@ import PhasesEditor from '@/components/admin/PhasesEditor';
 import ActionItemsEditor from '@/components/admin/ActionItemsEditor';
 import MilestonesEditor from '@/components/admin/MilestonesEditor';
 import AdminUtilitiesEditor from '@/components/admin/AdminUtilitiesEditor';
+import ScopeOfWorkEditor from '@/components/ScopeOfWorkEditor';
 import AdminDocuments from '@/components/admin/AdminDocuments';
 import AdminPhotos from '@/components/admin/AdminPhotos';
-import AdminNotes, { buildNotesTimeline } from '@/components/admin/AdminNotes';
+import AdminNotes from '@/components/admin/AdminNotes';
 import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 import ProjectProposalsList from '@/components/admin/ProjectProposalsList';
 import PaymentScheduleEditor from '@/components/admin/PaymentScheduleEditor';
-
-const STATUS_LABELS = {
-  planning: 'Planning',
-  active: 'Active',
-  'on-hold': 'On hold',
-  completed: 'Completed',
-};
 
 const TOC = [
   { key: 'overview', label: 'Overview' },
@@ -62,73 +55,17 @@ export default function ProjectWorkspace({
   proposals,
   paymentSchedule,
   roomScansWithUrls,
+  scopeAreas,
 }) {
-  const latestUpdates = buildNotesTimeline(notes, proposalActivity).slice(0, 3);
-
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.25rem' }}>
-        <div className={styles.fullWidthCard} style={{ margin: 0 }}>
-          <h3>Project at a glance</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem' }}>
-            <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Status: </span>
-              <span style={{ color: 'var(--navy)', fontWeight: 600 }}>{STATUS_LABELS[project.status] || project.status || '—'}</span>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Type: </span>
-              <span style={{ color: 'var(--navy)' }}>{project.project_type || '—'}</span>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Address: </span>
-              <span style={{ color: 'var(--navy)' }}>{project.address || '—'}</span>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Progress: </span>
-              <span style={{ color: 'var(--navy)' }}>{project.progress_pct ?? 0}%</span>
-            </div>
-            <div>
-              <span style={{ color: 'var(--text-tertiary)' }}>Room scanner: </span>
-              <span style={{ color: 'var(--navy)' }}>{project.room_scanner_enabled ? 'Enabled for client' : 'Off'}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.fullWidthCard} style={{ margin: 0 }}>
-          <MiniMonthCalendar events={calendarEvents || []} />
-        </div>
-
-        <div className={styles.fullWidthCard} style={{ margin: 0 }}>
-          <h3>Latest updates</h3>
-          {latestUpdates.length === 0 ? (
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>Nothing yet.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {latestUpdates.map((item) => {
-                const at = item.kind === 'activity' ? item.activity.created_at : item.note.created_at;
-                const text = item.kind === 'activity' ? item.activity.text : item.note.body;
-                const key = item.kind === 'activity' ? `activity-${item.activity.id}` : `note-${item.note.id}`;
-                return (
-                  <div key={key}>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--navy)' }}>{text}</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
-                      {new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
       <div
         style={{
           display: 'flex',
           gap: '1.25rem',
           flexWrap: 'wrap',
           paddingBottom: '0.75rem',
-          marginBottom: '1rem',
+          marginBottom: '1.25rem',
           borderBottom: '1px solid rgba(var(--border-rgb),0.1)',
         }}
       >
@@ -142,18 +79,20 @@ export default function ProjectWorkspace({
       <h2 id="section-overview" className={adminStyles.fieldDivider} style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
         Overview
       </h2>
-      <div className={styles.fullWidthCard}>
-        <h3>Project details</h3>
-        <ProjectInfoForm project={project} />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Calendar</h3>
-        <ProjectCalendarEditor
-          projectId={projectId}
-          initialEvents={calendarEvents || []}
-          people={assignablePeople || []}
-          contacts={contacts || []}
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <div className={styles.fullWidthCard}>
+          <h3>Project details</h3>
+          <ProjectInfoForm project={project} />
+        </div>
+        <div className={styles.fullWidthCard}>
+          <h3>Calendar</h3>
+          <ProjectCalendarEditor
+            projectId={projectId}
+            initialEvents={calendarEvents || []}
+            people={assignablePeople || []}
+            contacts={contacts || []}
+          />
+        </div>
       </div>
       <div className={styles.fullWidthCard}>
         <h3>Notes &amp; updates</h3>
@@ -206,6 +145,10 @@ export default function ProjectWorkspace({
       <div className={styles.fullWidthCard}>
         <h3>Utilities</h3>
         <AdminUtilitiesEditor projectId={projectId} initialUtilities={utilities || []} />
+      </div>
+      <div className={styles.fullWidthCard}>
+        <h3>Scope of Work</h3>
+        <ScopeOfWorkEditor projectId={projectId} areas={scopeAreas || []} isAdmin />
       </div>
 
       <h2 id="section-documents" className={adminStyles.fieldDivider}>

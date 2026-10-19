@@ -11,10 +11,31 @@ import NewNoteForm from '@/components/NewNoteForm';
 import ClientCalendar from '@/components/ClientCalendar';
 import PhaseBar from '@/components/PhaseBar';
 import PhotoGrid from '@/components/PhotoGrid';
+import ScopeOfWorkEditor from '@/components/ScopeOfWorkEditor';
 import { PERMIT_STATUSES } from '@/lib/constants';
 import { UTILITY_TYPES, UTILITY_STATUSES } from '@/lib/constants';
 
 const UTILITY_ICONS = { electrical: 'ti-bolt', water: 'ti-droplet', gas: 'ti-flame' };
+
+const TOC = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'team', label: 'Team' },
+  { key: 'scope', label: 'Scope & Schedule' },
+  { key: 'documents', label: 'Documents' },
+  { key: 'financials', label: 'Financials' },
+  { key: 'media', label: 'Media' },
+];
+
+function sectionDividerStyle(first) {
+  return {
+    fontFamily: 'Cormorant Garamond, serif',
+    fontSize: '1.1rem',
+    margin: first ? '0 0 0.75rem' : '1rem 0 0.75rem',
+    color: 'var(--navy)',
+    paddingTop: first ? 0 : '1rem',
+    borderTop: first ? 'none' : '1px solid rgba(var(--border-rgb),0.08)',
+  };
+}
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -69,6 +90,15 @@ export default async function EmployeeProjectPage({ params }) {
     supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
     supabase.from('calendar_events').select('*').eq('project_id', projectId).order('start_time'),
   ]);
+
+  const { data: scopeAreas } = await supabase
+    .from('scope_areas')
+    .select('*, scope_items(*)')
+    .eq('project_id', projectId)
+    .order('sort_order');
+  (scopeAreas || []).forEach((area) => {
+    area.scope_items = (area.scope_items || []).sort((a, b) => a.sort_order - b.sort_order);
+  });
 
   // RLS-scoped — the employee policy on design_studio_room_scans already
   // limits this to projects the caller is assigned to via project_employees,
@@ -157,42 +187,83 @@ export default async function EmployeeProjectPage({ params }) {
         </div>
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Project details</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.9rem' }}>
-          <div>
-            <div className={styles.ufLabel}>Type</div>
-            <div className={styles.ufValue}>{project.project_type || '—'}</div>
+      <div
+        style={{
+          display: 'flex',
+          gap: '1.25rem',
+          flexWrap: 'wrap',
+          paddingBottom: '0.75rem',
+          marginBottom: '1.25rem',
+          borderBottom: '1px solid rgba(var(--border-rgb),0.1)',
+        }}
+      >
+        {TOC.map((t) => (
+          <a key={t.key} href={`#section-${t.key}`} style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+            {t.label}
+          </a>
+        ))}
+      </div>
+
+      <h2 id="section-overview" style={sectionDividerStyle(true)}>
+        Overview
+      </h2>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <div className={styles.fullWidthCard}>
+          <h3>Project details</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.9rem' }}>
+            <div>
+              <div className={styles.ufLabel}>Type</div>
+              <div className={styles.ufValue}>{project.project_type || '—'}</div>
+            </div>
+            <div>
+              <div className={styles.ufLabel}>APN</div>
+              <div className={styles.ufValue}>{project.apn || '—'}</div>
+            </div>
+            <div>
+              <div className={styles.ufLabel}>Jurisdiction</div>
+              <div className={styles.ufValue}>{project.jurisdiction || '—'}</div>
+            </div>
+            <div>
+              <div className={styles.ufLabel}>Zoning</div>
+              <div className={styles.ufValue}>{project.zoning || '—'}</div>
+            </div>
+            <div>
+              <div className={styles.ufLabel}>Lot Size</div>
+              <div className={styles.ufValue}>{project.lot_size || '—'}</div>
+            </div>
+            <div>
+              <div className={styles.ufLabel}>Building Size</div>
+              <div className={styles.ufValue}>{project.building_size || '—'}</div>
+            </div>
           </div>
-          <div>
-            <div className={styles.ufLabel}>APN</div>
-            <div className={styles.ufValue}>{project.apn || '—'}</div>
-          </div>
-          <div>
-            <div className={styles.ufLabel}>Jurisdiction</div>
-            <div className={styles.ufValue}>{project.jurisdiction || '—'}</div>
-          </div>
-          <div>
-            <div className={styles.ufLabel}>Zoning</div>
-            <div className={styles.ufValue}>{project.zoning || '—'}</div>
-          </div>
-          <div>
-            <div className={styles.ufLabel}>Lot Size</div>
-            <div className={styles.ufValue}>{project.lot_size || '—'}</div>
-          </div>
-          <div>
-            <div className={styles.ufLabel}>Building Size</div>
-            <div className={styles.ufValue}>{project.building_size || '—'}</div>
-          </div>
+        </div>
+        <div className={styles.fullWidthCard}>
+          <h3>Calendar</h3>
+          <ClientCalendar events={calendarEvents || []} />
         </div>
       </div>
 
-      {phases && phases.length > 0 && (
-        <div className={styles.fullWidthCard}>
-          <h3>Project Phases</h3>
-          <PhaseBar phases={phases} />
+      <div className={styles.fullWidthCard}>
+        <h3>Notes &amp; Updates</h3>
+        <div className={styles.notesArea}>
+          {(notes || []).map((n) => (
+            <div className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`} key={n.id}>
+              <div className={styles.noteFrom}>{n.author_name}</div>
+              <div className={styles.noteText}>{n.body}</div>
+              <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
+            </div>
+          ))}
+          {(!notes || notes.length === 0) && (
+            <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates on this project will appear here." />
+          )}
         </div>
-      )}
+        <NewNoteForm projectId={projectId} />
+      </div>
+
+      <h2 id="section-team" style={sectionDividerStyle()}>
+        Team
+      </h2>
 
       {team && team.length > 0 && (
         <div className={styles.fullWidthCard}>
@@ -236,6 +307,52 @@ export default async function EmployeeProjectPage({ params }) {
                     <i className="ti ti-mail" aria-hidden="true"></i> {party.email}
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <h2 id="section-scope" style={sectionDividerStyle()}>
+        Scope &amp; Schedule
+      </h2>
+
+      {phases && phases.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Project Phases</h3>
+          <PhaseBar phases={phases} />
+        </div>
+      )}
+
+      <div className={styles.fullWidthCard}>
+        <h3>Action Items</h3>
+        <EmployeeActionItems initialItems={actionItems || []} />
+      </div>
+
+      {milestones && milestones.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Milestones</h3>
+          <div className={styles.statusSteps}>
+            {milestones.map((m) => (
+              <div className={styles.statusStep} key={m.id}>
+                <div
+                  className={`${styles.stepDot} ${
+                    m.state === 'done' ? styles.stepDotDone : m.state === 'active' ? styles.stepDotActive : styles.stepDotPending
+                  }`}
+                >
+                  {m.state === 'done' ? (
+                    <i className="ti ti-check" style={{ fontSize: '0.75rem' }}></i>
+                  ) : m.state === 'active' ? (
+                    <i className="ti ti-clock" style={{ fontSize: '0.75rem' }}></i>
+                  ) : (
+                    '·'
+                  )}
+                </div>
+                <div>
+                  <div className={styles.stepName}>{m.name}</div>
+                  <div className={styles.stepDate}>{m.display_date}</div>
+                  {m.notes && <div className={styles.stepNotes}>{m.notes}</div>}
+                </div>
               </div>
             ))}
           </div>
@@ -341,44 +458,13 @@ export default async function EmployeeProjectPage({ params }) {
       </div>
 
       <div className={styles.fullWidthCard}>
-        <h3>Action Items</h3>
-        <EmployeeActionItems initialItems={actionItems || []} />
+        <h3>Scope of Work</h3>
+        <ScopeOfWorkEditor projectId={projectId} areas={scopeAreas || []} isAdmin={false} />
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Calendar</h3>
-        <ClientCalendar events={calendarEvents || []} />
-      </div>
-
-      {milestones && milestones.length > 0 && (
-        <div className={styles.fullWidthCard}>
-          <h3>Milestones</h3>
-          <div className={styles.statusSteps}>
-            {milestones.map((m) => (
-              <div className={styles.statusStep} key={m.id}>
-                <div
-                  className={`${styles.stepDot} ${
-                    m.state === 'done' ? styles.stepDotDone : m.state === 'active' ? styles.stepDotActive : styles.stepDotPending
-                  }`}
-                >
-                  {m.state === 'done' ? (
-                    <i className="ti ti-check" style={{ fontSize: '0.75rem' }}></i>
-                  ) : m.state === 'active' ? (
-                    <i className="ti ti-clock" style={{ fontSize: '0.75rem' }}></i>
-                  ) : (
-                    '·'
-                  )}
-                </div>
-                <div>
-                  <div className={styles.stepName}>{m.name}</div>
-                  <div className={styles.stepDate}>{m.display_date}</div>
-                  {m.notes && <div className={styles.stepNotes}>{m.notes}</div>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <h2 id="section-documents" style={sectionDividerStyle()}>
+        Documents
+      </h2>
 
       <div className={styles.fullWidthCard}>
         <h3>Documents</h3>
@@ -409,42 +495,9 @@ export default async function EmployeeProjectPage({ params }) {
         <DocumentUpload projectId={projectId} />
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Photos</h3>
-        {photosWithUrls.length === 0 ? (
-          <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Progress photos on this project will show up here." />
-        ) : (
-          <PhotoGrid photos={photosWithUrls} showDownload />
-        )}
-      </div>
-
-      {roomScansWithUrls.length > 0 ? (
-        <div className={styles.fullWidthCard}>
-          <h3>Room scans</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {roomScansWithUrls.map((scan) => (
-              <div
-                key={scan.id}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem', border: '1px solid rgba(var(--border-rgb),0.1)' }}
-              >
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{scan.room_label || 'Scanned space'}</div>
-                  {scan.area_sqft ? (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
-                      {Math.round(scan.area_sqft)} sf{scan.area_is_estimate ? ' (approx.)' : ''} · {scan.wall_count} walls
-                    </div>
-                  ) : null}
-                </div>
-                {scan.model_url ? (
-                  <a href={scan.model_url} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', fontSize: '0.8rem', fontWeight: 600 }}>
-                    View
-                  </a>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      <h2 id="section-financials" style={sectionDividerStyle()}>
+        Financials
+      </h2>
 
       <div className={styles.fullWidthCard}>
         <h3>Accounting</h3>
@@ -510,22 +563,46 @@ export default async function EmployeeProjectPage({ params }) {
         )}
       </div>
 
+      <h2 id="section-media" style={sectionDividerStyle()}>
+        Media
+      </h2>
+
       <div className={styles.fullWidthCard}>
-        <h3>Notes &amp; Updates</h3>
-        <div className={styles.notesArea}>
-          {(notes || []).map((n) => (
-            <div className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`} key={n.id}>
-              <div className={styles.noteFrom}>{n.author_name}</div>
-              <div className={styles.noteText}>{n.body}</div>
-              <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
-            </div>
-          ))}
-          {(!notes || notes.length === 0) && (
-            <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates on this project will appear here." />
-          )}
-        </div>
-        <NewNoteForm projectId={projectId} />
+        <h3>Photos</h3>
+        {photosWithUrls.length === 0 ? (
+          <EmptyState icon="ti-photo-off" title="No photos yet" subtitle="Progress photos on this project will show up here." />
+        ) : (
+          <PhotoGrid photos={photosWithUrls} showDownload />
+        )}
       </div>
+
+      {roomScansWithUrls.length > 0 ? (
+        <div className={styles.fullWidthCard}>
+          <h3>Room scans</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            {roomScansWithUrls.map((scan) => (
+              <div
+                key={scan.id}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.85rem', border: '1px solid rgba(var(--border-rgb),0.1)' }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{scan.room_label || 'Scanned space'}</div>
+                  {scan.area_sqft ? (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
+                      {Math.round(scan.area_sqft)} sf{scan.area_is_estimate ? ' (approx.)' : ''} · {scan.wall_count} walls
+                    </div>
+                  ) : null}
+                </div>
+                {scan.model_url ? (
+                  <a href={scan.model_url} target="_blank" rel="noreferrer" style={{ color: 'var(--gold)', fontSize: '0.8rem', fontWeight: 600 }}>
+                    View
+                  </a>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

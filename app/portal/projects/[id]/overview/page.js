@@ -4,6 +4,7 @@ import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import PhaseBar from '@/components/PhaseBar';
 import WhatsNextChecklist from '@/components/WhatsNextChecklist';
+import MiniMonthCalendar from '@/components/MiniMonthCalendar';
 
 export default async function ProjectOverviewPage({ params }) {
   const supabase = createClient();
@@ -16,7 +17,7 @@ export default async function ProjectOverviewPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: proposals }, { data: invoices }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: activity }, { data: notes }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: proposals }, { data: invoices }, { data: calendarEvents }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
@@ -37,10 +38,9 @@ export default async function ProjectOverviewPage({ params }) {
       // "what's next" card instead of the (admin-only) payment schedule.
       supabase.from('proposals').select('id, status, signed_at').eq('project_id', projectId),
       supabase.from('invoices').select('amount, status, kind').eq('project_id', projectId),
+      supabase.from('calendar_events').select('*').eq('project_id', projectId).order('start_time'),
     ]);
 
-  const doneMilestones = (milestones || []).filter((m) => m.state === 'done').length;
-  const totalMilestones = (milestones || []).length;
   const recentDocs = (docs || []).slice(0, 4);
   const unpaidInvoices = (invoices || []).filter((i) => i.kind === 'invoice' && i.status === 'unpaid');
   const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount), 0);
@@ -82,61 +82,33 @@ export default async function ProjectOverviewPage({ params }) {
         unpaidCount={unpaidInvoices.length}
       />
 
-      <div className={styles.statCards}>
-        <div className={styles.statCard}>
-          <div className={styles.scLabel}>Overall Progress</div>
-          <div className={styles.scValue}>{project.progress_pct}%</div>
-          <div className={styles.scSub}>of project complete</div>
-          <div className={styles.scBar}>
-            <div className={styles.scBarFill} style={{ width: `${project.progress_pct}%` }} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <div className={styles.fullWidthCard}>
+          <h3>Project at a glance</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem' }}>
+            <div>
+              <span style={{ color: 'var(--text-tertiary)' }}>Status: </span>
+              <span style={{ color: 'var(--navy)', fontWeight: 600 }}>{capitalize(project.status)}</span>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-tertiary)' }}>Address: </span>
+              <span style={{ color: 'var(--navy)' }}>{project.address}</span>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-tertiary)' }}>Est. completion: </span>
+              <span style={{ color: 'var(--navy)' }}>{formatDate(project.estimated_completion)}</span>
+            </div>
+            <div>
+              <span style={{ color: 'var(--text-tertiary)' }}>Progress: </span>
+              <span style={{ color: 'var(--navy)' }}>{project.progress_pct}%</span>
+              <div className={styles.scBar} style={{ marginTop: '0.3rem' }}>
+                <div className={styles.scBarFill} style={{ width: `${project.progress_pct}%` }} />
+              </div>
+            </div>
           </div>
         </div>
-        <div className={styles.statCard}>
-          <div className={styles.scLabel}>Documents</div>
-          <div className={styles.scValue}>{docs?.length || 0}</div>
-          <div className={styles.scSub}>on file</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.scLabel}>Milestones</div>
-          <div className={styles.scValue}>
-            {doneMilestones}/{totalMilestones}
-          </div>
-          <div className={styles.scSub}>completed</div>
-        </div>
-        <div className={styles.statCard}>
-          <div className={styles.scLabel}>Project Start</div>
-          <div className={styles.scValueSmall}>{formatDate(project.started_on)}</div>
-          <div className={styles.scSub}>Est. complete {formatDate(project.estimated_completion)}</div>
-        </div>
-      </div>
-
-      <div className={styles.highlightCards}>
-        <div className={styles.highlightCard}>
-          <div className={styles.hcIcon}>
-            <i className="ti ti-activity" aria-hidden="true"></i>
-          </div>
-          <div>
-            <div className={styles.hcLabel}>Project Status</div>
-            <div className={styles.hcValue}>{capitalize(project.status)}</div>
-          </div>
-        </div>
-        <div className={styles.highlightCard}>
-          <div className={styles.hcIcon}>
-            <i className="ti ti-calendar" aria-hidden="true"></i>
-          </div>
-          <div>
-            <div className={styles.hcLabel}>Est. Completion</div>
-            <div className={styles.hcValue}>{formatDate(project.estimated_completion)}</div>
-          </div>
-        </div>
-        <div className={styles.highlightCard}>
-          <div className={styles.hcIcon}>
-            <i className="ti ti-map-pin" aria-hidden="true"></i>
-          </div>
-          <div>
-            <div className={styles.hcLabel}>Project Address</div>
-            <div className={styles.hcValue}>{project.address}</div>
-          </div>
+        <div className={styles.fullWidthCard}>
+          <MiniMonthCalendar events={calendarEvents || []} viewAllHref={`/portal/projects/${projectId}/calendar`} />
         </div>
       </div>
 
