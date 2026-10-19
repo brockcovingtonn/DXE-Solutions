@@ -22,7 +22,7 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const { areaId, projectId, description } = body;
+    const { areaId, projectId, description, notes, timeline } = body;
 
     if (!areaId || !projectId || !description?.trim()) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -39,6 +39,8 @@ export async function POST(request) {
         area_id: areaId,
         project_id: projectId,
         description: description.trim(),
+        notes: notes?.trim() || null,
+        timeline: timeline?.trim() || null,
         sort_order: count || 0,
       })
       .select()

@@ -64,6 +64,8 @@ export async function PATCH(request, { params }) {
     const update = {};
     if (isAdmin) {
       if ('description' in body) update.description = body.description?.trim() || null;
+      if ('notes' in body) update.notes = body.notes?.trim() || null;
+      if ('timeline' in body) update.timeline = body.timeline?.trim() || null;
       if ('sort_order' in body) update.sort_order = body.sort_order;
     }
     if ('completed' in body) {

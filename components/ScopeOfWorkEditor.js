@@ -94,6 +94,15 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
     }
   }
 
+  async function saveItemField(itemId, field, value) {
+    await fetch(`/api/admin/scope-items/${itemId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value }),
+    });
+    router.refresh();
+  }
+
   return (
     <div>
       {(areas || []).length === 0 && (
@@ -128,15 +137,16 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
             </div>
 
             {items.map((item) => (
-              <label
+              <div
                 key={item.id}
                 style={{
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: '0.6rem',
                   padding: '0.4rem 0',
+                  flexWrap: 'wrap',
                   opacity: busyId === item.id ? 0.6 : 1,
-                  cursor: 'pointer',
+                  borderBottom: '1px solid rgba(var(--border-rgb),0.06)',
                 }}
               >
                 <input
@@ -144,30 +154,56 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
                   checked={item.completed}
                   onChange={() => toggleItem(item)}
                   disabled={busyId === item.id}
-                  style={{ width: '16px', height: '16px', marginTop: '0.15rem', accentColor: 'var(--gold)', cursor: 'pointer' }}
+                  style={{ width: '16px', height: '16px', marginTop: '0.4rem', accentColor: 'var(--gold)', cursor: 'pointer', flexShrink: 0 }}
                 />
                 <span
                   style={{
-                    flex: 1,
+                    flex: '1 1 220px',
                     fontSize: '0.85rem',
+                    marginTop: '0.3rem',
                     color: item.completed ? 'var(--text-tertiary)' : 'var(--navy)',
                     textDecoration: item.completed ? 'line-through' : 'none',
                   }}
                 >
                   {item.description}
                 </span>
-                {isAdmin && (
-                  <button
-                    type="button"
-                    className={adminStyles.iconBtn}
-                    aria-label="Delete item"
-                    onClick={() => deleteItem(item.id)}
-                    disabled={busyId === item.id}
-                  >
-                    <i className="ti ti-trash" aria-hidden="true"></i>
-                  </button>
+                {isAdmin ? (
+                  <>
+                    <input
+                      className={adminStyles.fieldInput}
+                      style={{ width: '160px', flexShrink: 0 }}
+                      placeholder="Notes"
+                      defaultValue={item.notes || ''}
+                      onBlur={(e) => {
+                        if (e.target.value !== (item.notes || '')) saveItemField(item.id, 'notes', e.target.value);
+                      }}
+                    />
+                    <input
+                      className={adminStyles.fieldInput}
+                      style={{ width: '130px', flexShrink: 0 }}
+                      placeholder="Timeline"
+                      defaultValue={item.timeline || ''}
+                      onBlur={(e) => {
+                        if (e.target.value !== (item.timeline || '')) saveItemField(item.id, 'timeline', e.target.value);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className={adminStyles.iconBtn}
+                      aria-label="Delete item"
+                      onClick={() => deleteItem(item.id)}
+                      disabled={busyId === item.id}
+                    >
+                      <i className="ti ti-trash" aria-hidden="true"></i>
+                    </button>
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.74rem', color: 'var(--text-tertiary)', marginTop: '0.35rem' }}>
+                    {item.notes && <span>Notes: {item.notes}</span>}
+                    {item.timeline && <span>Timeline: {item.timeline}</span>}
+                  </div>
                 )}
-              </label>
+              </div>
             ))}
 
             {isAdmin && (
