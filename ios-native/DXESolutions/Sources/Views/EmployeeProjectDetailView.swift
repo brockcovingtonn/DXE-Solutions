@@ -25,6 +25,7 @@ struct EmployeeProjectDetailView: View {
                     if !phases.isEmpty { phasesSection }
                     if !milestones.isEmpty { milestonesSection }
                     if !actionItems.isEmpty { actionItemsSection }
+                    scopeOfWorkSection
                     if !annotatedScans.isEmpty { annotationsSection }
                     detailsSection
                 }
@@ -202,6 +203,13 @@ struct EmployeeProjectDetailView: View {
                         .foregroundColor(.secondary)
                 }
             }
+        }
+    }
+
+    private var scopeOfWorkSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SectionHeader("Scope of Work")
+            ScopeOfWorkView(projectId: project.id, isAdmin: false)
         }
     }
 

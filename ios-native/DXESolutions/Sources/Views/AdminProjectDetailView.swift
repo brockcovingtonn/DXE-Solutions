@@ -49,6 +49,19 @@ struct AdminProjectDetailView: View {
     @State private var milestones: [EditableMilestone] = []
     @State private var isSavingMilestones = false
     @State private var milestonesMessage: String?
+    @State private var milestonePresetSelection = ""
+
+    // Tabs
+    @State private var selectedTab = Tab.overview
+
+    private enum Tab: String, CaseIterable {
+        case overview = "Overview"
+        case team = "Team"
+        case scope = "Scope & Schedule"
+        case documents = "Documents & Proposals"
+        case financials = "Financials"
+        case media = "Media"
+    }
 
     private let projectTypes = [
         "Residential — New Construction",
@@ -72,27 +85,15 @@ struct AdminProjectDetailView: View {
             } else if let error = errorMessage {
                 Text(error).foregroundColor(.red).frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 28) {
-                        header
-                        infoSection
-                        sectionCard("Assigned Employees") { AdminEmployeesEditor(projectId: projectId) }
-                        sectionCard("Permits") { AdminPermitsEditor(projectId: projectId) }
-                        sectionCard("Project Team") { AdminTeamEditor(projectId: projectId) }
-                        calendarSection
-                        phasesSection
-                        sectionCard("Action Items") { AdminActionItemsEditor(projectId: projectId) }
-                        milestonesSection
-                        sectionCard("Utilities") { AdminUtilitiesEditor(projectId: projectId) }
-                        sectionCard("Documents") { AdminDocumentsEditor(projectId: projectId) }
-                        sectionCard("Proposals") { AdminProposalsEditor(projectId: projectId) }
-                        sectionCard("Accounting") { AdminAccountingEditor(projectId: projectId) }
-                        sectionCard("Payment Schedule") { AdminPaymentScheduleEditor(projectId: projectId) }
-                        sectionCard("Photos") { AdminPhotosEditor(projectId: projectId) }
-                        sectionCard("Room Scans") { AdminRoomScansEditor(projectId: projectId) }
-                        sectionCard("Notes & Updates") { AdminNotesEditor(projectId: projectId) }
+                VStack(spacing: 0) {
+                    tabBar
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 28) {
+                            header
+                            tabContent
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
             }
         }
@@ -100,6 +101,61 @@ struct AdminProjectDetailView: View {
         .navigationTitle(project?.name ?? "Project")
         .navigationBarTitleDisplayMode(.inline)
         .task { await load() }
+    }
+
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedTab {
+        case .overview:
+            infoSection
+            calendarSection
+            sectionCard("Notes & Updates") { AdminNotesEditor(projectId: projectId) }
+        case .team:
+            sectionCard("Assigned Employees") { AdminEmployeesEditor(projectId: projectId) }
+            sectionCard("Project Team") { AdminTeamEditor(projectId: projectId) }
+        case .scope:
+            phasesSection
+            milestonesSection
+            sectionCard("Action Items") { AdminActionItemsEditor(projectId: projectId) }
+            sectionCard("Permits") { AdminPermitsEditor(projectId: projectId) }
+            sectionCard("Utilities") { AdminUtilitiesEditor(projectId: projectId) }
+            sectionCard("Scope of Work") { ScopeOfWorkView(projectId: projectId, isAdmin: true) }
+        case .documents:
+            sectionCard("Documents") { AdminDocumentsEditor(projectId: projectId) }
+            sectionCard("Proposals") { AdminProposalsEditor(projectId: projectId) }
+        case .financials:
+            sectionCard("Accounting") { AdminAccountingEditor(projectId: projectId) }
+            sectionCard("Payment Schedule") { AdminPaymentScheduleEditor(projectId: projectId) }
+        case .media:
+            sectionCard("Photos") { AdminPhotosEditor(projectId: projectId) }
+            sectionCard("Room Scans") { AdminRoomScansEditor(projectId: projectId) }
+        }
+    }
+
+    private var tabBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 20) {
+                ForEach(Tab.allCases, id: \.self) { tab in
+                    Button {
+                        selectedTab = tab
+                    } label: {
+                        VStack(spacing: 6) {
+                            Text(tab.rawValue)
+                                .font(.subheadline.weight(selectedTab == tab ? .semibold : .regular))
+                                .foregroundColor(selectedTab == tab ? Theme.textPrimary : .secondary)
+                            Rectangle()
+                                .fill(selectedTab == tab ? Theme.gold : .clear)
+                                .frame(height: 2)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 10)
+        }
+        .background(Theme.cardBackground)
+        .overlay(Rectangle().fill(Theme.cardBorder).frame(height: 1), alignment: .bottom)
     }
 
     private var header: some View {
@@ -356,6 +412,24 @@ struct AdminProjectDetailView: View {
                     Label("Add milestone", systemImage: "plus")
                 }
                 .font(.caption.weight(.medium))
+
+                let usedNames = Set(milestones.map { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() })
+                let availablePresets = MilestonePresets.all.filter { !usedNames.contains($0.lowercased()) }
+                if !availablePresets.isEmpty {
+                    HStack {
+                        Text("Quick add:").font(.caption2.weight(.semibold)).foregroundColor(.secondary)
+                        Picker("Quick add", selection: $milestonePresetSelection) {
+                            Text("Select a milestone...").tag("")
+                            ForEach(availablePresets, id: \.self) { Text($0).tag($0) }
+                        }
+                        .pickerStyle(.menu)
+                        .onChange(of: milestonePresetSelection) { preset in
+                            guard !preset.isEmpty else { return }
+                            milestones.append(EditableMilestone(name: preset, displayDate: "", state: "pending", notes: ""))
+                            milestonePresetSelection = ""
+                        }
+                    }
+                }
 
                 if let milestonesMessage {
                     Text(milestonesMessage).font(.caption).foregroundColor(.secondary)
