@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { calculateQuote, ADDON_ORDER, EMPTY_INPUT, addOnRate, buildIncludedBullets } from '@/lib/design-studio/pricing';
 import { BRAND, C, S, money } from '@/lib/design-studio/brand';
@@ -15,6 +15,33 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [editingLineItemsFor, setEditingLineItemsFor] = useState(null);
+  const [clientProjects, setClientProjects] = useState([]);
+
+  // Load the selected client's projects so the project link can default
+  // to the most recent one (unambiguous for a client with just one) while
+  // staying editable — mirrors the auto-pick the create API does server
+  // side for a brand-new quote, but lets staff see/correct it here too.
+  useEffect(() => {
+    if (!form.clientId) {
+      setClientProjects([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/design-studio/clients/${form.clientId}/projects`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        const projects = data.projects || [];
+        setClientProjects(projects);
+        setForm((f) => (f.projectId ? f : { ...f, projectId: projects[0]?.id || null }));
+      })
+      .catch(() => {
+        if (!cancelled) setClientProjects([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [form.clientId]);
 
   const quote = useMemo(() => calculateQuote(form, config), [form, config]);
 
@@ -112,6 +139,7 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                     clientName: c?.name || '',
                     clientEmail: c?.email || '',
                     clientPhone: c?.phone || '',
+                    projectId: null,
                   }))
                 }
               />
@@ -120,6 +148,21 @@ export default function QuoteBuilder({ config, viewer, initial, quoteId }) {
                   <label style={S.label}>Project address</label>
                   <input style={S.input} value={form.projectAddress} onChange={set('projectAddress')} placeholder="2068 N Beverly Dr" />
                 </div>
+                {clientProjects.length > 0 && (
+                  <div>
+                    <label style={S.label}>Linked project</label>
+                    <select
+                      style={S.input}
+                      value={form.projectId || ''}
+                      onChange={(e) => setForm((f) => ({ ...f, projectId: e.target.value || null }))}
+                    >
+                      {clientProjects.length > 1 && <option value="">Not linked to a project</option>}
+                      {clientProjects.map((p) => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </section>
 

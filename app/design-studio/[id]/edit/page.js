@@ -24,6 +24,7 @@ export default async function EditQuotePage({ params }) {
     clientName: quote.client_name || '',
     clientEmail: quote.client_email || '',
     clientPhone: quote.client_phone || '',
+    projectId: quote.project_id || null,
     projectAddress: quote.project_address || '',
     projectType: quote.project_type,
     serviceLevel: quote.service_level,

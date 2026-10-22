@@ -82,6 +82,7 @@ export async function PATCH(request, { params }) {
         client_name: body.reprice.clientName || null,
         client_email: body.reprice.clientEmail || null,
         client_phone: body.reprice.clientPhone || null,
+        project_id: 'projectId' in body.reprice ? body.reprice.projectId || null : existing.project_id,
         project_address: body.reprice.projectAddress || null,
         project_type: recalculated.inputs.projectType,
         service_level: recalculated.inputs.serviceLevel,

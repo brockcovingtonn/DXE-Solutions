@@ -47,12 +47,29 @@ export async function POST(request) {
     );
     if (numberError) throw numberError;
 
+    // Auto-associate with the client's project when the UI didn't already
+    // send an explicit choice — unambiguous when there's exactly one
+    // project, and a reasonable (editable, in QuoteBuilder) default of the
+    // most recent one otherwise. No client picked yet, no projects to
+    // choose from: stays null, same as before this existed.
+    let projectId = body.projectId || null;
+    if (!projectId && body.clientId) {
+      const { data: clientProjects } = await db
+        .from('projects')
+        .select('id')
+        .eq('owner_id', body.clientId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      projectId = clientProjects?.[0]?.id || null;
+    }
+
     const { data, error } = await db
       .from('design_studio_quotes')
       .insert({
         quote_number: numberRow,
         status: 'draft',
         client_id: body.clientId || null,
+        project_id: projectId,
         client_name: body.clientName || null,
         client_email: body.clientEmail || null,
         client_phone: body.clientPhone || null,
