@@ -156,6 +156,12 @@ export default function PortalShell({ profile, projects, isAdmin, unreadByProjec
                 active={subPath === 'utilities'}
               />
               <SidebarLink
+                href={`${projectBasePath(activeProjectId)}/scope-of-work`}
+                icon="ti-list-check"
+                label="Scope of Work"
+                active={subPath === 'scope-of-work'}
+              />
+              <SidebarLink
                 href={`${projectBasePath(activeProjectId)}/proposals`}
                 icon="ti-file-description"
                 label="Proposals"

@@ -1,0 +1,53 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5vh 1rem;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.card {
+  width: 100%;
+  background: var(--white, #fff);
+  border: 1px solid rgba(var(--border-rgb), 0.15);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+  margin-bottom: 0.75rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid rgba(var(--border-rgb), 0.1);
+}
+
+.title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--navy);
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.closeBtn:hover {
+  color: var(--navy);
+}
+
+.body {
+  padding: 1.5rem;
+}

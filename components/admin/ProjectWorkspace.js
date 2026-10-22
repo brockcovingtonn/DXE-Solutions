@@ -2,6 +2,7 @@
 
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
+import ViewEditSection from '@/components/ViewEditSection';
 import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
 import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
 import ScanManager from '@/components/design-studio/ScanManager';
@@ -21,6 +22,15 @@ import ProjectCalendarEditor from '@/components/admin/ProjectCalendarEditor';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
 import ProjectProposalsList from '@/components/admin/ProjectProposalsList';
 import PaymentScheduleEditor from '@/components/admin/PaymentScheduleEditor';
+
+import ProjectDetailsView from '@/components/admin/views/ProjectDetailsView';
+import AssignedEmployeesView from '@/components/admin/views/AssignedEmployeesView';
+import RosterListView from '@/components/admin/views/RosterListView';
+import PhasesView from '@/components/admin/views/PhasesView';
+import MilestonesView from '@/components/admin/views/MilestonesView';
+import ActionItemsView from '@/components/admin/views/ActionItemsView';
+import PermitsView from '@/components/admin/views/PermitsView';
+import UtilitiesSummaryView from '@/components/admin/views/UtilitiesSummaryView';
 
 const TOC = [
   { key: 'overview', label: 'Overview' },
@@ -80,10 +90,12 @@ export default function ProjectWorkspace({
         Overview
       </h2>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
-        <div className={styles.fullWidthCard}>
-          <h3>Project details</h3>
-          <ProjectInfoForm project={project} />
-        </div>
+        <ViewEditSection
+          title="Project details"
+          view={<ProjectDetailsView project={project} />}
+          edit={<ProjectInfoForm project={project} />}
+        />
+        {/* Calendar stays as-is — it's already a compact, interactive widget, and adding an event already opens its own popup. */}
         <div className={styles.fullWidthCard}>
           <h3>Calendar</h3>
           <ProjectCalendarEditor
@@ -94,58 +106,79 @@ export default function ProjectWorkspace({
           />
         </div>
       </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Notes &amp; updates</h3>
-        <AdminNotes projectId={projectId} initialNotes={notes || []} proposalActivity={proposalActivity || []} />
-      </div>
+      <ViewEditSection
+        title="Notes & updates"
+        actionLabel="Add"
+        edit={<AdminNotes projectId={projectId} initialNotes={[]} proposalActivity={[]} hideList />}
+        view={<AdminNotes projectId={projectId} initialNotes={notes || []} proposalActivity={proposalActivity || []} hideForm />}
+      />
 
       <h2 id="section-team" className={adminStyles.fieldDivider}>
         Team
       </h2>
-      <div className={styles.fullWidthCard}>
-        <h3>Assigned employees</h3>
-        <ProjectEmployeesForm
-          projectId={projectId}
-          allEmployees={allEmployees || []}
-          assignedEmployeeIds={assignedEmployeeIds}
-        />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Project team</h3>
-        <ProjectTeamEditor projectId={projectId} initialTeam={team || []} />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Interested parties</h3>
-        <InterestedPartiesEditor projectId={projectId} initialParties={interestedParties || []} />
-      </div>
+      <ViewEditSection
+        title="Assigned employees"
+        view={<AssignedEmployeesView allEmployees={allEmployees || []} assignedEmployeeIds={assignedEmployeeIds} />}
+        edit={
+          <ProjectEmployeesForm
+            projectId={projectId}
+            allEmployees={allEmployees || []}
+            assignedEmployeeIds={assignedEmployeeIds}
+          />
+        }
+      />
+      <ViewEditSection
+        title="Project team"
+        actionLabel={(team || []).length === 0 ? 'Add' : 'Edit'}
+        view={<RosterListView items={team || []} tagField="trade" emptyLabel="No team members added yet." />}
+        edit={<ProjectTeamEditor projectId={projectId} initialTeam={team || []} />}
+      />
+      <ViewEditSection
+        title="Interested parties"
+        actionLabel={(interestedParties || []).length === 0 ? 'Add' : 'Edit'}
+        view={<RosterListView items={interestedParties || []} tagField="relationship" emptyLabel="No interested parties added yet." />}
+        edit={<InterestedPartiesEditor projectId={projectId} initialParties={interestedParties || []} />}
+      />
 
       <h2 id="section-scope" className={adminStyles.fieldDivider}>
         Scope &amp; Schedule
       </h2>
-      <div className={styles.fullWidthCard}>
-        <h3>Project phases</h3>
-        <PhasesEditor projectId={projectId} initialPhases={phases || []} />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Milestones</h3>
-        <MilestonesEditor projectId={projectId} initialMilestones={milestones || []} />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Action items</h3>
-        <ActionItemsEditor
-          projectId={projectId}
-          initialItems={actionItems || []}
-          assignablePeople={assignablePeople || []}
-        />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Permits</h3>
-        <PermitsEditor projectId={projectId} initialPermits={permits || []} />
-      </div>
-      <div className={styles.fullWidthCard}>
-        <h3>Utilities</h3>
-        <AdminUtilitiesEditor projectId={projectId} initialUtilities={utilities || []} />
-      </div>
+      <ViewEditSection
+        title="Project phases"
+        actionLabel={(phases || []).length === 0 ? 'Add' : 'Edit'}
+        view={<PhasesView phases={phases || []} />}
+        edit={<PhasesEditor projectId={projectId} initialPhases={phases || []} />}
+      />
+      <ViewEditSection
+        title="Milestones"
+        actionLabel={(milestones || []).length === 0 ? 'Add' : 'Edit'}
+        view={<MilestonesView milestones={milestones || []} />}
+        edit={<MilestonesEditor projectId={projectId} initialMilestones={milestones || []} />}
+      />
+      <ViewEditSection
+        title="Action items"
+        actionLabel={(actionItems || []).length === 0 ? 'Add' : 'Edit'}
+        view={<ActionItemsView items={actionItems || []} />}
+        edit={
+          <ActionItemsEditor
+            projectId={projectId}
+            initialItems={actionItems || []}
+            assignablePeople={assignablePeople || []}
+          />
+        }
+      />
+      <ViewEditSection
+        title="Permits"
+        actionLabel={(permits || []).length === 0 ? 'Add' : 'Edit'}
+        view={<PermitsView permits={permits || []} />}
+        edit={<PermitsEditor projectId={projectId} initialPermits={permits || []} />}
+      />
+      <ViewEditSection
+        title="Utilities"
+        view={<UtilitiesSummaryView utilities={utilities || []} />}
+        edit={<AdminUtilitiesEditor projectId={projectId} initialUtilities={utilities || []} />}
+      />
+      {/* Scope of Work keeps its checkboxes always visible and clickable — it has its own internal Edit toggle for the add/delete/notes chrome, not a popup. */}
       <div className={styles.fullWidthCard}>
         <h3>Scope of Work</h3>
         <ScopeOfWorkEditor projectId={projectId} areas={scopeAreas || []} isAdmin />
@@ -154,10 +187,13 @@ export default function ProjectWorkspace({
       <h2 id="section-documents" className={adminStyles.fieldDivider}>
         Documents &amp; Proposals
       </h2>
-      <div className={styles.fullWidthCard}>
-        <h3>Documents</h3>
-        <AdminDocuments projectId={projectId} initialDocs={docs || []} />
-      </div>
+      <ViewEditSection
+        title="Documents"
+        actionLabel="Add"
+        edit={<AdminDocuments projectId={projectId} initialDocs={[]} hideList />}
+        view={<AdminDocuments projectId={projectId} initialDocs={docs || []} hideForm />}
+      />
+      {/* Proposals stays as-is — already a compact list with a "Create a Proposal" button that navigates to its own page. */}
       <div className={styles.fullWidthCard}>
         <h3>Proposals</h3>
         <ProjectProposalsList projectId={projectId} proposals={proposals || []} />
@@ -166,32 +202,29 @@ export default function ProjectWorkspace({
       <h2 id="section-financials" className={adminStyles.fieldDivider}>
         Financials
       </h2>
-      <div className={styles.fullWidthCard} id="accounting">
-        <h3>Accounting</h3>
-        <AccountingEditor projectId={projectId} initialInvoices={invoices || []} />
-        <h4
-          style={{
-            fontSize: '0.82rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--text-secondary)',
-            margin: '1rem 0 0.75rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(var(--border-rgb),0.08)',
-          }}
-        >
-          Payment Schedule
-        </h4>
-        <PaymentScheduleEditor projectId={projectId} initialItems={paymentSchedule || []} />
-      </div>
+      <ViewEditSection
+        title="Accounting"
+        actionLabel="Add entry"
+        edit={<AccountingEditor projectId={projectId} initialInvoices={[]} hideList />}
+        view={<AccountingEditor projectId={projectId} initialInvoices={invoices || []} hideForm />}
+      />
+      <ViewEditSection
+        title="Payment Schedule"
+        actionLabel="Add milestone"
+        edit={<PaymentScheduleEditor projectId={projectId} initialItems={[]} hideList startAdding />}
+        view={<PaymentScheduleEditor projectId={projectId} initialItems={paymentSchedule || []} hideForm />}
+      />
 
       <h2 id="section-media" className={adminStyles.fieldDivider}>
         Media
       </h2>
-      <div className={styles.fullWidthCard}>
-        <h3>Photos</h3>
-        <AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} />
-      </div>
+      <ViewEditSection
+        title="Photos"
+        actionLabel="Add"
+        edit={<AdminPhotos projectId={projectId} initialPhotos={[]} hideList />}
+        view={<AdminPhotos projectId={projectId} initialPhotos={photosWithUrls} hideForm />}
+      />
+      {/* Room Scans stays as-is — already a compact grid with its own internal viewers/pickers. */}
       {roomScansWithUrls.length > 0 ? (
         <div className={styles.fullWidthCard}>
           <h3>Room scans</h3>

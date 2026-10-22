@@ -11,7 +11,7 @@ function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 
-export default function AccountingEditor({ projectId, initialInvoices }) {
+export default function AccountingEditor({ projectId, initialInvoices, hideForm = false, hideList = false }) {
   const supabase = createClient();
   const router = useRouter();
   const fileInputRef = useRef(null);
@@ -134,6 +134,8 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
 
   return (
     <div>
+      {!hideList && (
+      <>
       <div
         style={{
           padding: '0.85rem 1.1rem',
@@ -251,7 +253,10 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No invoices or receipts yet.</p>
         )}
       </div>
+      </>
+      )}
 
+      {!hideForm && (
       <form onSubmit={handleAdd}>
         <div className={adminStyles.formGrid2}>
           <div className={adminStyles.fieldGroup}>
@@ -318,6 +323,7 @@ export default function AccountingEditor({ projectId, initialInvoices }) {
           </button>
         </div>
       </form>
+      )}
     </div>
   );
 }

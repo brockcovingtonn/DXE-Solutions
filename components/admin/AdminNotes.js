@@ -13,7 +13,7 @@ export function buildNotesTimeline(notes, proposalActivity = []) {
   ].sort((a, b) => new Date(b.at) - new Date(a.at));
 }
 
-export default function AdminNotes({ projectId, initialNotes, proposalActivity = [] }) {
+export default function AdminNotes({ projectId, initialNotes, proposalActivity = [], hideForm = false, hideList = false }) {
   const router = useRouter();
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
@@ -102,21 +102,24 @@ export default function AdminNotes({ projectId, initialNotes, proposalActivity =
 
   return (
     <div>
-      <form className={styles.noteForm} onSubmit={handleSubmit}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Post an update</h3>
-        <textarea
-          placeholder="Write an update for the client..."
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          disabled={posting}
-        />
-        {error && <p className={adminStyles.formMsgError}>{error}</p>}
-        <button type="submit" className="btn-navy" disabled={posting || !body.trim()}>
-          {posting ? 'Posting...' : 'Post update'}
-        </button>
-      </form>
+      {!hideForm && (
+        <form className={styles.noteForm} onSubmit={handleSubmit}>
+          <h3 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Post an update</h3>
+          <textarea
+            placeholder="Write an update for the client..."
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            disabled={posting}
+          />
+          {error && <p className={adminStyles.formMsgError}>{error}</p>}
+          <button type="submit" className="btn-navy" disabled={posting || !body.trim()}>
+            {posting ? 'Posting...' : 'Post update'}
+          </button>
+        </form>
+      )}
 
-      <div className={styles.notesArea} style={{ marginTop: '1.5rem' }}>
+      {!hideList && (
+      <div className={styles.notesArea} style={{ marginTop: hideForm ? 0 : '1.5rem' }}>
         {timeline.map((item) => {
           if (item.kind === 'activity') {
             const a = item.activity;
@@ -201,6 +204,7 @@ export default function AdminNotes({ projectId, initialNotes, proposalActivity =
           <EmptyState icon="ti-note" title="No notes yet" subtitle="Post an update above to keep the client in the loop." />
         )}
       </div>
+      )}
     </div>
   );
 }

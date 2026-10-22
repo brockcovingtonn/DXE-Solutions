@@ -4,6 +4,7 @@ import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import DocumentUpload from '@/components/DocumentUpload';
 import DocumentsList from '@/components/DocumentsList';
+import ViewEditSection from '@/components/ViewEditSection';
 
 export default async function DocumentsPage({ params }) {
   const supabase = createClient();
@@ -36,12 +37,12 @@ export default async function DocumentsPage({ params }) {
         </p>
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>All Project Documents</h3>
-        <DocumentsList docs={docs} currentUserName={currentUserName} />
-      </div>
-
-      <DocumentUpload projectId={projectId} />
+      <ViewEditSection
+        title="All Project Documents"
+        actionLabel="Add"
+        edit={<DocumentUpload projectId={projectId} bare />}
+        view={<DocumentsList docs={docs} currentUserName={currentUserName} />}
+      />
     </div>
   );
 }

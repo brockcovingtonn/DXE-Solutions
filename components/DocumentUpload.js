@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import styles from '@/components/portal-shared.module.css';
 
-export default function DocumentUpload({ projectId }) {
+export default function DocumentUpload({ projectId, bare = false }) {
   const supabase = createClient();
   const router = useRouter();
   const fileInputRef = useRef(null);
@@ -61,8 +61,8 @@ export default function DocumentUpload({ projectId }) {
   }
 
   return (
-    <div className={styles.fullWidthCard}>
-      <h3>Upload a Document</h3>
+    <div className={bare ? undefined : styles.fullWidthCard}>
+      {!bare && <h3>Upload a Document</h3>}
       <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
         Share contracts, insurance certificates, authorizations, or any file relevant to your
         project.

@@ -8,7 +8,7 @@ import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
 import PhotoGrid from '@/components/PhotoGrid';
 
-export default function AdminPhotos({ projectId, initialPhotos }) {
+export default function AdminPhotos({ projectId, initialPhotos, hideForm = false, hideList = false }) {
   const supabase = createClient();
   const router = useRouter();
   const fileInputRef = useRef(null);
@@ -106,6 +106,8 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
 
   return (
     <div>
+      {!hideList && (
+      <>
       {selectedIds.size > 0 && (
         <div className={adminStyles.bulkActionBar}>
           <span style={{ fontSize: '0.82rem', color: 'var(--navy)', fontWeight: 500 }}>
@@ -180,7 +182,11 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
           }
         />
       )}
+      </>
+      )}
 
+      {!hideForm && (
+      <>
       <div style={{ marginTop: '1rem' }}>
         <label className={adminStyles.fieldLabel}>Caption (applies to this upload)</label>
         <input
@@ -213,6 +219,8 @@ export default function AdminPhotos({ projectId, initialPhotos }) {
           onChange={(e) => handleFiles(e.target.files)}
         />
       </label>
+      </>
+      )}
       {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginTop: '0.75rem' }}>{error}</p>}
     </div>
   );

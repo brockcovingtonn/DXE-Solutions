@@ -5,8 +5,15 @@ import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
 import { PROPERTY_AREAS } from '@/lib/constants';
 
-export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
+export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly = false }) {
   const router = useRouter();
+  // Checkboxes stay clickable either way — checking items off is the main
+  // use of this feature. "Editing" only reveals the add/delete/notes/
+  // timeline chrome, kept separate from the page-level view/edit-popup
+  // pattern since hiding the checklist itself inside a modal would defeat
+  // the point of a quick field checklist.
+  const [editing, setEditing] = useState(false);
+  const showAdminControls = isAdmin && editing;
   const [areaSelect, setAreaSelect] = useState('');
   const [customArea, setCustomArea] = useState('');
   const [addingArea, setAddingArea] = useState(false);
@@ -105,6 +112,26 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
 
   return (
     <div>
+      {isAdmin && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.6rem' }}>
+          <button
+            type="button"
+            onClick={() => setEditing((v) => !v)}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(var(--border-rgb),0.18)',
+              color: 'var(--navy)',
+              padding: '0.3rem 0.75rem',
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            {editing ? 'Done' : 'Edit'}
+          </button>
+        </div>
+      )}
+
       {(areas || []).length === 0 && (
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
           No scope of work areas added yet.
@@ -122,7 +149,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
                 <span className={adminStyles.utilityToggleHint}>
                   {items.length === 0 ? 'No items yet' : `${completedCount}/${items.length} complete`}
                 </span>
-                {isAdmin && (
+                {showAdminControls && (
                   <button
                     type="button"
                     className={adminStyles.iconBtn}
@@ -152,9 +179,16 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
                 <input
                   type="checkbox"
                   checked={item.completed}
-                  onChange={() => toggleItem(item)}
-                  disabled={busyId === item.id}
-                  style={{ width: '16px', height: '16px', marginTop: '0.4rem', accentColor: 'var(--gold)', cursor: 'pointer', flexShrink: 0 }}
+                  onChange={readOnly ? undefined : () => toggleItem(item)}
+                  disabled={readOnly || busyId === item.id}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    marginTop: '0.4rem',
+                    accentColor: 'var(--gold)',
+                    cursor: readOnly ? 'default' : 'pointer',
+                    flexShrink: 0,
+                  }}
                 />
                 <span
                   style={{
@@ -167,7 +201,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
                 >
                   {item.description}
                 </span>
-                {isAdmin ? (
+                {showAdminControls ? (
                   <>
                     <input
                       className={adminStyles.fieldInput}
@@ -206,7 +240,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
               </div>
             ))}
 
-            {isAdmin && (
+            {showAdminControls && (
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
                 <input
                   className={adminStyles.fieldInput}
@@ -234,7 +268,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin }) {
         );
       })}
 
-      {isAdmin && (
+      {showAdminControls && (
         <form onSubmit={addArea} style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <select
             className={adminStyles.fieldInput}

@@ -8,6 +8,7 @@ import EmptyState from '@/components/EmptyState';
 import EmployeeActionItems from '@/components/EmployeeActionItems';
 import DocumentUpload from '@/components/DocumentUpload';
 import NewNoteForm from '@/components/NewNoteForm';
+import ViewEditSection from '@/components/ViewEditSection';
 import ClientCalendar from '@/components/ClientCalendar';
 import PhaseBar from '@/components/PhaseBar';
 import PhotoGrid from '@/components/PhotoGrid';
@@ -244,22 +245,25 @@ export default async function EmployeeProjectPage({ params }) {
         </div>
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Notes &amp; Updates</h3>
-        <div className={styles.notesArea}>
-          {(notes || []).map((n) => (
-            <div className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`} key={n.id}>
-              <div className={styles.noteFrom}>{n.author_name}</div>
-              <div className={styles.noteText}>{n.body}</div>
-              <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
-            </div>
-          ))}
-          {(!notes || notes.length === 0) && (
-            <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates on this project will appear here." />
-          )}
-        </div>
-        <NewNoteForm projectId={projectId} />
-      </div>
+      <ViewEditSection
+        title="Notes & Updates"
+        actionLabel="Add"
+        edit={<NewNoteForm projectId={projectId} />}
+        view={
+          <div className={styles.notesArea}>
+            {(notes || []).map((n) => (
+              <div className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`} key={n.id}>
+                <div className={styles.noteFrom}>{n.author_name}</div>
+                <div className={styles.noteText}>{n.body}</div>
+                <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
+              </div>
+            ))}
+            {(!notes || notes.length === 0) && (
+              <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates on this project will appear here." />
+            )}
+          </div>
+        }
+      />
 
       <h2 id="section-team" style={sectionDividerStyle()}>
         Team
@@ -466,34 +470,37 @@ export default async function EmployeeProjectPage({ params }) {
         Documents
       </h2>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Documents</h3>
-        {!docs || docs.length === 0 ? (
-          <EmptyState icon="ti-files" title="No documents yet" subtitle="Files uploaded on this project will show up here." />
-        ) : (
-          <div className={styles.docList}>
-            {docs.map((d) => (
-              <div className={styles.docItem} key={d.id}>
-                <div className={styles.docIcon}>
-                  <i className="ti ti-file-text" aria-hidden="true"></i>
+      <ViewEditSection
+        title="Documents"
+        actionLabel="Add"
+        edit={<DocumentUpload projectId={projectId} bare />}
+        view={
+          !docs || docs.length === 0 ? (
+            <EmptyState icon="ti-files" title="No documents yet" subtitle="Files uploaded on this project will show up here." />
+          ) : (
+            <div className={styles.docList}>
+              {docs.map((d) => (
+                <div className={styles.docItem} key={d.id}>
+                  <div className={styles.docIcon}>
+                    <i className="ti ti-file-text" aria-hidden="true"></i>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className={styles.docName}>{d.file_name}</div>
+                    <div className={styles.docMeta}>{formatDate(d.created_at)}</div>
+                  </div>
+                  <a
+                    href={`/api/documents/${d.id}/download`}
+                    style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}
+                    title="Download"
+                  >
+                    <i className="ti ti-download" aria-hidden="true"></i>
+                  </a>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div className={styles.docName}>{d.file_name}</div>
-                  <div className={styles.docMeta}>{formatDate(d.created_at)}</div>
-                </div>
-                <a
-                  href={`/api/documents/${d.id}/download`}
-                  style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}
-                  title="Download"
-                >
-                  <i className="ti ti-download" aria-hidden="true"></i>
-                </a>
-              </div>
-            ))}
-          </div>
-        )}
-        <DocumentUpload projectId={projectId} />
-      </div>
+              ))}
+            </div>
+          )
+        }
+      />
 
       <h2 id="section-financials" style={sectionDividerStyle()}>
         Financials

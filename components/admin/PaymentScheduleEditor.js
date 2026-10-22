@@ -29,10 +29,10 @@ const STATUS_STYLE = {
 
 const emptyForm = { description: '', amount: '', percent: '', dueDate: '' };
 
-export default function PaymentScheduleEditor({ projectId, initialItems }) {
+export default function PaymentScheduleEditor({ projectId, initialItems, hideForm = false, hideList = false, startAdding = false }) {
   const router = useRouter();
   const [items, setItems] = useState(initialItems || []);
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState(startAdding);
   const [form, setForm] = useState(emptyForm);
   const [busyId, setBusyId] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -113,6 +113,8 @@ export default function PaymentScheduleEditor({ projectId, initialItems }) {
 
   return (
     <div>
+      {!hideList && (
+      <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
         <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
           {items.length === 0 ? 'No payment schedule set for this project.' : `${formatCurrency(totalScheduled)} still scheduled`}
@@ -176,8 +178,10 @@ export default function PaymentScheduleEditor({ projectId, initialItems }) {
           );
         })}
       </div>
+      </>
+      )}
 
-      {adding ? (
+      {!hideForm && (adding ? (
         <form onSubmit={handleAdd} className={adminStyles.adminForm} style={{ padding: '1rem', border: '1px solid rgba(var(--border-rgb),0.12)', marginBottom: '1rem' }}>
           <div className={adminStyles.formGrid2}>
             <div className={adminStyles.fieldGroup}>
@@ -240,7 +244,7 @@ export default function PaymentScheduleEditor({ projectId, initialItems }) {
             <i className="ti ti-plus" aria-hidden="true" style={{ marginRight: '0.4rem' }}></i> Add payment milestone
           </button>
         </div>
-      )}
+      ))}
     </div>
   );
 }

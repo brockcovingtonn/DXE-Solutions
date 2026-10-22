@@ -14,7 +14,7 @@ const BADGE_CLASS = {
   contract: styles.badgeContract,
 };
 
-export default function AdminDocuments({ projectId, initialDocs }) {
+export default function AdminDocuments({ projectId, initialDocs, hideForm = false, hideList = false }) {
   const supabase = createClient();
   const router = useRouter();
   const fileInputRef = useRef(null);
@@ -143,6 +143,8 @@ export default function AdminDocuments({ projectId, initialDocs }) {
 
   return (
     <div>
+      {!hideList && (
+      <>
       {selectedIds.size > 0 && (
         <div className={adminStyles.bulkActionBar}>
           <span style={{ fontSize: '0.82rem', color: 'var(--navy)', fontWeight: 500 }}>
@@ -271,7 +273,10 @@ export default function AdminDocuments({ projectId, initialDocs }) {
           <EmptyState icon="ti-file-text" title="No documents yet" subtitle="Upload a contract, permit, or plan set below." />
         )}
       </div>
+      </>
+      )}
 
+      {!hideForm && (
       <label
         className={styles.uploadZone}
         onDrop={handleDrop}
@@ -291,6 +296,7 @@ export default function AdminDocuments({ projectId, initialDocs }) {
         <p style={{ fontSize: '0.72rem', marginTop: '0.3rem' }}>PDF, DOCX, DWG, XLSX — max 50MB</p>
         <input ref={fileInputRef} type="file" multiple disabled={uploading} onChange={(e) => handleFiles(e.target.files)} />
       </label>
+      )}
       {error && <p style={{ fontSize: '0.8rem', color: 'var(--text-error)', marginTop: '0.75rem' }}>{error}</p>}
     </div>
   );

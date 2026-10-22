@@ -4,6 +4,7 @@ import { getViewableProject } from '@/lib/project-access';
 import styles from '@/components/portal-shared.module.css';
 import NewNoteForm from '@/components/NewNoteForm';
 import EmptyState from '@/components/EmptyState';
+import ViewEditSection from '@/components/ViewEditSection';
 
 export default async function NotesPage({ params }) {
   const supabase = createClient();
@@ -29,26 +30,28 @@ export default async function NotesPage({ params }) {
         <p>Messages and updates from your project manager</p>
       </div>
 
-      <div className={styles.fullWidthCard}>
-        <h3>Project Notes</h3>
-        <div className={styles.notesArea}>
-          {(notes || []).map((n) => (
-            <div
-              className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`}
-              key={n.id}
-            >
-              <div className={styles.noteFrom}>{n.author_name}</div>
-              <div className={styles.noteText}>{n.body}</div>
-              <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
-            </div>
-          ))}
-          {(!notes || notes.length === 0) && (
-            <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates from your project manager will appear here." />
-          )}
-        </div>
-
-        <NewNoteForm projectId={projectId} />
-      </div>
+      <ViewEditSection
+        title="Project Notes"
+        actionLabel="Add"
+        edit={<NewNoteForm projectId={projectId} />}
+        view={
+          <div className={styles.notesArea}>
+            {(notes || []).map((n) => (
+              <div
+                className={`${styles.noteItem} ${n.author_role === 'client' ? styles.clientNote : ''}`}
+                key={n.id}
+              >
+                <div className={styles.noteFrom}>{n.author_name}</div>
+                <div className={styles.noteText}>{n.body}</div>
+                <div className={styles.noteTime}>{formatDate(n.created_at)}</div>
+              </div>
+            ))}
+            {(!notes || notes.length === 0) && (
+              <EmptyState icon="ti-note" title="No notes yet" subtitle="Updates from your project manager will appear here." />
+            )}
+          </div>
+        }
+      />
     </div>
   );
 }
