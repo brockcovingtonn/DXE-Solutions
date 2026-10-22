@@ -1,12 +1,22 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-server';
+import { supabaseAdmin as designStudioAdmin } from '@/lib/design-studio/server';
 import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import NewProjectForm from '@/components/NewProjectForm';
 import ClientInfoForm from '@/components/admin/ClientInfoForm';
 import SendWelcomeEmail from '@/components/admin/SendWelcomeEmail';
+import SetClientPassword from '@/components/admin/SetClientPassword';
 import DangerDeleteButton from '@/components/admin/DangerDeleteButton';
+
+const DS_STATUS_STYLE = {
+  draft: { background: 'rgba(201,168,87,0.15)', color: '#7a5c0a' },
+  sent: { background: 'rgba(62,84,104,0.12)', color: 'var(--navy)' },
+  accepted: { background: 'rgba(16,185,129,0.12)', color: 'var(--text-success)' },
+  declined: { background: 'rgba(148,163,184,0.15)', color: 'var(--text-tertiary)' },
+  expired: { background: 'rgba(148,163,184,0.15)', color: 'var(--text-tertiary)' },
+};
 
 export default async function ClientDetailPage({ params }) {
   const supabase = createClient();
@@ -23,6 +33,14 @@ export default async function ClientDetailPage({ params }) {
     .from('projects')
     .select('id, name, status, project_type')
     .eq('owner_id', client.id)
+    .order('created_at', { ascending: false });
+
+  // Design Studio tables are RLS-enabled with no policies (service-role +
+  // app-layer staff checks only), same as the project page's equivalent query.
+  const { data: designStudioQuotes } = await designStudioAdmin()
+    .from('design_studio_quotes')
+    .select('id, quote_number, status, total, created_at')
+    .eq('client_id', client.id)
     .order('created_at', { ascending: false });
 
   return (
@@ -43,6 +61,7 @@ export default async function ClientDetailPage({ params }) {
       <div className={styles.fullWidthCard}>
         <h3>Client portal</h3>
         <SendWelcomeEmail clientId={client.id} />
+        <SetClientPassword clientId={client.id} />
       </div>
 
       <div className={styles.fullWidthCard}>
@@ -66,6 +85,30 @@ export default async function ClientDetailPage({ params }) {
           </p>
         )}
       </div>
+
+      {designStudioQuotes && designStudioQuotes.length > 0 && (
+        <div className={styles.fullWidthCard}>
+          <h3>Design Studio Quotes</h3>
+          {designStudioQuotes.map((q) => (
+            <Link
+              key={q.id}
+              href={`/design-studio/${q.id}`}
+              className={adminStyles.listRow}
+              style={{ textDecoration: 'none' }}
+            >
+              <span className={adminStyles.listRowPill} style={DS_STATUS_STYLE[q.status] || DS_STATUS_STYLE.draft}>
+                {q.status}
+              </span>
+              <div className={adminStyles.listRowMain}>
+                <div className={adminStyles.listRowTitle}>{q.quote_number}</div>
+              </div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(q.total || 0)}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className={styles.fullWidthCard}>
         <h3>Add a new project</h3>

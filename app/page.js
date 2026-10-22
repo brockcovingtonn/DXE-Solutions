@@ -92,18 +92,12 @@ export default async function HomePage() {
               <div className={styles.aboutText}>
                 <div className="section-header">
                   <div className="section-eyebrow">About DXE Solutions</div>
-                  <div className={styles.aboutHeadingRow}>
-                    <h2 className="display" style={{ color: 'var(--navy)' }}>
-                      The firm between the plans and the keys.
-                    </h2>
-                    <div className={styles.aboutBadgeInline}>
-                      <span className={styles.aboutBadgeBig}>15+</span>
-                      <span className={styles.aboutBadgeSmall}>Years Experience</span>
-                    </div>
-                  </div>
+                  <h2 className="display" style={{ color: 'var(--navy)' }}>
+                    The firm between the plans and the keys.
+                  </h2>
                 </div>
                 <p className={styles.aboutLead}>
-                  That experience shows up as one thing: a process that doesn&apos;t skip steps
+                  It comes down to one thing: a process that doesn&apos;t skip steps
                   — permits filed right the first time, inspections sequenced before
                   they&apos;re needed, one person accountable for the outcome.
                 </p>

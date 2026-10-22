@@ -120,6 +120,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
             style={{
               background: 'transparent',
               border: '1px solid rgba(var(--border-rgb),0.18)',
+              borderRadius: 'var(--radius-sm)',
               color: 'var(--navy)',
               padding: '0.3rem 0.75rem',
               fontSize: '0.74rem',

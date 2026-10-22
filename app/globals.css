@@ -20,6 +20,10 @@
   --text-faint: #CBD5E0;
   --text-error: #DC2626;
   --text-success: #065F46;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
 }
 
 /* =====================================================================
@@ -158,6 +162,7 @@ button {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
@@ -182,6 +187,7 @@ button {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
@@ -202,6 +208,7 @@ button {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: background 0.2s;
@@ -221,6 +228,7 @@ button {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: background 0.2s;
@@ -273,6 +281,7 @@ button {
   width: 100%;
   background: var(--white);
   border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   color: var(--navy);
   padding: 0.8rem 1rem;
   font-size: 0.9rem;

@@ -17,6 +17,7 @@ export default function ViewEditSection({ title, actionLabel = 'Edit', modalMaxW
           style={{
             background: 'transparent',
             border: '1px solid rgba(var(--border-rgb),0.18)',
+            borderRadius: 'var(--radius-sm)',
             color: 'var(--navy)',
             padding: '0.35rem 0.85rem',
             fontSize: '0.75rem',

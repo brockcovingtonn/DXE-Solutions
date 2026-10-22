@@ -60,6 +60,16 @@ export default async function AdminProjectPage({ params }) {
     area.scope_items = (area.scope_items || []).sort((a, b) => a.sort_order - b.sort_order);
   });
 
+  // Design Studio tables are RLS-enabled with no policies by design
+  // (service-role + app-layer staff checks only) — same reason the room
+  // scan queries below use designStudioAdmin() instead of the regular
+  // RLS-scoped client.
+  const { data: designStudioQuotes } = await designStudioAdmin()
+    .from('design_studio_quotes')
+    .select('id, quote_number, status, total, created_at')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+
   // RLS-scoped on purpose (not service-role) — the new employee/client
   // policies on design_studio_room_scans decide what comes back here for
   // free: admins see everything, employees only if assigned to this
@@ -186,6 +196,7 @@ export default async function AdminProjectPage({ params }) {
         proposals={proposals}
         paymentSchedule={paymentSchedule}
         scopeAreas={scopeAreas}
+        designStudioQuotes={designStudioQuotes}
         roomScansWithUrls={roomScansWithUrls}
       />
     </div>
