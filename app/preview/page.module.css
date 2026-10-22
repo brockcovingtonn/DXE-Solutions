@@ -186,30 +186,6 @@
   height: 80%;
 }
 
-.aboutBadge {
-  position: absolute;
-  bottom: 2rem;
-  right: -1rem;
-  background: var(--gold);
-  color: var(--white);
-  padding: 1.2rem 1.5rem;
-  font-family: 'Cormorant Garamond', serif;
-}
-
-.aboutBadgeBig {
-  font-size: 2rem;
-  font-weight: 700;
-  display: block;
-  line-height: 1;
-}
-
-.aboutBadgeSmall {
-  font-size: 0.7rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
 .aboutText p {
   font-size: 1rem;
   line-height: 1.8;

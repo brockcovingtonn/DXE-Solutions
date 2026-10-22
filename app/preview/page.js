@@ -118,10 +118,6 @@ export default async function HomePage() {
                     <line x1="30" y1="65" x2="70" y2="65" stroke="rgba(201,168,87,0.2)" strokeWidth="0.5" />
                   </svg>
                 </div>
-                <div className={styles.aboutBadge}>
-                  <span className={styles.aboutBadgeBig}>15+</span>
-                  <span className={styles.aboutBadgeSmall}>Years Experience</span>
-                </div>
               </div>
               <div className={styles.aboutText}>
                 <div className="section-header">
@@ -129,8 +125,8 @@ export default async function HomePage() {
                   <h2 className="display">The firm between the plans and the keys.</h2>
                 </div>
                 <p className={styles.lead}>
-                  DXE Solutions brings over 15 years of civil engineering and construction
-                  management expertise to every project we take on.
+                  DXE Solutions brings civil engineering and construction management
+                  expertise to every project we take on.
                 </p>
                 <p>
                   DXE Solutions was founded on a simple premise: great construction projects
