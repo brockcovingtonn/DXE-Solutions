@@ -278,7 +278,7 @@ struct AdminDashboardView: View {
     private func activityRowContent(icon: String, title: String, subtitle: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: icon)
-                .foregroundColor(Theme.gold)
+                .foregroundColor(.secondary)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.subheadline)

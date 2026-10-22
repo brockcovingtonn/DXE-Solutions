@@ -195,7 +195,7 @@ struct CalendarView: View {
         return VStack(alignment: .leading, spacing: 10) {
             Text(selectedDateTitle.uppercased())
                 .font(.caption.weight(.semibold))
-                .foregroundColor(Theme.gold)
+                .foregroundColor(Theme.textPrimary)
                 .tracking(1)
 
             if let weather = WeatherService.day(for: selectedDate, in: weatherDays) {

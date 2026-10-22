@@ -137,7 +137,7 @@ struct AdminClientDetailView: View {
                                     }
                                 }
                                 Spacer()
-                                Text(project.status.capitalized).font(.caption2.weight(.semibold)).foregroundColor(Theme.gold)
+                                Text(project.status.capitalized).font(.caption2.weight(.semibold)).foregroundColor(Theme.textPrimary)
                             }
                             .padding(10)
                             .dxeCard()

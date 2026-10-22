@@ -15,7 +15,7 @@ struct BiometricLockView: View {
 
             Image(systemName: biometricType.iconName)
                 .font(.system(size: 56))
-                .foregroundColor(Theme.gold)
+                .foregroundColor(Theme.navy)
 
             Text("DXE Solutions")
                 .font(.title2.weight(.semibold))

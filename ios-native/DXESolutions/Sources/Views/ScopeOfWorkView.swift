@@ -93,7 +93,7 @@ struct ScopeOfWorkView: View {
                     Task { await toggle(item) }
                 } label: {
                     Image(systemName: item.completed ? "checkmark.square.fill" : "square")
-                        .foregroundColor(item.completed ? Theme.gold : .secondary)
+                        .foregroundColor(item.completed ? Theme.success : .secondary)
                 }
                 .buttonStyle(.plain)
                 .disabled(busyId == item.id)

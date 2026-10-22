@@ -57,7 +57,7 @@ struct AdminActionItemsEditor: View {
                 Task { await toggleStatus(item) }
             } label: {
                 Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isDone ? Theme.gold : .secondary)
+                    .foregroundColor(isDone ? Theme.success : .secondary)
             }
             .buttonStyle(.plain)
 
@@ -105,7 +105,7 @@ struct AdminActionItemsEditor: View {
             }
             .pickerStyle(.menu)
             TextField("Due date (YYYY-MM-DD, optional)", text: $newDueDate).textFieldStyle(.roundedBorder)
-            Toggle("Visible to client", isOn: $newVisibleToClient).tint(Theme.gold)
+            Toggle("Visible to client", isOn: $newVisibleToClient).tint(Theme.navy)
 
             Button {
                 Task { await create() }

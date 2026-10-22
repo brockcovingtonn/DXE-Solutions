@@ -81,7 +81,7 @@ struct ProjectOverviewView: View {
     private func whatsNextRow(done: Bool, title: String, subtitle: String?, actionLabel: String?, destination: AnyView) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: done ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(done ? .green : Theme.gold)
+                .foregroundColor(done ? Theme.success : Theme.gold)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.subheadline.weight(.medium)).foregroundColor(Theme.textPrimary)
                 if let subtitle {
@@ -203,7 +203,7 @@ struct ProjectOverviewView: View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader("Overall Progress")
             ProgressView(value: Double(project.progressPct ?? 0), total: 100)
-                .tint(Theme.gold)
+                .tint(Theme.navy)
             Text("\(project.progressPct ?? 0)% complete")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -320,7 +320,7 @@ private struct SectionHeader: View {
     var body: some View {
         Text(title.uppercased())
             .font(.caption.weight(.semibold))
-            .foregroundColor(Theme.gold)
+            .foregroundColor(Theme.textPrimary)
             .tracking(1)
     }
 }

@@ -54,7 +54,7 @@ struct AdminUtilitiesListView: View {
     private func rowContent(title: String, subtitle: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "bolt")
-                .foregroundColor(Theme.gold)
+                .foregroundColor(.secondary)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.subheadline)

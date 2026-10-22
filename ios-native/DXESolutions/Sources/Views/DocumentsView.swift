@@ -51,7 +51,7 @@ struct DocumentsView: View {
                             } label: {
                                 Label("Sign", systemImage: "signature")
                             }
-                            .tint(Theme.gold)
+                            .tint(Theme.navy)
                         }
                     }
                 }

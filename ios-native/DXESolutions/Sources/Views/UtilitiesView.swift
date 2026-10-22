@@ -61,7 +61,7 @@ struct UtilitiesView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Image(systemName: utilityIcons[utility.utilityType] ?? "bolt.fill")
-                    .foregroundColor(Theme.gold)
+                    .foregroundColor(.secondary)
                 Text(utilityLabels[utility.utilityType] ?? utility.utilityType.capitalized)
                     .font(.headline)
                     .foregroundColor(Theme.textPrimary)

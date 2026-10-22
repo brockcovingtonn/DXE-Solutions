@@ -117,7 +117,7 @@ struct AdminContactListView: View {
             if projectNames.isEmpty {
                 Text("Not linked to a project").font(.caption2).foregroundColor(.secondary)
             } else {
-                Text(projectNames.joined(separator: ", ")).font(.caption2).foregroundColor(Theme.gold)
+                Text(projectNames.joined(separator: ", ")).font(.caption2).foregroundColor(.secondary)
             }
         }
         .padding(.vertical, 4)

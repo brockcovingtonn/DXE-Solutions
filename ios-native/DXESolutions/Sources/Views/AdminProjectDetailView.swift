@@ -190,7 +190,7 @@ struct AdminProjectDetailView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundColor(.secondary)
                     Slider(value: $progressPct, in: 0...100, step: 1)
-                        .tint(Theme.gold)
+                        .tint(Theme.navy)
                 }
 
                 Divider().padding(.vertical, 4)
@@ -326,7 +326,7 @@ struct AdminProjectDetailView: View {
                             Spacer()
                             if phase.state != "na" {
                                 Text("\(Int(phase.pct))%").font(.caption).foregroundColor(.secondary)
-                                Slider(value: $phase.pct, in: 0...100, step: 1).frame(width: 120).tint(Theme.gold)
+                                Slider(value: $phase.pct, in: 0...100, step: 1).frame(width: 120).tint(Theme.navy)
                             }
                         }
                     }

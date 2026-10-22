@@ -44,7 +44,7 @@ struct AdminMilestonesListView: View {
     private func rowContent(_ item: AdminMilestoneItem) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "flag")
-                .foregroundColor(Theme.gold)
+                .foregroundColor(.secondary)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.name).font(.subheadline)

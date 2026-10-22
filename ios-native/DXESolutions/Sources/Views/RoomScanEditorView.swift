@@ -135,7 +135,7 @@ struct RoomScanEditorView: View {
                         .disabled(redoStack.isEmpty)
                 }
                 .font(.title3)
-                .foregroundColor(Theme.gold)
+                .foregroundColor(Theme.navy)
                 if mode == .drawWall, draftWallStart != nil {
                     Button("Cancel") { draftWallStart = nil }.font(.caption)
                 }

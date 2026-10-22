@@ -44,7 +44,7 @@ struct AdminActivityListView: View {
     private func rowContent(_ item: ActivityItem) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: iconName(for: item.type))
-                .foregroundColor(Theme.gold)
+                .foregroundColor(.secondary)
                 .frame(width: 20)
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.text).font(.subheadline)

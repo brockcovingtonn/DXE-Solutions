@@ -95,7 +95,7 @@ struct AdminProjectListView: View {
                 Spacer()
                 Text(project.status.capitalized)
                     .font(.caption2.weight(.semibold))
-                    .foregroundColor(Theme.gold)
+                    .foregroundColor(Theme.textPrimary)
             }
         }
         .padding(.vertical, 4)

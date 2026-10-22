@@ -162,7 +162,7 @@ struct EmployeeProjectDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             SectionHeader("Overall Progress")
             ProgressView(value: Double(project.progressPct ?? 0), total: 100)
-                .tint(Theme.gold)
+                .tint(Theme.navy)
             Text("\(project.progressPct ?? 0)% complete")
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -226,7 +226,7 @@ struct EmployeeProjectDetailView: View {
                             ProgressView().frame(width: 18)
                         } else {
                             Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(isDone ? Theme.gold : .secondary)
+                                .foregroundColor(isDone ? Theme.success : .secondary)
                         }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(item.title).font(.subheadline).strikethrough(isDone)
@@ -311,7 +311,7 @@ private struct SectionHeader: View {
     var body: some View {
         Text(title.uppercased())
             .font(.caption.weight(.semibold))
-            .foregroundColor(Theme.gold)
+            .foregroundColor(Theme.textPrimary)
             .tracking(1)
     }
 }

@@ -67,7 +67,7 @@ struct EmployeeTrainingView: View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(index + 1)")
                 .font(.title3.weight(.semibold))
-                .foregroundColor(Theme.gold)
+                .foregroundColor(Theme.textPrimary)
                 .frame(width: 28, alignment: .leading)
             VStack(alignment: .leading, spacing: 4) {
                 Text(step.title)

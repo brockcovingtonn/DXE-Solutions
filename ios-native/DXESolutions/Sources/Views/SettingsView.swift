@@ -75,7 +75,7 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .tint(Theme.gold)
+            .tint(Theme.navy)
 
             notificationsRow
                 .padding(.top, 6)
@@ -155,7 +155,7 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .tint(Theme.gold)
+            .tint(Theme.navy)
 
             if let biometricMessage {
                 Text(biometricMessage)
@@ -218,7 +218,7 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
             }
-            .tint(Theme.gold)
+            .tint(Theme.navy)
             .padding(.top, 4)
 
             if let saveMessage {

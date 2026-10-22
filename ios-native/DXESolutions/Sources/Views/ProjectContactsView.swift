@@ -98,7 +98,7 @@ struct ProjectContactsView: View {
                 }
             }
             .font(.caption2)
-            .foregroundColor(Theme.gold)
+            .foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
     }

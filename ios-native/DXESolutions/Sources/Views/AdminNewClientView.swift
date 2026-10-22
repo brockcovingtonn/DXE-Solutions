@@ -95,7 +95,7 @@ struct AdminNewClientView: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title.uppercased())
             .font(.caption.weight(.semibold))
-            .foregroundColor(Theme.gold)
+            .foregroundColor(Theme.textPrimary)
             .tracking(1)
     }
 

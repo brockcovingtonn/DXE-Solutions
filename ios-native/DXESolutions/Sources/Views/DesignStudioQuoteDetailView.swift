@@ -240,7 +240,7 @@ struct DesignStudioQuoteDetailView: View {
                             Button("Edit") { editScan = scan }
                                 .font(.caption)
                                 .buttonStyle(.borderedProminent)
-                                .tint(Theme.gold)
+                                .tint(Theme.navy)
                             if scan.floorPlanUrl != nil {
                                 Button("Annotate") { annotateScan = scan }
                                     .font(.caption)

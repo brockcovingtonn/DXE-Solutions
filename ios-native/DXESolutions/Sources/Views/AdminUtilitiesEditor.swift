@@ -63,7 +63,7 @@ struct AdminUtilitiesEditor: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(Theme.textPrimary)
             }
-            .tint(Theme.gold)
+            .tint(Theme.navy)
 
             if utility.wrappedValue.enabled {
                 TextField("Contact trade", text: utility.contactTrade).textFieldStyle(.roundedBorder)

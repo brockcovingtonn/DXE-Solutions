@@ -113,7 +113,7 @@ struct CoverSheetView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title.uppercased())
                 .font(.caption2.weight(.semibold))
-                .foregroundColor(Theme.gold)
+                .foregroundColor(Theme.textPrimary)
                 .tracking(1)
             content()
         }
