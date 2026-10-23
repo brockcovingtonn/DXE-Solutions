@@ -14,6 +14,10 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
   // the point of a quick field checklist.
   const [editing, setEditing] = useState(false);
   const showAdminControls = isAdmin && editing;
+  // Only one area's checklist is shown at a time — opening another area
+  // collapses whichever was open, so the list doesn't turn into one long
+  // continuous scroll across every area.
+  const [expandedAreaId, setExpandedAreaId] = useState(null);
   const [areaSelect, setAreaSelect] = useState('');
   const [customArea, setCustomArea] = useState('');
   const [addingArea, setAddingArea] = useState(false);
@@ -142,29 +146,48 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
       {(areas || []).map((area) => {
         const items = area.scope_items || [];
         const completedCount = items.filter((i) => i.completed).length;
+        const isExpanded = expandedAreaId === area.id;
         return (
           <div key={area.id} className={adminStyles.utilitySection}>
-            <div className={adminStyles.utilitySectionHeader}>
-              <span className={adminStyles.utilityToggleLabel}>{area.name}</span>
+            <button
+              type="button"
+              onClick={() => setExpandedAreaId((prev) => (prev === area.id ? null : area.id))}
+              className={adminStyles.utilitySectionHeader}
+              style={{ width: '100%', background: 'none', border: 'none', padding: '0 0 0.6rem', font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <i className={`ti ${isExpanded ? 'ti-chevron-down' : 'ti-chevron-right'}`} aria-hidden="true" style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)' }}></i>
+                <span className={adminStyles.utilityToggleLabel}>{area.name}</span>
+              </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span className={adminStyles.utilityToggleHint}>
                   {items.length === 0 ? 'No items yet' : `${completedCount}/${items.length} complete`}
                 </span>
                 {showAdminControls && (
-                  <button
-                    type="button"
+                  <span
+                    role="button"
+                    tabIndex={0}
                     className={adminStyles.iconBtn}
                     aria-label={`Delete ${area.name}`}
-                    onClick={() => deleteArea(area.id)}
-                    disabled={busyId === area.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteArea(area.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.stopPropagation();
+                        deleteArea(area.id);
+                      }
+                    }}
+                    aria-disabled={busyId === area.id}
                   >
                     <i className="ti ti-trash" aria-hidden="true"></i>
-                  </button>
+                  </span>
                 )}
               </div>
-            </div>
+            </button>
 
-            {items.map((item) => (
+            {isExpanded && items.map((item) => (
               <div
                 key={item.id}
                 style={{
@@ -241,7 +264,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
               </div>
             ))}
 
-            {showAdminControls && (
+            {isExpanded && showAdminControls && (
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
                 <input
                   className={adminStyles.fieldInput}
