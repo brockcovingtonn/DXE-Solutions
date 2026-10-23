@@ -15,7 +15,28 @@ async function requireAdmin(supabase, user) {
   return { user };
 }
 
-const ALLOWED_FIELDS = ['description', 'amount', 'status', 'due_date', 'approval_status', 'visible_to_client'];
+const ALLOWED_FIELDS = ['description', 'amount', 'status', 'due_date', 'paid_date', 'approval_status', 'visible_to_client'];
+
+// Re-derives whether an invoice is fully paid from its linked payment
+// rows (amount - sum of kind='payment' rows pointing at it), and flips
+// `status` to match. Only called right after a payment row tied to this
+// invoice was created/edited/removed, or the invoice's own amount
+// changed — never for a plain admin paid-toggle with no payment rows,
+// so a manual "mark paid" on an invoice with no payments is untouched.
+async function recalculateInvoiceStatus(supabase, invoiceId) {
+  const { data: invoice } = await supabase.from('invoices').select('amount, status').eq('id', invoiceId).maybeSingle();
+  if (!invoice) return;
+
+  const { data: payments } = await supabase.from('invoices').select('amount').eq('invoice_id', invoiceId).eq('kind', 'payment');
+  const totalPaid = (payments || []).reduce((sum, p) => sum + Number(p.amount), 0);
+  const fullyPaid = totalPaid >= Number(invoice.amount) && totalPaid > 0;
+
+  if (fullyPaid && invoice.status !== 'paid') {
+    await supabase.from('invoices').update({ status: 'paid', paid_date: new Date().toISOString().slice(0, 10) }).eq('id', invoiceId);
+  } else if (!fullyPaid && invoice.status === 'paid') {
+    await supabase.from('invoices').update({ status: 'unpaid', paid_date: null }).eq('id', invoiceId);
+  }
+}
 
 export async function PATCH(request, { params }) {
   const { supabase, user } = await getRequestClient(request);
@@ -32,10 +53,19 @@ export async function PATCH(request, { params }) {
     if (update.status === 'paid') update.paid_date = new Date().toISOString().slice(0, 10);
     if (update.status === 'unpaid') update.paid_date = null;
 
+    const { data: current } = await supabase.from('invoices').select('kind, invoice_id').eq('id', params.id).maybeSingle();
+
     const { error } = await supabase.from('invoices').update(update).eq('id', params.id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (current?.kind === 'payment' && current.invoice_id && 'amount' in update) {
+      await recalculateInvoiceStatus(supabase, current.invoice_id);
+    }
+    if (current?.kind === 'invoice' && 'amount' in update) {
+      await recalculateInvoiceStatus(supabase, params.id);
     }
 
     return NextResponse.json({ success: true });
@@ -53,7 +83,7 @@ export async function DELETE(request, { params }) {
   try {
     const { data: invoice } = await supabase
       .from('invoices')
-      .select('file_path')
+      .select('file_path, kind, invoice_id')
       .eq('id', params.id)
       .single();
 
@@ -65,6 +95,10 @@ export async function DELETE(request, { params }) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    if (invoice?.kind === 'payment' && invoice.invoice_id) {
+      await recalculateInvoiceStatus(supabase, invoice.invoice_id);
     }
 
     return NextResponse.json({ success: true });

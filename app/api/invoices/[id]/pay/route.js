@@ -40,7 +40,18 @@ export async function POST(request, { params }) {
     return NextResponse.json({ error: 'A payment for this invoice is already processing.' }, { status: 409 });
   }
 
-  const amountCents = Math.round(Number(invoice.amount) * 100);
+  // Charge whatever's left, not the original amount — a partial manual
+  // payment (check, cash) recorded by the admin reduces what's still
+  // owed, and this invoice may not be fully settled by this charge alone.
+  const { data: payments } = await supabase
+    .from('invoices')
+    .select('amount')
+    .eq('invoice_id', invoice.id)
+    .eq('kind', 'payment');
+  const totalPaid = (payments || []).reduce((sum, p) => sum + Number(p.amount), 0);
+  const remaining = Number(invoice.amount) - totalPaid;
+
+  const amountCents = Math.round(remaining * 100);
   if (!Number.isFinite(amountCents) || amountCents < 50) {
     return NextResponse.json({ error: 'Invoice amount is too small to charge.' }, { status: 400 });
   }

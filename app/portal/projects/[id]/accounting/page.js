@@ -20,15 +20,28 @@ export default async function AccountingPage({ params, searchParams }) {
 
   if (!project) notFound();
 
-  const { data: invoices } = await supabase
+  const { data: allEntries } = await supabase
     .from('invoices')
     .select('*')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
 
-  const balanceDue = (invoices || [])
+  // Payments are an internal ledger adjustment on the invoice they're
+  // applied to, not their own line in the client's list — they reduce
+  // "remaining" on that invoice instead (see AccountingEditor.js for
+  // the admin-side equivalent of this same remaining-balance math).
+  const invoices = (allEntries || []).filter((i) => i.kind !== 'payment');
+  function remainingOf(item) {
+    if (item.kind !== 'invoice' || item.status === 'paid') return 0;
+    const paid = (allEntries || [])
+      .filter((p) => p.kind === 'payment' && p.invoice_id === item.id)
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    return Number(item.amount) - paid;
+  }
+
+  const balanceDue = invoices
     .filter((i) => i.kind === 'invoice' && i.status === 'unpaid')
-    .reduce((sum, i) => sum + Number(i.amount), 0);
+    .reduce((sum, i) => sum + remainingOf(i), 0);
 
   const stripeLive = stripeConfigured();
   const previewOnly = !stripeLive && paymentsPreviewEnabled();
@@ -83,6 +96,8 @@ export default async function AccountingPage({ params, searchParams }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {invoices.map((item) => {
               const isPayable = item.kind === 'invoice' && item.status === 'unpaid';
+              const remaining = remainingOf(item);
+              const isPartial = item.kind === 'invoice' && item.status === 'unpaid' && remaining < Number(item.amount);
               return (
                 <div
                   key={item.id}
@@ -113,10 +128,11 @@ export default async function AccountingPage({ params, searchParams }) {
                     <div style={{ fontSize: '0.88rem', color: 'var(--navy)', fontWeight: 500 }}>{item.description}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.15rem' }}>
                       {item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}
+                      {isPartial && ` · ${formatCurrency(remaining)} remaining of ${formatCurrency(item.amount)}`}
                       {item.status === 'paid' && item.paid_via === 'stripe' && ` · Paid online (${paymentMethodLabel(item.payment_method)})`}
                       {item.status === 'unpaid' && item.payment_state === 'processing' && ' · Payment clearing'}
                       {item.status === 'unpaid' && item.payment_state === 'failed' && ' · Last payment failed'}
-                      {item.status === 'unpaid' && item.payment_state === 'idle' && ' · Unpaid'}
+                      {item.status === 'unpaid' && item.payment_state === 'idle' && !isPartial && ' · Unpaid'}
                       {item.file_name && (
                         <>
                           {' · '}
@@ -128,7 +144,7 @@ export default async function AccountingPage({ params, searchParams }) {
                     </div>
                   </div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--navy)', flexShrink: 0 }}>
-                    {formatCurrency(item.amount)}
+                    {formatCurrency(isPartial ? remaining : item.amount)}
                   </div>
                   {isPayable && payEnabled && item.payment_state !== 'processing' && (
                     <InvoicePayButton invoiceId={item.id} small preview={previewOnly} />

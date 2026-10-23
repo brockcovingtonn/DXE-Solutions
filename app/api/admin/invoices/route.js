@@ -22,24 +22,36 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const { projectId, kind, description, amount, dueDate, filePath, fileName } = body;
-
-    if (!projectId || !description?.trim() || !amount) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
+    const { projectId, kind, description, amount, dueDate, paidDate, invoiceId, filePath, fileName } = body;
 
     const isReceipt = kind === 'receipt';
+    const isPayment = kind === 'payment';
+
+    if (!projectId || !amount || (!isPayment && !description?.trim())) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    if (isPayment && !invoiceId) {
+      return NextResponse.json({ error: 'Missing invoice to apply this payment to' }, { status: 400 });
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
 
     const { data: invoice, error } = await supabase
       .from('invoices')
       .insert({
         project_id: projectId,
-        kind: isReceipt ? 'receipt' : 'invoice',
-        description: description.trim(),
+        kind: isPayment ? 'payment' : isReceipt ? 'receipt' : 'invoice',
+        description: description?.trim() || (isPayment ? 'Payment' : ''),
         amount,
-        status: isReceipt ? 'paid' : 'unpaid',
-        due_date: !isReceipt ? dueDate || null : null,
-        paid_date: isReceipt ? new Date().toISOString().slice(0, 10) : null,
+        status: isReceipt || isPayment ? 'paid' : 'unpaid',
+        due_date: !isReceipt && !isPayment ? dueDate || null : null,
+        paid_date: isReceipt || isPayment ? paidDate || today : null,
+        invoice_id: isPayment ? invoiceId : null,
+        // A payment must be readable by the client under RLS (which
+        // requires visible_to_client = true) — the remaining-balance
+        // math in the client portal and the Stripe pay route both read
+        // payment rows as the authenticated client, not as an admin.
+        visible_to_client: isPayment ? true : undefined,
         file_path: filePath || null,
         file_name: fileName || null,
         created_by: user.id,
@@ -49,6 +61,31 @@ export async function POST(request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    // A payment that brings the parent invoice's balance to zero (or
+    // past it) marks that invoice paid, same as the admin's manual
+    // paid-toggle — so an invoice fully settled via partial payments
+    // doesn't just sit there showing "$0 remaining" but still "Unpaid".
+    if (isPayment) {
+      const { data: parent } = await supabase
+        .from('invoices')
+        .select('amount, status')
+        .eq('id', invoiceId)
+        .single();
+
+      if (parent && parent.status !== 'paid') {
+        const { data: payments } = await supabase
+          .from('invoices')
+          .select('amount')
+          .eq('invoice_id', invoiceId)
+          .eq('kind', 'payment');
+
+        const totalPaid = (payments || []).reduce((sum, p) => sum + Number(p.amount), 0);
+        if (totalPaid >= Number(parent.amount)) {
+          await supabase.from('invoices').update({ status: 'paid', paid_date: today }).eq('id', invoiceId);
+        }
+      }
     }
 
     return NextResponse.json({ success: true, invoice });

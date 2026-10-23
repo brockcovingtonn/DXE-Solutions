@@ -14,7 +14,7 @@ function clientNameOf(invoice) {
   return name || 'Your client';
 }
 
-async function markPaid(admin, invoiceId, { paymentIntentId, method }) {
+async function markPaid(admin, invoiceId, { paymentIntentId, method, chargedAmount }) {
   const { data: invoice } = await admin
     .from('invoices')
     .select('id, project_id, amount, status, projects(name, owner_id, profiles!projects_owner_id_fkey(first_name, last_name))')
@@ -36,11 +36,14 @@ async function markPaid(admin, invoiceId, { paymentIntentId, method }) {
       .eq('id', invoiceId);
   }
 
+  // The checkout session charges whatever's still owed, which can be
+  // less than the invoice's original amount once partial manual
+  // payments exist — use what was actually charged, not invoice.amount.
   await notifyAdminOfInvoicePayment({
     projectName: invoice.projects?.name || 'a project',
     projectId: invoice.project_id,
     clientName: clientNameOf(invoice),
-    amount: Number(invoice.amount),
+    amount: chargedAmount ?? Number(invoice.amount),
     method: paymentMethodLabel(method),
     outcome: 'paid',
   });
@@ -126,7 +129,11 @@ export async function POST(request) {
         if (!invoiceId) break;
         const method = session.payment_method_types?.[0];
         if (session.payment_status === 'paid') {
-          await markPaid(admin, invoiceId, { paymentIntentId: session.payment_intent, method });
+          await markPaid(admin, invoiceId, {
+            paymentIntentId: session.payment_intent,
+            method,
+            chargedAmount: session.amount_total != null ? session.amount_total / 100 : undefined,
+          });
         } else {
           // Async method (ACH) — funds not settled yet.
           await markProcessing(admin, invoiceId);
@@ -140,6 +147,7 @@ export async function POST(request) {
           await markPaid(admin, invoiceId, {
             paymentIntentId: session.payment_intent,
             method: session.payment_method_types?.[0],
+            chargedAmount: session.amount_total != null ? session.amount_total / 100 : undefined,
           });
         }
         break;

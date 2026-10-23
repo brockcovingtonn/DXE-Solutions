@@ -4,8 +4,10 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-client';
 import adminStyles from '@/components/admin.module.css';
+import Modal from '@/components/Modal';
 
-const emptyForm = { kind: 'invoice', description: '', amount: '', dueDate: '' };
+const emptyForm = { kind: 'invoice', description: '', amount: '', dueDate: '', paidDate: '' };
+const today = () => new Date().toISOString().slice(0, 10);
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -22,9 +24,102 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
   const [busyId, setBusyId] = useState(null);
   const [error, setError] = useState('');
 
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({ description: '', amount: '', date: '' });
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  const [payingItem, setPayingItem] = useState(null);
+  const [payForm, setPayForm] = useState({ amount: '', date: today(), description: '' });
+  const [paySaving, setPaySaving] = useState(false);
+  const [payError, setPayError] = useState('');
+
+  // Remaining balance on an invoice is derived from its linked payment
+  // rows rather than stored — kept in one place so the header sum, the
+  // per-row display, and the Apply Payment default all agree.
+  function remainingOf(item) {
+    if (item.kind !== 'invoice' || item.status === 'paid') return 0;
+    const paid = (initialInvoices || [])
+      .filter((p) => p.kind === 'payment' && p.invoice_id === item.id)
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    return Number(item.amount) - paid;
+  }
+
   const balanceDue = (initialInvoices || [])
     .filter((i) => i.kind === 'invoice' && i.status === 'unpaid')
-    .reduce((sum, i) => sum + Number(i.amount), 0);
+    .reduce((sum, i) => sum + remainingOf(i), 0);
+
+  function openEdit(item) {
+    setEditError('');
+    setEditForm({
+      description: item.description || '',
+      amount: item.amount,
+      date: item.kind === 'invoice' ? item.due_date || '' : item.paid_date || '',
+    });
+    setEditingItem(item);
+  }
+
+  async function handleEditSave(e) {
+    e.preventDefault();
+    if (!editForm.description.trim() && editingItem.kind !== 'payment') return;
+    if (!editForm.amount) return;
+
+    setEditSaving(true);
+    setEditError('');
+    try {
+      const body = { description: editForm.description.trim(), amount: Number(editForm.amount) };
+      if (editingItem.kind === 'invoice') body.due_date = editForm.date || null;
+      else body.paid_date = editForm.date || null;
+
+      const res = await fetch(`/api/admin/invoices/${editingItem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      setEditingItem(null);
+      router.refresh();
+    } catch {
+      setEditError('Could not save these changes.');
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  function openApplyPayment(item) {
+    setPayError('');
+    setPayForm({ amount: remainingOf(item), date: today(), description: '' });
+    setPayingItem(item);
+  }
+
+  async function handleApplyPayment(e) {
+    e.preventDefault();
+    if (!payForm.amount) return;
+
+    setPaySaving(true);
+    setPayError('');
+    try {
+      const res = await fetch('/api/admin/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          kind: 'payment',
+          invoiceId: payingItem.id,
+          amount: Number(payForm.amount),
+          paidDate: payForm.date || null,
+          description: payForm.description.trim() || undefined,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      setPayingItem(null);
+      router.refresh();
+    } catch {
+      setPayError('Could not apply this payment.');
+    } finally {
+      setPaySaving(false);
+    }
+  }
 
   function handleFormChange(e) {
     const { name, value } = e.target;
@@ -60,6 +155,7 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
           description: form.description,
           amount: Number(form.amount),
           dueDate: form.dueDate || null,
+          paidDate: form.paidDate || null,
           filePath,
           fileName,
         }),
@@ -155,7 +251,11 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        {(initialInvoices || []).map((item) => (
+        {(initialInvoices || []).map((item) => {
+          const remaining = remainingOf(item);
+          const isPartial = item.kind === 'invoice' && item.status === 'unpaid' && remaining < Number(item.amount);
+          const parentInvoice = item.kind === 'payment' ? (initialInvoices || []).find((i) => i.id === item.invoice_id) : null;
+          return (
           <div
             key={item.id}
             className={adminStyles.listRow}
@@ -164,8 +264,8 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
             <span
               className={adminStyles.listRowPill}
               style={{
-                background: item.kind === 'receipt' ? 'rgba(59,130,246,0.12)' : item.kind === 'reimbursement' ? 'rgba(147,51,234,0.12)' : 'rgba(201,168,87,0.18)',
-                color: item.kind === 'receipt' ? '#1e40af' : item.kind === 'reimbursement' ? '#7e22ce' : '#7a5c0a',
+                background: item.kind === 'receipt' ? 'rgba(59,130,246,0.12)' : item.kind === 'payment' ? 'rgba(16,185,129,0.14)' : item.kind === 'reimbursement' ? 'rgba(147,51,234,0.12)' : 'rgba(201,168,87,0.18)',
+                color: item.kind === 'receipt' ? '#1e40af' : item.kind === 'payment' ? '#047857' : item.kind === 'reimbursement' ? '#7e22ce' : '#7a5c0a',
               }}
             >
               {item.kind}
@@ -173,7 +273,12 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
             <div className={adminStyles.listRowMain}>
               <div className={adminStyles.listRowTitle}>{item.description}</div>
               <div className={adminStyles.listRowMeta}>
-                {item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}
+                {item.kind === 'payment' ? (
+                  <>Applied to {parentInvoice?.description || 'an invoice'}{item.paid_date ? ` · ${item.paid_date}` : ''}</>
+                ) : (
+                  <>{item.due_date ? `Due ${item.due_date}` : item.paid_date ? `Paid ${item.paid_date}` : '—'}</>
+                )}
+                {isPartial && <> · {formatCurrency(remaining)} remaining of {formatCurrency(item.amount)}</>}
                 {item.file_name && (
                   <>
                     {' · '}
@@ -238,6 +343,28 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
                 <i className={`ti ${item.status === 'paid' ? 'ti-circle-check' : 'ti-circle-dashed'}`} aria-hidden="true"></i>
               </button>
             )}
+            {item.kind === 'invoice' && item.status !== 'paid' && remaining > 0 && (
+              <button
+                type="button"
+                onClick={() => openApplyPayment(item)}
+                disabled={busyId === item.id}
+                className={adminStyles.iconBtn}
+                title="Apply a payment"
+                aria-label="Apply a payment"
+              >
+                <i className="ti ti-cash" aria-hidden="true"></i>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => openEdit(item)}
+              disabled={busyId === item.id}
+              className={adminStyles.iconBtn}
+              title="Edit entry"
+              aria-label="Edit entry"
+            >
+              <i className="ti ti-pencil" aria-hidden="true"></i>
+            </button>
             <button
               type="button"
               className={adminStyles.iconBtn}
@@ -248,7 +375,8 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
               <i className="ti ti-trash" aria-hidden="true"></i>
             </button>
           </div>
-        ))}
+          );
+        })}
         {(!initialInvoices || initialInvoices.length === 0) && (
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No invoices or receipts yet.</p>
         )}
@@ -305,6 +433,19 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
           </div>
         )}
 
+        {form.kind === 'receipt' && (
+          <div className={adminStyles.fieldGroup}>
+            <label className={adminStyles.fieldLabel}>Date (optional — defaults to today)</label>
+            <input
+              className={adminStyles.fieldInput}
+              type="date"
+              name="paidDate"
+              value={form.paidDate}
+              onChange={handleFormChange}
+            />
+          </div>
+        )}
+
         <div className={adminStyles.fieldGroup}>
           <label className={adminStyles.fieldLabel}>Attach PDF (optional)</label>
           <input
@@ -323,6 +464,89 @@ export default function AccountingEditor({ projectId, initialInvoices, hideForm 
           </button>
         </div>
       </form>
+      )}
+
+      {editingItem && (
+        <Modal title="Edit entry" onClose={() => setEditingItem(null)} maxWidth={480}>
+          <form onSubmit={handleEditSave}>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>Description</label>
+              <input
+                className={adminStyles.fieldInput}
+                value={editForm.description}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>Amount</label>
+              <input
+                className={adminStyles.fieldInput}
+                type="number"
+                step="0.01"
+                min="0"
+                value={editForm.amount}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, amount: e.target.value }))}
+              />
+            </div>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>{editingItem.kind === 'invoice' ? 'Due date' : 'Date'}</label>
+              <input
+                className={adminStyles.fieldInput}
+                type="date"
+                value={editForm.date}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, date: e.target.value }))}
+              />
+            </div>
+            {editError && <p className={adminStyles.formMsgError}>{editError}</p>}
+            <div className={adminStyles.saveBar}>
+              <button type="submit" className="btn-navy" disabled={editSaving || !editForm.amount}>
+                {editSaving ? 'Saving...' : 'Save changes'}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {payingItem && (
+        <Modal title={`Apply a payment — ${payingItem.description}`} onClose={() => setPayingItem(null)} maxWidth={480}>
+          <form onSubmit={handleApplyPayment}>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>Amount</label>
+              <input
+                className={adminStyles.fieldInput}
+                type="number"
+                step="0.01"
+                min="0"
+                value={payForm.amount}
+                onChange={(e) => setPayForm((prev) => ({ ...prev, amount: e.target.value }))}
+              />
+            </div>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>Date</label>
+              <input
+                className={adminStyles.fieldInput}
+                type="date"
+                value={payForm.date}
+                onChange={(e) => setPayForm((prev) => ({ ...prev, date: e.target.value }))}
+              />
+            </div>
+            <div className={adminStyles.fieldGroup}>
+              <label className={adminStyles.fieldLabel}>Note (optional)</label>
+              <input
+                className={adminStyles.fieldInput}
+                value={payForm.description}
+                onChange={(e) => setPayForm((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="e.g. Check #1234"
+              />
+            </div>
+            {payError && <p className={adminStyles.formMsgError}>{payError}</p>}
+            <div className={adminStyles.saveBar}>
+              <button type="submit" className="btn-navy" disabled={paySaving || !payForm.amount}>
+                {paySaving ? 'Applying...' : 'Apply payment'}
+              </button>
+            </div>
+          </form>
+        </Modal>
       )}
     </div>
   );
