@@ -148,12 +148,24 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
         const completedCount = items.filter((i) => i.completed).length;
         const isExpanded = expandedAreaId === area.id;
         return (
-          <div key={area.id} className={adminStyles.utilitySection}>
+          <div key={area.id} className={adminStyles.utilitySection} style={{ padding: isExpanded ? '1rem' : '0.6rem 1rem' }}>
             <button
               type="button"
               onClick={() => setExpandedAreaId((prev) => (prev === area.id ? null : area.id))}
               className={adminStyles.utilitySectionHeader}
-              style={{ width: '100%', background: 'none', border: 'none', padding: '0 0 0.6rem', font: 'inherit', cursor: 'pointer', textAlign: 'left' }}
+              style={{
+                width: '100%',
+                background: 'none',
+                border: 'none',
+                borderBottom: isExpanded ? undefined : 'none',
+                paddingLeft: 0,
+                paddingRight: 0,
+                paddingBottom: isExpanded ? undefined : 0,
+                marginBottom: isExpanded ? undefined : 0,
+                font: 'inherit',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <i className={`ti ${isExpanded ? 'ti-chevron-down' : 'ti-chevron-right'}`} aria-hidden="true" style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)' }}></i>
