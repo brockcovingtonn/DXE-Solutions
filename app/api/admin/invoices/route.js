@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getRequestClient } from '@/lib/supabase-server';
+import { notifyClientOfProjectUpdate } from '@/lib/email-notifications';
+import { sendPushToUser } from '@/lib/push-notifications';
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount) || 0);
+}
 
 async function requireAdmin(supabase, user) {
   if (!user) return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
@@ -70,7 +76,7 @@ export async function POST(request) {
     if (isPayment) {
       const { data: parent } = await supabase
         .from('invoices')
-        .select('amount, status')
+        .select('amount, status, description')
         .eq('id', invoiceId)
         .single();
 
@@ -84,6 +90,37 @@ export async function POST(request) {
         const totalPaid = (payments || []).reduce((sum, p) => sum + Number(p.amount), 0);
         if (totalPaid >= Number(parent.amount)) {
           await supabase.from('invoices').update({ status: 'paid', paid_date: today }).eq('id', invoiceId);
+        }
+      }
+
+      // Let the client know a payment was recorded — the Stripe webhook
+      // path already does this for online payments, but a manual entry
+      // (check, cash) had no client-facing notification at all.
+      const { data: project } = await supabase
+        .from('projects')
+        .select('name, owner_id, profiles!projects_owner_id_fkey(email, email_notifications)')
+        .eq('id', projectId)
+        .single();
+
+      if (project?.profiles?.email) {
+        await notifyClientOfProjectUpdate({
+          clientEmail: project.profiles.email,
+          clientNotificationsEnabled: project.profiles.email_notifications,
+          projectName: project.name,
+          projectId,
+          message: `A payment of ${formatCurrency(amount)} was recorded on "${parent?.description || 'your invoice'}".`,
+        });
+      }
+
+      if (project?.owner_id) {
+        try {
+          await sendPushToUser(project.owner_id, {
+            title: `${project.name} — Payment Received`,
+            body: `A payment of ${formatCurrency(amount)} was recorded on "${parent?.description || 'your invoice'}".`,
+            data: { type: 'payment', projectId },
+          });
+        } catch (pushErr) {
+          console.error('Push notification error (payment applied):', pushErr);
         }
       }
     }

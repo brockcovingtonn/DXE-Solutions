@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import adminStyles from '@/components/admin.module.css';
 import { PROPERTY_AREAS } from '@/lib/constants';
 
+function formatTimeline(dateStr) {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly = false }) {
   const router = useRouter();
   // Checkboxes stay clickable either way — checking items off is the main
@@ -251,10 +255,11 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
                     <input
                       className={adminStyles.fieldInput}
                       style={{ width: '130px', flexShrink: 0 }}
-                      placeholder="Timeline"
+                      type="date"
+                      title="Timeline"
                       defaultValue={item.timeline || ''}
                       onBlur={(e) => {
-                        if (e.target.value !== (item.timeline || '')) saveItemField(item.id, 'timeline', e.target.value);
+                        if (e.target.value !== (item.timeline || '')) saveItemField(item.id, 'timeline', e.target.value || null);
                       }}
                     />
                     <button
@@ -270,7 +275,7 @@ export default function ScopeOfWorkEditor({ projectId, areas, isAdmin, readOnly 
                 ) : (
                   <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.74rem', color: 'var(--text-tertiary)', marginTop: '0.35rem' }}>
                     {item.notes && <span>Notes: {item.notes}</span>}
-                    {item.timeline && <span>Timeline: {item.timeline}</span>}
+                    {item.timeline && <span>Timeline: {formatTimeline(item.timeline)}</span>}
                   </div>
                 )}
               </div>

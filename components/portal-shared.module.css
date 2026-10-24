@@ -331,6 +331,11 @@
   color: var(--navy);
 }
 
+.actIconScope {
+  background: rgba(13, 148, 136, 0.12);
+  color: #0f766e;
+}
+
 .actTitle {
   font-size: 0.82rem;
   font-weight: 500;

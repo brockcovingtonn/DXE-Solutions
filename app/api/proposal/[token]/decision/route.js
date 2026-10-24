@@ -24,7 +24,7 @@ export async function POST(request, { params }) {
     const db = supabaseAdmin();
     const { data: quote, error } = await db
       .from('design_studio_quotes')
-      .select('id, quote_number, client_name, status, share_token')
+      .select('id, quote_number, client_name, status, share_token, project_id, deposit, created_by')
       .eq('share_token', token)
       .maybeSingle();
     if (error) throw error;
@@ -65,6 +65,27 @@ export async function POST(request, { params }) {
 
     const { error: updateError } = await db.from('design_studio_quotes').update(patch).eq('id', quote.id);
     if (updateError) throw updateError;
+
+    // An accepted quote on a known project gets its deposit invoiced
+    // automatically — previously someone had to remember to add this by
+    // hand in Accounting. Never lets a failure here break the client's
+    // actual signing flow.
+    if (decision === 'accepted' && quote.project_id && quote.deposit) {
+      try {
+        await db.from('invoices').insert({
+          project_id: quote.project_id,
+          kind: 'invoice',
+          description: `Design Studio deposit — ${quote.quote_number}`,
+          amount: quote.deposit,
+          status: 'unpaid',
+          visible_to_client: true,
+          approval_status: 'approved',
+          created_by: quote.created_by,
+        });
+      } catch (invoiceErr) {
+        console.error('Deposit invoice creation error:', invoiceErr);
+      }
+    }
 
     await notifyStaffOfProposalDecision({
       quote: { ...quote, ...patch },
