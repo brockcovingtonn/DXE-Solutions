@@ -5,6 +5,7 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import ViewEditSection from '@/components/ViewEditSection';
 import ProjectInfoForm from '@/components/admin/ProjectInfoForm';
+import ProjectCoverPhoto from '@/components/admin/ProjectCoverPhoto';
 import ProjectEmployeesForm from '@/components/admin/ProjectEmployeesForm';
 import ScanManager from '@/components/design-studio/ScanManager';
 import PermitsEditor from '@/components/admin/PermitsEditor';
@@ -59,6 +60,7 @@ export default function ProjectWorkspace({
   milestones,
   docs,
   photosWithUrls,
+  coverPhotoUrl,
   notes,
   activity,
   team,
@@ -100,7 +102,12 @@ export default function ProjectWorkspace({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', alignItems: 'start' }}>
             <ViewEditSection
               title="Project details"
-              view={<ProjectDetailsView project={project} />}
+              view={
+                <>
+                  <ProjectDetailsView project={project} />
+                  <ProjectCoverPhoto projectId={projectId} coverPhotoUrl={coverPhotoUrl} />
+                </>
+              }
               edit={<ProjectInfoForm project={project} />}
             />
             {/* Calendar stays as-is — it's already a compact, interactive widget, and adding an event already opens its own popup. */}

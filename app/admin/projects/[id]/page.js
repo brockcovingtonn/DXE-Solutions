@@ -138,6 +138,12 @@ export default async function AdminProjectPage({ params }) {
     );
   }
 
+  let coverPhotoUrl = null;
+  if (project.cover_photo_path) {
+    const { data } = await supabase.storage.from('project-photos').createSignedUrl(project.cover_photo_path, 3600);
+    coverPhotoUrl = data?.signedUrl || null;
+  }
+
   const client = project.profiles;
 
   return (
@@ -183,6 +189,7 @@ export default async function AdminProjectPage({ params }) {
         milestones={milestones}
         docs={docs}
         photosWithUrls={photosWithUrls}
+        coverPhotoUrl={coverPhotoUrl}
         notes={notes}
         activity={activity}
         team={team}

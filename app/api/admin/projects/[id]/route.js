@@ -44,6 +44,7 @@ export async function PATCH(request, { params }) {
       'building_size',
       'color',
       'room_scanner_enabled',
+      'cover_photo_path',
     ];
 
     const update = {};
