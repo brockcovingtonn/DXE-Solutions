@@ -610,44 +610,10 @@
 }
 
 .phaseBlock {
-  background: var(--white);
   padding: 1rem;
   text-align: center;
   border-bottom: 3px solid transparent;
   transition: background 0.2s ease;
-}
-
-/* Completion-% threshold shades — a navy tint scale so progress across
-   the whole bar reads at a glance. */
-.phasePct0 {
-  background: var(--white);
-}
-.phasePct1 {
-  background: rgba(62, 84, 104, 0.1);
-  border-bottom-color: rgba(62, 84, 104, 0.3);
-}
-.phasePct2 {
-  background: rgba(62, 84, 104, 0.22);
-  border-bottom-color: rgba(62, 84, 104, 0.55);
-}
-.phasePct3 {
-  background: rgba(62, 84, 104, 0.38);
-  border-bottom-color: var(--navy);
-}
-.phasePctNa {
-  background: rgba(var(--border-rgb), 0.06);
-}
-
-.phaseBlockDone {
-  background: var(--navy);
-  border-bottom-color: var(--gold);
-}
-
-/* Active phase always pops in gold regardless of its % shade. */
-.phaseBlockActive,
-.phaseBlock.phaseBlockActive {
-  background: var(--gold);
-  border-bottom-color: var(--navy);
 }
 
 .phName {
@@ -659,42 +625,11 @@
   color: var(--text-secondary);
 }
 
-.phasePct2 .phName,
-.phasePct3 .phName {
-  color: var(--navy);
-}
-
-.phaseBlockDone .phName {
-  color: var(--gold);
-}
-
-.phaseBlockActive .phName {
-  color: var(--navy);
-}
-
 .phPct {
   font-size: 1.2rem;
   font-weight: 600;
   font-family: 'Cormorant Garamond', serif;
   color: var(--text-faint);
-}
-
-.phasePct1 .phPct {
-  color: var(--text-secondary);
-}
-
-.phasePct2 .phPct,
-.phasePct3 .phPct {
-  color: var(--navy);
-  font-weight: 700;
-}
-
-.phaseBlockDone .phPct {
-  color: var(--white);
-}
-
-.phaseBlockActive .phPct {
-  color: var(--navy);
 }
 
 /* Highlight cards */
@@ -881,16 +816,6 @@
 :global(.portal[data-theme='dark']) .stepDotDone,
 :global(.portal:not([data-theme='light'])) .stepDotDone {
   background: #3E5468;
-}
-
-:global(.portal[data-theme='dark']) .phaseBlockDone,
-:global(.portal:not([data-theme='light'])) .phaseBlockDone {
-  background: #3E5468;
-}
-
-:global(.portal[data-theme='dark']) .phaseBlockDone .phPct,
-:global(.portal:not([data-theme='light'])) .phaseBlockDone .phPct {
-  color: #fff;
 }
 
 :global(.portal[data-theme='dark']) .hcIcon,

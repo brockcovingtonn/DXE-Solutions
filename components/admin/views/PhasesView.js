@@ -1,18 +1,5 @@
 import { ViewEmpty } from './ViewField';
-
-// Muted slate (close to --text-tertiary) at low completion, blending up
-// to the brand gold exactly at 100% — so color itself reads as progress
-// instead of every in-progress phase looking identically "done".
-const GRADIENT_START = { r: 160, g: 174, b: 192 };
-const GRADIENT_END = { r: 201, g: 168, b: 87 }; // --gold
-
-function phaseColor(pct) {
-  const t = Math.max(0, Math.min(100, pct)) / 100;
-  const r = Math.round(GRADIENT_START.r + (GRADIENT_END.r - GRADIENT_START.r) * t);
-  const g = Math.round(GRADIENT_START.g + (GRADIENT_END.g - GRADIENT_START.g) * t);
-  const b = Math.round(GRADIENT_START.b + (GRADIENT_END.b - GRADIENT_START.b) * t);
-  return `rgb(${r}, ${g}, ${b})`;
-}
+import { phaseColor } from '@/lib/phase-color';
 
 export default function PhasesView({ phases }) {
   if (!phases || phases.length === 0) {
