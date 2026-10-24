@@ -41,6 +41,12 @@ export default async function ProjectOverviewPage({ params }) {
       supabase.from('calendar_events').select('*').eq('project_id', projectId).order('start_time'),
     ]);
 
+  let coverPhotoUrl = null;
+  if (project.cover_photo_path) {
+    const { data } = await supabase.storage.from('project-photos').createSignedUrl(project.cover_photo_path, 3600);
+    coverPhotoUrl = data?.signedUrl || null;
+  }
+
   const recentDocs = (docs || []).slice(0, 4);
   const unpaidInvoices = (invoices || []).filter((i) => i.kind === 'invoice' && i.status === 'unpaid');
   const unpaidTotal = unpaidInvoices.reduce((sum, i) => sum + Number(i.amount), 0);
@@ -87,6 +93,19 @@ export default async function ProjectOverviewPage({ params }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         <div className={styles.fullWidthCard}>
           <h3>Project at a glance</h3>
+          {coverPhotoUrl && (
+            <img
+              src={coverPhotoUrl}
+              alt={project.name}
+              style={{
+                width: '100%',
+                height: '180px',
+                objectFit: 'cover',
+                borderRadius: 'var(--radius-md)',
+                marginBottom: '0.85rem',
+              }}
+            />
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem' }}>
             <div>
               <span style={{ color: 'var(--text-tertiary)' }}>Status: </span>
