@@ -6,14 +6,23 @@ import styles from '@/components/portal-shared.module.css';
 import adminStyles from '@/components/admin.module.css';
 import EmptyState from '@/components/EmptyState';
 
-export function buildNotesTimeline(notes, proposalActivity = []) {
+const ACTIVITY_META = {
+  proposal: { icon: 'ti-file-invoice', label: 'Proposal update' },
+  doc: { icon: 'ti-file-text', label: 'Document update' },
+  photo: { icon: 'ti-photo', label: 'Photo update' },
+  scope: { icon: 'ti-checklist', label: 'Scope of Work update' },
+  status: { icon: 'ti-flag', label: 'Project update' },
+};
+const DEFAULT_ACTIVITY_META = { icon: 'ti-activity', label: 'Update' };
+
+export function buildNotesTimeline(notes, activity = []) {
   return [
     ...(notes || []).map((n) => ({ kind: 'note', at: n.created_at, note: n })),
-    ...(proposalActivity || []).map((a) => ({ kind: 'activity', at: a.created_at, activity: a })),
+    ...(activity || []).map((a) => ({ kind: 'activity', at: a.created_at, activity: a })),
   ].sort((a, b) => new Date(b.at) - new Date(a.at));
 }
 
-export default function AdminNotes({ projectId, initialNotes, proposalActivity = [], hideForm = false, hideList = false }) {
+export default function AdminNotes({ projectId, initialNotes, activity = [], hideForm = false, hideList = false }) {
   const router = useRouter();
   const [body, setBody] = useState('');
   const [posting, setPosting] = useState(false);
@@ -95,10 +104,11 @@ export default function AdminNotes({ projectId, initialNotes, proposalActivity =
     }
   }
 
-  // Proposal activity (sent/signed/declined) interleaved read-only among
-  // manual notes, sorted together by date — same underlying "what's
-  // happened on this project" timeline, not a separate feed.
-  const timeline = buildNotesTimeline(initialNotes, proposalActivity);
+  // Project activity (documents, photos, scope completions, proposal
+  // and status changes) interleaved read-only among manual notes,
+  // sorted together by date — same underlying "what's happened on this
+  // project" timeline, not a separate feed.
+  const timeline = buildNotesTimeline(initialNotes, activity);
 
   return (
     <div>
@@ -123,12 +133,13 @@ export default function AdminNotes({ projectId, initialNotes, proposalActivity =
         {timeline.map((item) => {
           if (item.kind === 'activity') {
             const a = item.activity;
+            const meta = ACTIVITY_META[a.type] || DEFAULT_ACTIVITY_META;
             return (
               <div className={styles.noteItem} key={`activity-${a.id}`} style={{ opacity: 0.85 }}>
                 <div className={adminStyles.noteHeaderRow}>
                   <div className={styles.noteFrom}>
-                    <i className="ti ti-file-invoice" aria-hidden="true" style={{ marginRight: '0.35rem' }}></i>
-                    Proposal update
+                    <i className={`ti ${meta.icon}`} aria-hidden="true" style={{ marginRight: '0.35rem' }}></i>
+                    {meta.label}
                   </div>
                 </div>
                 <div className={styles.noteText}>{a.text}</div>

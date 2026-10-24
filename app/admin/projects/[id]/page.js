@@ -18,14 +18,17 @@ export default async function AdminProjectPage({ params }) {
 
   if (!project) notFound();
 
-  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: proposalActivity }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }, { data: contacts }] =
+  const [{ data: phases }, { data: milestones }, { data: docs }, { data: photos }, { data: notes }, { data: activity }, { data: team }, { data: interestedParties }, { data: utilities }, { data: actionItems }, { data: assignablePeople }, { data: permits }, { data: invoices }, { data: allEmployees }, { data: employeeAssignments }, { data: calendarEvents }, { data: contacts }] =
     await Promise.all([
       supabase.from('project_phases').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('milestones').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('documents').select('*, document_signatures(signer_name, created_at)').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('photos').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
       supabase.from('notes').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
-      supabase.from('activity').select('*').eq('project_id', projectId).eq('type', 'proposal').order('created_at', { ascending: false }),
+      // Every activity type except 'note' — a note is already shown as
+      // itself above, so including its own activity-log echo here would
+      // just duplicate it in the merged timeline.
+      supabase.from('activity').select('*').eq('project_id', projectId).neq('type', 'note').order('created_at', { ascending: false }),
       supabase.from('project_team').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.from('project_interested_parties').select('*').eq('project_id', projectId).order('sort_order'),
       supabase.rpc('get_project_utilities_admin', { p_project_id: projectId }),
@@ -181,7 +184,7 @@ export default async function AdminProjectPage({ params }) {
         docs={docs}
         photosWithUrls={photosWithUrls}
         notes={notes}
-        proposalActivity={proposalActivity}
+        activity={activity}
         team={team}
         interestedParties={interestedParties}
         utilities={utilities}

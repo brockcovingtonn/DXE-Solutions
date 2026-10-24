@@ -60,7 +60,7 @@ export default function ProjectWorkspace({
   docs,
   photosWithUrls,
   notes,
-  proposalActivity,
+  activity,
   team,
   interestedParties,
   utilities,
@@ -117,8 +117,8 @@ export default function ProjectWorkspace({
           <ViewEditSection
             title="Notes & updates"
             actionLabel="Add"
-            edit={<AdminNotes projectId={projectId} initialNotes={[]} proposalActivity={[]} hideList />}
-            view={<AdminNotes projectId={projectId} initialNotes={notes || []} proposalActivity={proposalActivity || []} hideForm />}
+            edit={<AdminNotes projectId={projectId} initialNotes={[]} activity={[]} hideList />}
+            view={<AdminNotes projectId={projectId} initialNotes={notes || []} activity={activity || []} hideForm />}
           />
         </>
       )}
