@@ -73,7 +73,7 @@ const tabBtnStyle = {
 
 const activeTabStyle = { background: 'var(--navy)', color: 'var(--white)', borderColor: 'var(--navy)' };
 
-export default function CalendarView({ events, onSelectEvent, selectedEventId, headerActions, payments }) {
+export default function CalendarView({ events, onSelectEvent, selectedEventId, headerActions, payments, compact = false }) {
   const [view, setView] = useState('month');
   const [refDate, setRefDate] = useState(() => startOfDay(new Date()));
   const [weatherDays, setWeatherDays] = useState([]);
@@ -143,7 +143,7 @@ export default function CalendarView({ events, onSelectEvent, selectedEventId, h
       </div>
 
       {view === 'month' && (
-        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} />
+        <MonthGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} compact={compact} />
       )}
       {view === 'week' && (
         <WeekGrid refDate={refDate} events={events} onSelectEvent={onSelectEvent} selectedEventId={selectedEventId} weatherDays={weatherDays} payments={payments} />
@@ -155,11 +155,12 @@ export default function CalendarView({ events, onSelectEvent, selectedEventId, h
   );
 }
 
-function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays, payments }) {
+function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDays, payments, compact }) {
   const monthStart = startOfMonth(refDate);
   const gridStart = startOfWeek(monthStart);
   const days = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
   const today = startOfDay(new Date());
+  const maxChips = compact ? 2 : 3;
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', background: 'var(--border)', border: '1px solid var(--border)' }}>
@@ -168,7 +169,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
           key={d}
           style={{
             background: 'var(--surface)',
-            padding: '0.5rem',
+            padding: compact ? '0.3rem' : '0.5rem',
             fontSize: '0.65rem',
             textAlign: 'center',
             fontWeight: 600,
@@ -177,7 +178,7 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
             letterSpacing: '0.05em',
           }}
         >
-          {d}
+          {compact ? d[0] : d}
         </div>
       ))}
       {days.map((day, i) => {
@@ -187,8 +188,8 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
         const isToday = isSameDay(day, today);
         const weather = weatherForDate(weatherDays, day);
         return (
-          <div key={i} style={{ background: 'var(--white)', minHeight: '92px', padding: '0.4rem', opacity: inMonth ? 1 : 0.4 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
+          <div key={i} style={{ background: 'var(--white)', minHeight: compact ? '52px' : '92px', padding: compact ? '0.25rem' : '0.4rem', opacity: inMonth ? 1 : 0.4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: compact ? '0.15rem' : '0.3rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--gold)' : 'var(--navy)' }}>
                   {day.getDate()}
@@ -200,17 +201,17 @@ function MonthGrid({ refDate, events, onSelectEvent, selectedEventId, weatherDay
                   />
                 )}
               </div>
-              {weather && (
+              {weather && !compact && (
                 <div title={`${weatherDisplay(weather.weatherCode).label} · High ${weather.high}° / Low ${weather.low}°`} style={{ fontSize: '0.68rem', color: 'var(--text-tertiary)' }}>
                   {weatherDisplay(weather.weatherCode).emoji} {weather.high}°
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-              {dayEvents.slice(0, 3).map((e) => (
+              {dayEvents.slice(0, maxChips).map((e) => (
                 <EventChip key={e.id} event={e} selected={e.id === selectedEventId} onClick={() => onSelectEvent(e)} />
               ))}
-              {dayEvents.length > 3 && <div style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)' }}>+{dayEvents.length - 3} more</div>}
+              {dayEvents.length > maxChips && <div style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)' }}>+{dayEvents.length - maxChips} more</div>}
             </div>
           </div>
         );

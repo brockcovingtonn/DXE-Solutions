@@ -97,7 +97,7 @@ export default function ProjectWorkspace({
 
       {selectedTab === 'overview' && (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', alignItems: 'start' }}>
             <ViewEditSection
               title="Project details"
               view={<ProjectDetailsView project={project} />}

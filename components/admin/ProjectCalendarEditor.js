@@ -90,6 +90,7 @@ export default function ProjectCalendarEditor({ projectId, initialEvents, people
         events={initialEvents}
         onSelectEvent={selectEvent}
         selectedEventId={selected?.id}
+        compact
         headerActions={
           <button type="button" className="btn-navy" style={{ padding: '0.4rem 1rem', fontSize: '0.75rem' }} onClick={() => { setAdding(true); setSelected(null); }}>
             <i className="ti ti-plus" aria-hidden="true"></i> Add to Calendar
